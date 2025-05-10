@@ -52,7 +52,7 @@ struct HomeView: View {
                     // TODO: 상단 배너
                     
                     // 매칭된 모임 + 모임 신청 + 하단 배너
-                    ScrollView(.vertical) {
+                    ScrollView(.vertical, showsIndicators: false) {
                         
                         // 매칭된 모임
                         VStack(alignment: .leading, spacing: 12) {
@@ -76,20 +76,16 @@ struct HomeView: View {
                             if matchingSummaryInfos.isEmpty {
                                 HomeGridEmptyAndFooter(category: .placeholder)
                             } else {
-                                ScrollView(.horizontal) {
-                                    LazyHGrid(rows: self.rows, pinnedViews: [.sectionFooters]) {
-                                        Section(
-                                            content: {
-                                                ForEach(
-                                                    matchingSummaryInfos,
-                                                    id: \.matchingId
-                                                ) { matchingSummaryInfo in
-                                                    HomeGridItem(matchingSummary: matchingSummaryInfo)
-                                                }
-                                            }, footer: {
-                                                HomeGridEmptyAndFooter(category: .footer)
-                                            }
-                                        )
+                                ScrollView(.horizontal, showsIndicators: false) {
+                                    LazyHGrid(rows: self.rows) {
+                                        ForEach(
+                                            matchingSummaryInfos,
+                                            id: \.matchingId
+                                        ) { matchingSummaryInfo in
+                                            HomeGridItem(matchingSummary: matchingSummaryInfo)
+                                        }
+                                        
+                                        HomeGridEmptyAndFooter(category: .footer)
                                     }
                                 }
                             }
@@ -134,7 +130,6 @@ struct HomeView: View {
                         .onAppear { self.setupIndicator() }
                         .tabViewStyle(.page(indexDisplayMode: .always))
                     }
-                    // 상단, 하단 마진
                      .padding(.top, 32)
                     // TODO: 새로고침 시 contentOffset 필요
                      .refreshable {
