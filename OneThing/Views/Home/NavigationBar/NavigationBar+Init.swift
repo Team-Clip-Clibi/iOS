@@ -38,6 +38,12 @@ extension NavigationBar {
         naviBar.onBackButtonTap = action
         return naviBar
     }
+    /// 하단 구분 선 숨김 여부 설정
+    func hidesBottomSeparator(_ hides: Bool) -> NavigationBar {
+        var naviBar = self
+        naviBar.hidesBottomSeparator = hides
+        return naviBar
+    }
     /// 내부 여백 설정
     func inset(_ inset: EdgeInsets) -> NavigationBar {
         var naviBar = self
