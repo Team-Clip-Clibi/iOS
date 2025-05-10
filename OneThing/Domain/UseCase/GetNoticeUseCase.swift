@@ -8,9 +8,9 @@
 import Foundation
 
 struct GetNoticeUseCase {
-    private let repository: NotificationRepository
+    private let repository: DisplayContentsRepository
     
-    init(repository: NotificationRepository = NotificationRepository()) {
+    init(repository: DisplayContentsRepository = DisplayContentsRepository()) {
         self.repository = repository
     }
     

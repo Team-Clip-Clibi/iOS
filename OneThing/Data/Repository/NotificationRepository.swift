@@ -13,19 +13,6 @@ struct NotificationRepository {
     
     // MARK: - GET
     
-    func notice() async throws -> NoticeDTO {
-        let endpoint = EndPoint(
-            path: "/displays/notices",
-            method: .get,
-            headers: [
-                "Content-Type": "application/json",
-                "Authorization": "Bearer \(TokenManager.shared.accessToken)"
-            ]
-        )
-        
-        return try await self.networkService.get(endpoint: endpoint)
-    }
-    
     func unReadNotification() async throws -> NotificationDTO {
         let endpoint = EndPoint(
             path: "/notifications/unread",
