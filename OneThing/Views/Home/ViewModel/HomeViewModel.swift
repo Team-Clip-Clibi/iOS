@@ -14,6 +14,7 @@ class HomeViewModel {
         fileprivate(set) var isUnReadNotificationEmpty: Bool
         fileprivate(set) var noticeInfos: [NoticeInfo]
         fileprivate(set) var matchingSummaryInfos: [MatchingSummaryInfo]
+        fileprivate(set) var bannerInfos: [BannerInfo]
     }
     
     var currentState: State
@@ -21,22 +22,26 @@ class HomeViewModel {
     private let unReadNotificationUseCase: GetUnReadNotificationUseCase
     private let noticeUseCase: GetNoticeUseCase
     private let matchingSummaryUseCase: GetMatchingSummaryUseCase
+    private let bannerUseCase: GetBannerUseCase
     
     init(
         unReadNotificationUseCase: GetUnReadNotificationUseCase = GetUnReadNotificationUseCase(),
         noticeUseCase: GetNoticeUseCase = GetNoticeUseCase(),
-        matchingSummaryUseCase: GetMatchingSummaryUseCase = GetMatchingSummaryUseCase()
+        matchingSummaryUseCase: GetMatchingSummaryUseCase = GetMatchingSummaryUseCase(),
+        bannerUseCase: GetBannerUseCase = GetBannerUseCase()
     ) {
         
         self.currentState = State(
             isUnReadNotificationEmpty: true,
             noticeInfos: [],
-            matchingSummaryInfos: []
+            matchingSummaryInfos: [],
+            bannerInfos: []
         )
         
         self.unReadNotificationUseCase = unReadNotificationUseCase
         self.noticeUseCase = noticeUseCase
         self.matchingSummaryUseCase = matchingSummaryUseCase
+        self.bannerUseCase = bannerUseCase
     }
     
     func isUnReadNotificationEmpty() async {
@@ -60,6 +65,14 @@ class HomeViewModel {
             self.currentState.matchingSummaryInfos = try await self.matchingSummaryUseCase.execute()
         } catch {
             self.currentState.matchingSummaryInfos = []
+        }
+    }
+    
+    func banners() async {
+        do {
+            self.currentState.bannerInfos = try await self.bannerUseCase.execute(with: .home)
+        } catch {
+            self.currentState.bannerInfos = []
         }
     }
 }

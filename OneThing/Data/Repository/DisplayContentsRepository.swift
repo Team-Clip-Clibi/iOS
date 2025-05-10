@@ -25,6 +25,20 @@ struct DisplayContentsRepository {
         
         return try await self.networkService.get(endpoint: endpoint)
     }
+    
+    func banners(with bannerType: BannerType) async throws -> BannerDTO {
+        let endpoint = EndPoint(
+            path: "/displays/banners/\(bannerType.rawValue)",
+            method: .get,
+            headers: [
+                "Content-Type": "application/json",
+                "Authorization": "Bearer \(TokenManager.shared.accessToken)"
+            ]
+        )
+        
+        return try await self.networkService.get(endpoint: endpoint)
+    }
+    
     // MARK: - PATCH
     
 }

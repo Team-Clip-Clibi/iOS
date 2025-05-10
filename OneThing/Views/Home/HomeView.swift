@@ -115,15 +115,12 @@ struct HomeView: View {
                         
                         // TODO: 하단 배너, 임시 색상으로 표시
                         TabView {
-                            Color.purple400
-                                .padding(.bottom, 26)
-                                .frame(height: 110)
-                            Color.green100
-                                .padding(.bottom, 26)
-                                .frame(height: 110)
-                            Color.yellow100
-                                .padding(.bottom, 26)
-                                .frame(height: 110)
+                            ForEach(
+                                self.viewModel.currentState.bannerInfos,
+                                id: \.id
+                            ) { bannerInfo in
+                                self.setupBanner(with: bannerInfo.urlString)
+                            }
                         }
                         // 배너 높이 + 하단 마진 + 인디케이터 높이
                         .frame(height: 136)
@@ -136,6 +133,7 @@ struct HomeView: View {
                          await self.viewModel.isUnReadNotificationEmpty()
                          await self.viewModel.notice()
                          await self.viewModel.matchingSummary()
+                         await self.viewModel.banners()
                      }
                 }
             }
@@ -143,6 +141,7 @@ struct HomeView: View {
                 await self.viewModel.isUnReadNotificationEmpty()
                 await self.viewModel.notice()
                 await self.viewModel.matchingSummary()
+                await self.viewModel.banners()
             }
         }
         
@@ -150,6 +149,22 @@ struct HomeView: View {
 }
 
 extension HomeView {
+    
+    private func setupBanner(with urlString: String) -> some View {
+        
+        AsyncImage(url: URL(string: urlString)) { phase in
+            switch phase {
+            case let .success(image):
+                // TODO: 이미지 스케일 문제 해결 해야 함
+                image
+                    .resizable()
+                    .padding(.bottom, 26)
+                    .frame(height: 110)
+            default:
+                EmptyView()
+            }
+        }
+    }
     
     private func setupIndicator() {
         UIPageControl.appearance().currentPageIndicatorTintColor = UIColor(.purple400)
