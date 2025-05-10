@@ -78,7 +78,9 @@ struct NotificationView: View {
                         .frame(maxWidth: .infinity)
                     }
                     
-                    Spacer().frame(height: 24)
+                    if self.viewModel.currentState.unReadNotificationInfos.isEmpty == false {
+                        Spacer().frame(height: 24)
+                    }
                     
                     // 읽은 알림
                     if self.viewModel.currentState.readNotificationInfos.isEmpty == false {
