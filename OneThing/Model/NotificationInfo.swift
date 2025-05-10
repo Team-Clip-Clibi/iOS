@@ -13,6 +13,14 @@ struct NotificationInfo: Equatable {
         case meeting = "MEETING"
         case event = "EVENT"
         case notice = "NOTICE"
+        
+        var title: String {
+            switch self {
+            case .meeting: return "모임"
+            case .event: return "이벤트"
+            case .notice: return "공지사항"
+            }
+        }
     }
     
     let id: String
