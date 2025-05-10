@@ -19,6 +19,8 @@ struct NavigationBar: View {
     
     /// 뒤로 가기 버튼 숨김 여부
     var hidesBackButton: Bool = false
+    /// 하단 구분 선 숨김 여부
+    var hidesBottomSeparator: Bool = true
     /// 내부 여백
     var inset: EdgeInsets = EdgeInsets(top: 0, leading: 16, bottom: 0, trailing: 16)
     /// 내부 요소들 사이의 간격
@@ -33,47 +35,67 @@ struct NavigationBar: View {
     var onBackButtonTap: (() -> Void)?
     
     var body: some View {
-        HStack(spacing: self.spacing) {
-            // 왼쪽 영역 (뒤로가기 + 좌측 버튼들)
+        
+        ZStack {
+            if self.titleAlignment == .center {
+                // 중앙 영역 (타이틀)
+                if let titleView = self.titleView {
+                    titleView
+                        .frame(maxWidth: .infinity, alignment: self.titleAlignment.toAlignment)
+                } else if let title = self.title {
+                    self.textTitleView(title)
+                }
+            }
+            
             HStack(spacing: self.spacing) {
-                if self.hidesBackButton == false {
-                    self.backButton
+                // 왼쪽 영역 (뒤로가기 + 좌측 버튼들)
+                HStack(spacing: self.spacing) {
+                    if self.hidesBackButton == false {
+                        self.backButton
+                    }
+                    
+                    if let leftButtons = self.leftButtons, leftButtons.isEmpty == false {
+                        ForEach(0..<leftButtons.count, id: \.self) { index in
+                            leftButtons[index]
+                        }
+                    }
+                }
+                .frame(minWidth: 0)
+                
+                Spacer(minLength: self.spacing)
+                
+                if self.titleAlignment != .center {
+                    if let titleView = self.titleView {
+                        titleView
+                            .frame(maxWidth: .infinity, alignment: self.titleAlignment.toAlignment)
+                    } else if let title = self.title {
+                        self.textTitleView(title)
+                    }
                 }
                 
-                if let leftButtons = self.leftButtons, leftButtons.isEmpty == false {
-                    ForEach(0..<leftButtons.count, id: \.self) { index in
-                        leftButtons[index]
+                Spacer(minLength: self.spacing)
+                
+                // 오른쪽 영역 (우측 버튼들)
+                HStack(spacing: self.spacing) {
+                    if let rightButtons = self.rightButtons, !rightButtons.isEmpty {
+                        ForEach(0..<rightButtons.count, id: \.self) { index in
+                            rightButtons[index]
+                        }
                     }
                 }
+                .frame(minWidth: 0)
             }
-            .frame(minWidth: 0)
-            
-            Spacer(minLength: self.spacing)
-            
-            // 중앙 영역 (타이틀)
-            if let titleView = self.titleView {
-                titleView
-                    .frame(maxWidth: .infinity, alignment: self.titleAlignment.toAlignment)
-            } else if let title = self.title {
-                self.textTitleView(title)
-            }
-            
-            Spacer(minLength: self.spacing)
-            
-            // 오른쪽 영역 (우측 버튼들)
-            HStack(spacing: self.spacing) {
-                if let rightButtons = self.rightButtons, !rightButtons.isEmpty {
-                    ForEach(0..<rightButtons.count, id: \.self) { index in
-                        rightButtons[index]
-                    }
-                }
-            }
-            .frame(minWidth: 0)
+            .frame(maxWidth: .infinity)
+            .frame(height: 48)
+            .padding(self.inset)
+            .background(.clear)
+            .overlay(
+                Rectangle()
+                    .frame(width: nil, height: self.hidesBottomSeparator ? 0: 1, alignment: .bottom)
+                    .foregroundStyle(.gray200),
+                alignment: .bottom
+            )
         }
-        .frame(maxWidth: .infinity)
-        .frame(height: 48)
-        .padding(self.inset)
-        .background(.clear)
     }
     
     private var backButton: some View {
@@ -81,6 +103,7 @@ struct NavigationBar: View {
             self.onBackButtonTap?()
         }) {
             Image(.backButton)
+                .resizable()
                 .foregroundColor(.gray800)
                 .frame(width: 24, height: 24)
         }
@@ -136,4 +159,8 @@ extension NavigationBar {
                     .frame(width: 24, height: 24)
             })
         ])
+    
+    NavigationBar()
+        .title("알림")
+        .hidesBottomSeparator(false)
 }
