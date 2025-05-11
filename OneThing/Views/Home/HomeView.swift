@@ -16,6 +16,8 @@ struct HomeView: View {
     @Binding var appPathManager: OTAppPathManager
     @Binding var viewModel: HomeViewModel
     
+    @State private var currentPage: Int = 0
+    
     private let rows = [GridItem()]
     
     var body: some View {
@@ -44,10 +46,7 @@ struct HomeView: View {
                             })
                         ])
                     
-                    NoticeView(
-                        notices: self.viewModel.currentState.noticeInfos,
-                        backgroundTapAction: { }
-                    )
+                    NoticeView(notices: self.viewModel.currentState.noticeInfos)
                     
                     // TODO: 상단 배너
                     
@@ -113,21 +112,36 @@ struct HomeView: View {
                         
                         Spacer().frame(height: 40)
                         
-                        // TODO: 하단 배너, 임시 색상으로 표시
-                        TabView {
-                            ForEach(
-                                self.viewModel.currentState.bannerInfos,
-                                id: \.id
-                            ) { bannerInfo in
-                                self.setupBanner(with: bannerInfo.urlString)
+                        // 하단 배너
+                        VStack(spacing: 10) {
+                            TabView(selection: $currentPage) {
+                                ForEach(
+                                    0..<self.viewModel.currentState.bannerInfos.count,
+                                    id: \.self
+                                ) { page in
+                                    let urlString = self.viewModel.currentState.bannerInfos[page].urlString
+                                    self.setupBanner(with: urlString)
+                                        .tag(page)
+                                }
+                            }
+                            .tabViewStyle(.page(indexDisplayMode: .never))
+                            
+                            HStack(spacing: 6) {
+                                ForEach(
+                                    0..<self.viewModel.currentState.bannerInfos.count,
+                                    id: \.self
+                                ) { page in
+                                    Circle()
+                                        .fill(page == self.currentPage ? .purple400: .gray400)
+                                        .frame(width: 6, height: 6)
+                                        .animation(.easeInOut(duration: 0.2), value: self.currentPage)
+                                }
                             }
                         }
-                        // 배너 높이 + 하단 마진 + 인디케이터 높이
+                        // 초기 높이, 이미지 높이 추정 전
                         .frame(height: 136)
-                        .onAppear { self.setupIndicator() }
-                        .tabViewStyle(.page(indexDisplayMode: .always))
                     }
-                     .padding(.top, 32)
+                    .padding(.top, self.viewModel.currentState.noticeInfos.isEmpty ? 0: 32)
                     // TODO: 새로고침 시 contentOffset 필요
                      .refreshable {
                          await self.viewModel.isUnReadNotificationEmpty()
@@ -155,10 +169,9 @@ extension HomeView {
         AsyncImage(url: URL(string: urlString)) { phase in
             switch phase {
             case let .success(image):
-                // TODO: 이미지 스케일 문제 해결 해야 함
                 image
                     .resizable()
-                    .padding(.bottom, 26)
+                    .scaledToFill()
                     .frame(height: 110)
             default:
                 EmptyView()
