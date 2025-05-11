@@ -9,9 +9,9 @@ import SwiftUI
 
 struct NoticeView: View {
     
-    private(set) var notices: [NoticeInfo]
+    @Environment(\.openURL) private var openURL
     
-    private(set) var backgroundTapAction: (() -> Void)
+    private(set) var notices: [NoticeInfo]
     
     var body: some View {
         if self.notices.isEmpty == false, let notice = self.notices.last {
@@ -35,7 +35,7 @@ struct NoticeView: View {
             .frame(maxWidth: .infinity)
             .frame(height: 34)
             .background(Color.gray200)
-            .onTapGesture { self.backgroundTapAction() }
+            .onTapGesture { self.openURL(URL(string: notice.link)!) }
         } else {
             EmptyView()
         }
@@ -44,7 +44,6 @@ struct NoticeView: View {
 
 #Preview {
     NoticeView(
-        notices: [NoticeInfo(noticeType: .notice, content: "원띵 업데이트 공지 어쩌구 저쩌구", link: "")],
-        backgroundTapAction: { }
+        notices: [NoticeInfo(noticeType: .notice, content: "원띵 업데이트 공지 어쩌구 저쩌구", link: "")]
     )
 }
