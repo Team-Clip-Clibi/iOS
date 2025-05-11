@@ -33,5 +33,10 @@ class MyPageReportViewModel {
         
         return try await submitReportUseCase.execute(content: content, reportCategory: reportCategory)
     }
+    
+    func initReport() {
+        self.content = ""
+        self.reportCategory = nil
+    }
 
 }
