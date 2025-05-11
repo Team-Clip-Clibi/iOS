@@ -30,10 +30,16 @@ struct MyPageView: View {
                     // 프로필 정보 카드
                     VStack {
                         VStack(alignment: .leading, spacing: 10) {
-                            Text("안녕하세요! \( viewModel.profileInfo?.username ?? "원띵")님")
-                                .otFont(.title1)
-                                .fontWeight(.semibold)
-                            
+                            HStack(spacing: 6) {
+                                Text("안녕하세요!")
+                                    .otFont(.title1)
+                                    .fontWeight(.semibold)
+                                    .foregroundStyle(.purple400)
+                                Text("\( viewModel.profileInfo?.username ?? "원띵")님")
+                                    .otFont(.title1)
+                                    .fontWeight(.semibold)
+                                
+                            }
                             Rectangle()
                                 .fill(Color.gray200)
                                 .frame(height: 1)
