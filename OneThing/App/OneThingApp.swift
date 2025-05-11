@@ -19,20 +19,6 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
         // UNUserNotificationCenter delegate 설정
         UNUserNotificationCenter.current().delegate = self
         
-        // 알림 권한 요청
-        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { granted, error in
-            if let error = error {
-                print("알림 권한 요청 에러: \(error.localizedDescription)")
-            }
-            if granted {
-                DispatchQueue.main.async {
-                    application.registerForRemoteNotifications()
-                }
-            } else {
-                print("사용자가 알림 권한을 거부했습니다.")
-            }
-        }
-        
         // Firebase Messaging delegate 설정
         Messaging.messaging().delegate = self
         
@@ -62,7 +48,8 @@ extension AppDelegate: MessagingDelegate {
     func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
         guard let token = fcmToken else { return }
         print("Firebase FCM 토큰: \(token)")
-        // 여기서 서버에 토큰 전송 등 추가 작업을 수행합니다.
+        
+        UserDefaults.standard.set(token, forKey: "firebaseToken")
     }
 }
 
