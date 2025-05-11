@@ -36,23 +36,15 @@ extension Date {
             return "\(hours)시간 전".trimmingCharacters(in: .whitespaces)
         }
         
-        if minutes > 9 && minutes < 60 {
-            return "\(minutes / 10)0분 전".trimmingCharacters(in: .whitespaces)
-        }
-        
-        if minutes > 5 && minutes < 10 {
-            return "10분 전".trimmingCharacters(in: .whitespaces)
-        }
-        
-        if minutes < 6 {
-            return "5분 전".trimmingCharacters(in: .whitespaces)
+        if minutes > 0 && minutes < 60 {
+            return "\(minutes)분 전".trimmingCharacters(in: .whitespaces)
         }
 
-        return ""
+        return "0분 전"
     }
     
-    var banEndFormatted: String {
-        return self.toString("MM월 dd일")
+    var readNotiFormatted: String {
+        return self.toString("M월 dd일")
     }
 }
 
