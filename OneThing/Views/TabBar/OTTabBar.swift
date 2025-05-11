@@ -80,6 +80,7 @@ struct OTTabBar: View {
 
 struct OTTabBarContainer: View {
     
+    @State private var homeViewModel = HomeViewModel()
     @State private var myPageViewModel = MyPageEditViewModel()
     
     @Binding var pathManager: OTAppPathManager
@@ -95,10 +96,10 @@ struct OTTabBarContainer: View {
                 switch pathManager.currentTab {
                 case .home:
                     NavigationStack(path: $pathManager.homePaths) {
-                        HomeView(appPathManager: $pathManager)
+                        HomeView(appPathManager: $pathManager, viewModel: $homeViewModel)
                             .navigationDestination(for: OTHomePath.self) { homePath in
                                 switch homePath {
-                                default:
+                                case .none:
                                     EmptyView()
                                 }
                             }

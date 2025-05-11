@@ -13,6 +13,19 @@ struct MatchingRepository {
     
     // MARK: - GET
     
+    func meetingSummaries() async throws -> MatchingSummaryDTO {
+        let endpoint = EndPoint(
+            path: "/matchings/summaries",
+            method: .get,
+            headers: [
+                "Content-Type": "application/json",
+                "Authorization": "Bearer \(TokenManager.shared.accessToken)"
+            ]
+        )
+        
+        return try await self.networkService.get(endpoint: endpoint)
+    }
+    
     // MARK: - PATCH
     
 }

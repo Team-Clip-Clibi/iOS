@@ -10,14 +10,7 @@ import Foundation
 enum OTHomePath: Hashable, Equatable {
     var id: String { UUID().uuidString }
     
-    case myPage
-    case editProfile
-    case editAlarm
-    
-    case notification
-    
-    case privacyAndPolicy
-    case reportMatching
+    case none
 }
 
 
