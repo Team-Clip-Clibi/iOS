@@ -30,7 +30,7 @@ struct MyPageView: View {
                     // 프로필 정보 카드
                     VStack {
                         VStack(alignment: .leading, spacing: 10) {
-                            Text("안녕하세요! 민만밈님")
+                            Text("안녕하세요! \( viewModel.profileInfo?.username ?? "원띵")님")
                                 .otFont(.title1)
                                 .fontWeight(.semibold)
                             
@@ -66,7 +66,7 @@ struct MyPageView: View {
                             backgroundColor: Color.white100,
                             borderColor: Color.white100,
                             action: {
-                                // 알림 설정 액션
+                                pathManager.push(path: .notification)
                             },
                             isClicked: false
                         )
@@ -99,7 +99,15 @@ struct MyPageView: View {
                             backgroundColor: Color.white100,
                             borderColor: Color.white100,
                             action: {
-                                // 신고하기 액션
+                                Task {
+                                    withAnimation(.easeInOut(duration: 0.3)) {
+                                        pathManager.isTabBarHidden = true
+                                    }
+                                    
+                                    try await Task.sleep(nanoseconds: 300_000_000)
+                                    
+                                    pathManager.push(path: .report)
+                                }
                             },
                             isClicked: false
                         )
@@ -117,7 +125,9 @@ struct MyPageView: View {
                 
                 HStack(spacing: 16) {
                     Button(action: {
-                        
+                        pathManager.withTabBarHiddenThenNavigate {
+                            pathManager.push(path: .term)
+                        }
                     }) {
                         Text("약관 및 정책")
                             .otFont(.captionTwo)
@@ -143,6 +153,12 @@ struct MyPageView: View {
                 .padding(.top, 13)
                 .padding(.leading, 16)
                 .padding(.bottom, 43)
+            }
+        }
+        .onAppear {
+            Task {
+                _ = try await self.viewModel.fetchProfile()
+                
             }
         }
     }

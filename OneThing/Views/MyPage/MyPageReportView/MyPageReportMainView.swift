@@ -15,39 +15,76 @@ struct MyPageReportMainView: View {
     var body: some View {
         VStack(spacing: 0) {
             OTNavigationBar(
-                rightButtonType: .close,
+                leftButtonType: .back,
                 title: "신고하기",
                 phase: 0,
-                rightAction: {
+                leftAction: {
+                    pathManager.isTabBarHidden = false
                     _ = self.pathManager.myPagePaths.popLast()
                 }
             )
-            
-            HStack {
-                Text("서비스 이용 중 불편한 점이 있으셨나요?")
-                    .otFont(.title1)
-                    .fontWeight(.semibold)
-                    .foregroundStyle(.gray800)
+            VStack(spacing: 0) {
+                HStack {
+                    Text("서비스 이용 중 불편한 점이 있으셨나요?")
+                        .otFont(.title1)
+                        .fontWeight(.semibold)
+                        .foregroundStyle(.gray800)
+                    Spacer()
+                }
                 Spacer()
+                    .frame(height: 24)
+                InfoRow(
+                    title: "매칭 관련 신고하기",
+                    value: "",
+                    isClickable: true,
+                    action: {
+                        pathManager.push(path: .reportMatching)
+                    })
+                
+                InfoRow(
+                    title: "서비스 관련 신고하기",
+                    value: "",
+                    isClickable: true,
+                    action: {
+                        
+                    })
             }
+            .padding(.horizontal, 17)
+            .padding(.top, 32)
             
-            InfoRow(
-                title: "매칭 관련 신고하기",
-                value: "",
-                isClickable: true,
-                action: {
+            Spacer()
+            
+            VStack(spacing: 20) {
+                HStack {
+                    Text("신고 전, 이용 수칙을 확인해 보세요")
+                        .otFont(.title1)
+                        .fontWeight(.semibold)
+                        .foregroundStyle(.gray800)
+                    Spacer()
+                }
                 
-            })
-            
-            InfoRow(
-                title: "서비스 관련 신고하기",
-                value: "",
-                isClickable: true,
-                action: {
-                
-            })
-            
+                HStack(spacing: 12) {
+                    OTSelectionButton(
+                        buttonTitle: "커뮤니티 이용 수칙",
+                        action:{
+                            
+                        },
+                        isClicked: false)
+                    
+                    OTSelectionButton(
+                        buttonTitle: "1:1 문의하기",
+                        action:{
+                            
+                        },
+                        isClicked: false)
+                }
+            }
+            .padding(.horizontal, 17)
         }
+        .onAppear {
+            pathManager.isTabBarHidden = true
+        }
+        .navigationBarBackButtonHidden()
     }
 }
 
