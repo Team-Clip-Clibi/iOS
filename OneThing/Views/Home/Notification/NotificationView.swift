@@ -63,7 +63,7 @@ struct NotificationView: View {
                                     self.viewModel.currentState.unReadNotificationInfos,
                                     id: \.id
                                 ) { notification in
-                                    NotificationGridItem(notification: notification)
+                                    NotificationGridItem(notification: notification, isNew: true)
                                         .task {
                                             guard self.viewModel.currentState.isLoadMore == false,
                                                   notification == self.viewModel.currentState.unReadNotificationInfos.last
@@ -95,7 +95,7 @@ struct NotificationView: View {
                                     self.viewModel.currentState.readNotificationInfos,
                                     id: \.id
                                 ) { notification in
-                                    NotificationGridItem(notification: notification)
+                                    NotificationGridItem(notification: notification, isNew: false)
                                         .task {
                                             guard self.viewModel.currentState.isLoadMore == false,
                                                   notification == self.viewModel.currentState.readNotificationInfos.last

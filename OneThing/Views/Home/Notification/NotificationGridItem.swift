@@ -10,6 +10,7 @@ import SwiftUI
 struct NotificationGridItem: View {
     
     private(set) var notification: NotificationInfo
+    private(set) var isNew: Bool
     
     private var tintColor: Color {
         switch self.notification.notificationType {
@@ -25,6 +26,11 @@ struct NotificationGridItem: View {
         case .event: return .giftFill
         case .notice: return .notiFill
         }
+    }
+    
+    private var dateString: String {
+        let createdAt = self.notification.createdAt
+        return self.isNew ? createdAt.infoReadableTimeTakenFromThis(to: Date()): createdAt.readNotiFormatted
     }
     
     var body: some View {
@@ -43,7 +49,7 @@ struct NotificationGridItem: View {
                 
                 Spacer(minLength: 8)
                 
-                Text("")
+                Text(self.dateString)
                     .otFont(.body1)
                     .foregroundStyle(.gray500)
             }
@@ -77,7 +83,8 @@ struct NotificationGridItem: View {
             notificationType: .meeting,
             content: "신청한 모임이 매칭되었어요! 모임 참여를 확정해주세요",
             createdAt: Date()
-        )
+        ),
+        isNew: true
     )
     NotificationGridItem(
         notification: NotificationInfo(
@@ -85,7 +92,8 @@ struct NotificationGridItem: View {
             notificationType: .event,
             content: "오늘 이태원에서 모임이 예정되어있어요. 이따가 만나요!",
             createdAt: Date()
-        )
+        ),
+        isNew: true
     )
     NotificationGridItem(
         notification: NotificationInfo(
@@ -93,6 +101,7 @@ struct NotificationGridItem: View {
             notificationType: .notice,
             content: "계정 보호를 위해 꼭 확인해주세요",
             createdAt: Date()
-        )
+        ),
+        isNew: false
     )
 }
