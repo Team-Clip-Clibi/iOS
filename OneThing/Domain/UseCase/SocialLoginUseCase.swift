@@ -48,7 +48,7 @@ class SocialLoginUseCase {
         guard let socialId = await extractKakaoSocialID(idToken) else {
             throw NetworkError.invalidSocialId
         }
-        guard let firebaseToken = await getFCMToken() else {
+        guard let firebaseToken = sessionStore.firebaseToken, !firebaseToken.isEmpty else {
             throw NetworkError.invalidFCMToken
         }
         

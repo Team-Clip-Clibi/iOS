@@ -8,6 +8,6 @@
 import Foundation
 
 struct RelationshipInfo {
-    var status: RelationshipStatus?
-    var isConsidered: Bool?
+    var status: RelationshipStatus
+    var isConsidered: Bool
 }

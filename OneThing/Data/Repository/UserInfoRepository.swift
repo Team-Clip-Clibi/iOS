@@ -27,7 +27,7 @@ struct UserInfoRepository {
     
     func usersLanguage() async throws -> LanguageDTO {
         let endpoint = EndPoint(
-            path: "/users/relationship",
+            path: "/users/language",
             method: .get,
             headers: [
                 "Content-Type": "application/json",
