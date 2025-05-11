@@ -102,6 +102,7 @@ struct MyPageEditNicknameView: View {
         }
         .onAppear {
             pathManager.isTabBarHidden = true
+            text = viewModel.profileInfo?.nickname ?? ""
         }
         .onDisappear {
             pathManager.isTabBarHidden = false
