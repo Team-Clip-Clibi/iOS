@@ -39,7 +39,9 @@ struct HomeView: View {
                         )
                         .titleAlignment(.left)
                         .rightButtons([
-                            Button(action: { }, label: {
+                            Button(action: {
+                                self.appPathManager.push(path: OTHomePath.notification)
+                            }, label: {
                                 Image(self.viewModel.currentState.isUnReadNotificationEmpty ? .bellOutlined: .bellUnread)
                                     .resizable()
                                     .frame(width: 24, height: 24)

@@ -81,6 +81,8 @@ struct OTTabBar: View {
 struct OTTabBarContainer: View {
     
     @State private var homeViewModel = HomeViewModel()
+    @State private var notificationViewModel = NotificationViewModel()
+    
     @State private var myPageViewModel = MyPageEditViewModel()
     
     @State private var myPageNotificationViewModel = MyPageNotificationViewModel()
@@ -103,8 +105,11 @@ struct OTTabBarContainer: View {
                         HomeView(appPathManager: $pathManager, viewModel: $homeViewModel)
                             .navigationDestination(for: OTHomePath.self) { homePath in
                                 switch homePath {
-                                case .none:
-                                    EmptyView()
+                                case .notification:
+                                    NotificationView(
+                                        appPathManager: $pathManager,
+                                        viewModel: $notificationViewModel
+                                    )
                                 }
                             }
                     }
