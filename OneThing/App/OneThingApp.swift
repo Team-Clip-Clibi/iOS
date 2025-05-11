@@ -108,6 +108,9 @@ struct OneThingApp: App {
         } catch {
             self.appStateManager.isSignedIn = false
         }
+        
+        try await NotificationManager.shared.requestAuthorization()
+        HapticManager.shared.setEnable(true)
     }
 }
 

@@ -96,6 +96,7 @@ struct MyPageEditJobView: View {
         } else {
             withAnimation {
                 isLimitErrorHighlighted = true
+                HapticManager.shared.notification(type: .error)
             }
             
             DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
