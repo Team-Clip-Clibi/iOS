@@ -39,11 +39,7 @@ class HomeViewModel {
         
         self.currentState = State(
             isUnReadNotificationEmpty: true,
-            topBannerInfos: [
-                .init(id: 1, type: .matching),
-                .init(id: 2, type: .matchingInfo),
-                .init(id: 3, type: .review)
-            ],
+            topBannerInfos: [],
             isChangeSuccessForTopBannerStatus: false,
             noticeInfos: [],
             matchingSummaryInfos: [],
