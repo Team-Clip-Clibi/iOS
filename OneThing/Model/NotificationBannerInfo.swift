@@ -9,7 +9,7 @@ import Foundation
 
 struct NotificationBannerInfo: Equatable {
     
-    enum bannerType: String, Codable {
+    enum bannerType: String {
         case matching = "MATCHING"
         case matchingInfo = "MATCHING_INFO"
         case review = "REVIEW"
@@ -54,3 +54,4 @@ extension NotificationBannerInfo: Codable {
         self.type = try container.decode(NotificationBannerInfo.bannerType.self, forKey: .type)
     }
 }
+extension NotificationBannerInfo.bannerType: Codable { }

@@ -13,7 +13,7 @@ struct DisplayContentsRepository {
     
     // MARK: - GET
     
-    func notice() async throws -> NoticeDTO {
+    func notice() async throws -> NoticeInfoDTO {
         let endpoint = EndPoint(
             path: "/displays/notices",
             method: .get,
@@ -26,9 +26,9 @@ struct DisplayContentsRepository {
         return try await self.networkService.get(endpoint: endpoint)
     }
     
-    func banners(with bannerType: BannerType) async throws -> BannerDTO {
+    func banners(with bannerInfoType: BannerInfoType) async throws -> BannerInfoDTO {
         let endpoint = EndPoint(
-            path: "/displays/banners/\(bannerType.rawValue)",
+            path: "/displays/banners/\(bannerInfoType.rawValue)",
             method: .get,
             headers: [
                 "Content-Type": "application/json",
