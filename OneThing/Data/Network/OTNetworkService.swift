@@ -25,6 +25,11 @@ class OTNetworkService: APIService {
         return response
     }
     
+    func patch(endpoint: EndPoint) async throws -> HTTPURLResponse {
+        let response = try await APIClient.shared.patchRequest(endpoint: endpoint) as HTTPURLResponse
+        return response
+    }
+    
     func delete(endpoint: EndPoint) async throws -> HTTPURLResponse {
         let response = try await APIClient.shared.deleteRequest(endpoint: endpoint) as HTTPURLResponse
         return response

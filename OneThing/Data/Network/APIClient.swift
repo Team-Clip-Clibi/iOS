@@ -103,6 +103,24 @@ class APIClient {
         return httpResponse
     }
     
+    func patchRequest(endpoint: EndPoint) async throws -> HTTPURLResponse {
+        guard let url = endpoint.url else {
+            throw NetworkError.invalidURL
+        }
+        
+        var urlRequest = URLRequest(url: url)
+        urlRequest.httpMethod = endpoint.method.rawValue
+        urlRequest.allHTTPHeaderFields = endpoint.headers
+        urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        let (_, response) = try await URLSession.shared.data(for: urlRequest)
+        guard let httpResponse = response as? HTTPURLResponse,
+              (200...299).contains(httpResponse.statusCode) else {
+            throw NetworkError.invalidHttpStatusCode(code: (response as? HTTPURLResponse)?.statusCode ?? 0)
+        }
+        return httpResponse
+    }
+    
     func deleteRequest(endpoint: EndPoint) async throws -> HTTPURLResponse {
         guard let url = endpoint.url else {
             throw NetworkError.invalidURL
