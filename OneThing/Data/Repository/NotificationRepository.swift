@@ -26,6 +26,45 @@ struct NotificationRepository {
         return try await self.networkService.get(endpoint: endpoint)
     }
     
+    func unReadNotificationWithPaging(id: String) async throws -> NotificationDTO {
+        let endpoint = EndPoint(
+            path: "/notifications/unread/\(id)",
+            method: .get,
+            headers: [
+                "Content-Type": "application/json",
+                "Authorization": "Bearer \(TokenManager.shared.accessToken)"
+            ]
+        )
+        
+        return try await self.networkService.get(endpoint: endpoint)
+    }
+    
+    func readNotification() async throws -> NotificationDTO {
+        let endpoint = EndPoint(
+            path: "/notifications/read",
+            method: .get,
+            headers: [
+                "Content-Type": "application/json",
+                "Authorization": "Bearer \(TokenManager.shared.accessToken)"
+            ]
+        )
+        
+        return try await self.networkService.get(endpoint: endpoint)
+    }
+    
+    func readNotificationWithPaging(id: String) async throws -> NotificationDTO {
+        let endpoint = EndPoint(
+            path: "/notifications/read/\(id)",
+            method: .get,
+            headers: [
+                "Content-Type": "application/json",
+                "Authorization": "Bearer \(TokenManager.shared.accessToken)"
+            ]
+        )
+        
+        return try await self.networkService.get(endpoint: endpoint)
+    }
+    
     // MARK: - PATCH
     
 }

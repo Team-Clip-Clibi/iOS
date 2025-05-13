@@ -10,7 +10,7 @@ import Foundation
 enum OTHomePath: Hashable, Equatable {
     var id: String { UUID().uuidString }
     
-    case none
+    case notification
 }
 
 

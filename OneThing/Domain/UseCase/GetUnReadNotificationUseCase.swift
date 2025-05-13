@@ -18,7 +18,11 @@ struct GetUnReadNotificationUseCase {
         return try await self.execute().count == 0
     }
     
-    func execute() async throws -> [NotificationInfo] {
-        return try await self.repository.unReadNotification().notificationInfos
+    func execute(with id: String = "") async throws -> [NotificationInfo] {
+        if id.isEmpty {
+            return try await self.repository.unReadNotification().notificationInfos
+        } else {
+            return try await self.repository.unReadNotificationWithPaging(id: id).notificationInfos
+        }
     }
 }
