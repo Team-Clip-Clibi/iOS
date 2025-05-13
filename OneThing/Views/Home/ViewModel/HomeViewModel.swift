@@ -12,6 +12,8 @@ class HomeViewModel {
     
     struct State: Equatable {
         fileprivate(set) var isUnReadNotificationEmpty: Bool
+        fileprivate(set) var topBannerInfos: [NotificationBannerInfo]
+        fileprivate(set) var isChangeSuccessForTopBannerStatus: Bool
         fileprivate(set) var noticeInfos: [NoticeInfo]
         fileprivate(set) var matchingSummaryInfos: [MatchingSummaryInfo]
         fileprivate(set) var bannerInfos: [BannerInfo]
@@ -20,12 +22,16 @@ class HomeViewModel {
     var currentState: State
     
     private let unReadNotificationUseCase: GetUnReadNotificationUseCase
+    private let getNotificationBannerUseCase: GetNotificationBannerUseCase
+    private let updateNotificationBannerUseCase: UpdateNotificationBannerUseCase
     private let noticeUseCase: GetNoticeUseCase
     private let matchingSummaryUseCase: GetMatchingSummaryUseCase
     private let bannerUseCase: GetBannerUseCase
     
     init(
         unReadNotificationUseCase: GetUnReadNotificationUseCase = GetUnReadNotificationUseCase(),
+        getNotificationBannerUseCase: GetNotificationBannerUseCase = GetNotificationBannerUseCase(),
+        updateNotificationBannerUseCase: UpdateNotificationBannerUseCase = UpdateNotificationBannerUseCase(),
         noticeUseCase: GetNoticeUseCase = GetNoticeUseCase(),
         matchingSummaryUseCase: GetMatchingSummaryUseCase = GetMatchingSummaryUseCase(),
         bannerUseCase: GetBannerUseCase = GetBannerUseCase()
@@ -33,12 +39,20 @@ class HomeViewModel {
         
         self.currentState = State(
             isUnReadNotificationEmpty: true,
+            topBannerInfos: [
+                .init(id: 1, type: .matching),
+                .init(id: 2, type: .matchingInfo),
+                .init(id: 3, type: .review)
+            ],
+            isChangeSuccessForTopBannerStatus: false,
             noticeInfos: [],
             matchingSummaryInfos: [],
             bannerInfos: []
         )
         
         self.unReadNotificationUseCase = unReadNotificationUseCase
+        self.getNotificationBannerUseCase = getNotificationBannerUseCase
+        self.updateNotificationBannerUseCase = updateNotificationBannerUseCase
         self.noticeUseCase = noticeUseCase
         self.matchingSummaryUseCase = matchingSummaryUseCase
         self.bannerUseCase = bannerUseCase
@@ -49,6 +63,38 @@ class HomeViewModel {
             self.currentState.isUnReadNotificationEmpty = try await self.unReadNotificationUseCase.isUnReadNotificationEmpty()
         } catch {
             self.currentState.isUnReadNotificationEmpty = true
+        }
+    }
+    
+    func topBanners() async {
+        do {
+            let topBannerInfos = try await self.getNotificationBannerUseCase.execute()
+            
+            await MainActor.run {
+                self.currentState.topBannerInfos = topBannerInfos
+                self.currentState.isChangeSuccessForTopBannerStatus = false
+            }
+        } catch {
+            
+            await MainActor.run {
+                self.currentState.topBannerInfos = []
+                self.currentState.isChangeSuccessForTopBannerStatus = false
+            }
+        }
+    }
+    
+    func updateTopBannerStatus(with id: Int) async {
+        do {
+            let response = try await self.updateNotificationBannerUseCase.execute(with: id)
+            
+            await MainActor.run {
+                self.currentState.isChangeSuccessForTopBannerStatus = response.statusCode == 200
+            }
+        } catch {
+            
+            await MainActor.run {
+                self.currentState.isChangeSuccessForTopBannerStatus = false
+            }
         }
     }
     
