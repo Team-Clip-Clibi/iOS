@@ -16,6 +16,7 @@ struct HomeView: View {
     @Binding var appPathManager: OTAppPathManager
     @Binding var viewModel: HomeViewModel
     
+    @State private var topBannerCurrPage: Int = 0
     @State private var currentPage: Int = 0
     
     private let rows = [GridItem()]
@@ -27,7 +28,7 @@ struct HomeView: View {
             ZStack {
                 Color.gray100.ignoresSafeArea()
                 
-                // 네비게이션 바 + 공지/새소식 + 상단 배너
+                // 네비게이션 바 + 공지/새소식
                 VStack {
                     NavigationBar()
                         .hidesBackButton(true)
@@ -50,10 +51,43 @@ struct HomeView: View {
                     
                     NoticeView(notices: self.viewModel.currentState.noticeInfos)
                     
-                    // TODO: 상단 배너
-                    
-                    // 매칭된 모임 + 모임 신청 + 하단 배너
+                    // 상단 배너 + 매칭된 모임 + 모임 신청 + 하단 배너
                     ScrollView(.vertical, showsIndicators: false) {
+                        
+                        // 상단 배너
+                        if self.viewModel.currentState.topBannerInfos.isEmpty {
+                            EmptyView()
+                        } else {
+                            ZStack {
+                                TabView {
+                                    ForEach(
+                                        Array(self.viewModel.currentState.topBannerInfos.enumerated()),
+                                        id: \.offset
+                                    ) { page, bannerInfo in
+                                        TopBannerView(
+                                            description: bannerInfo.type.description,
+                                            title: bannerInfo.type.title,
+                                            currentPage: page,
+                                            totalPage: self.viewModel.currentState.topBannerInfos.count,
+                                            closeTapAction: {
+                                                Task {
+                                                    await self.viewModel.updateTopBannerStatus(
+                                                        with: bannerInfo.id
+                                                    )
+                                                }
+                                            }
+                                        )
+                                        .tag(page)
+                                    }
+                                }
+                                .tabViewStyle(.page(indexDisplayMode: .never))
+                            }
+                            .padding(.horizontal, 16)
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 82)
+                            
+                            Spacer().frame(height: 40)
+                        }
                         
                         // 매칭된 모임
                         VStack(alignment: .leading, spacing: 12) {
@@ -147,6 +181,7 @@ struct HomeView: View {
                     // TODO: 새로고침 시 contentOffset 필요
                      .refreshable {
                          await self.viewModel.isUnReadNotificationEmpty()
+                         await self.viewModel.topBanners()
                          await self.viewModel.notice()
                          await self.viewModel.matchingSummary()
                          await self.viewModel.banners()
@@ -155,9 +190,15 @@ struct HomeView: View {
             }
             .task {
                 await self.viewModel.isUnReadNotificationEmpty()
+                await self.viewModel.topBanners()
                 await self.viewModel.notice()
                 await self.viewModel.matchingSummary()
                 await self.viewModel.banners()
+            }
+            .task(id: self.viewModel.currentState.isChangeSuccessForTopBannerStatus) {
+                if self.viewModel.currentState.isChangeSuccessForTopBannerStatus {
+                    await self.viewModel.topBanners()
+                }
             }
         }
         
@@ -187,9 +228,9 @@ extension HomeView {
     }
 }
 
-#Preview {
-     HomeView(
-        appPathManager: .constant(OTAppPathManager()),
-        viewModel: .constant(HomeViewModel())
-    )
-}
+// #Preview {
+//      HomeView(
+//         appPathManager: .constant(OTAppPathManager()),
+//         viewModel: .constant(HomeViewModel())
+//     )
+// }
