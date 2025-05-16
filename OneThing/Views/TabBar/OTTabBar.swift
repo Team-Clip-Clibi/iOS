@@ -82,6 +82,7 @@ struct OTTabBarContainer: View {
     
     @State private var homeViewModel = HomeViewModel()
     @State private var notificationViewModel = NotificationViewModel()
+    @State private var randomMatchingViewModel = RandomMatchingViewModel()
     
     @State private var myPageViewModel = MyPageEditViewModel()
     
@@ -105,6 +106,36 @@ struct OTTabBarContainer: View {
                                     NotificationView(
                                         appPathManager: $pathManager,
                                         viewModel: $notificationViewModel
+                                    )
+                                case .random(.main):
+                                    RandomMatchingMainView(
+                                        appPathManager: $pathManager,
+                                        viewModel: $randomMatchingViewModel
+                                    )
+                                case .random(.location):
+                                    RandomMatchingLocationView(
+                                        appPathManager: $pathManager,
+                                        viewModel: $randomMatchingViewModel
+                                    )
+                                case .random(.topic):
+                                    RandomMatchingTopicView(
+                                        appPathManager: $pathManager,
+                                        viewModel: $randomMatchingViewModel
+                                    )
+                                case .random(.tmi):
+                                    RandomMatchingTMIView(
+                                        appPathManager: $pathManager,
+                                        viewModel: $randomMatchingViewModel
+                                    )
+                                case .random(.payment):
+                                    RandomMatchingPaymentView(
+                                        appPathManager: $pathManager,
+                                        viewModel: $randomMatchingViewModel
+                                    )
+                                case .random(.complete):
+                                    RandomMatchingCompleteView(
+                                        appPathManager: $pathManager,
+                                        viewModel: $randomMatchingViewModel
                                     )
                                 }
                             }

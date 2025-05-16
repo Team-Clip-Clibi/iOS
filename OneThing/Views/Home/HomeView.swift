@@ -105,7 +105,13 @@ struct HomeView: View {
                             RequestMeetingButton(category: .onething, backgroundTapAction: { })
                             
                             HStack(spacing: 10) {
-                                RequestMeetingButton(category: .random, backgroundTapAction: { })
+                                RequestMeetingButton(
+                                    category: .random,
+                                    backgroundTapAction: {
+                                        self.appPathManager.isTabBarHidden = true
+                                        self.appPathManager.push(path: .random(.main))
+                                    }
+                                )
                                 RequestMeetingButton(category: .instant, backgroundTapAction: { })
                             }
                         }

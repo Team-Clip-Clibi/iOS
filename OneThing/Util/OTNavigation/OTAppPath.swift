@@ -11,6 +11,17 @@ enum OTHomePath: Hashable, Equatable {
     var id: String { UUID().uuidString }
     
     case notification
+    
+    case random(RandomMatching)
+    
+    enum RandomMatching: Equatable {
+        case main
+        case location
+        case topic
+        case tmi
+        case payment
+        case complete
+    }
 }
 
 
