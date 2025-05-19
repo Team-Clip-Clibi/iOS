@@ -104,8 +104,8 @@ struct NavigationBar: View {
         }) {
             Image(.backButton)
                 .resizable()
-                .foregroundColor(.gray800)
                 .frame(width: 24, height: 24)
+                .foregroundColor(.gray800)
         }
     }
     
@@ -150,6 +150,7 @@ extension NavigationBar {
                 .resizable()
                 .scaledToFit()
                 .frame(height: 24)
+                
         )
         .titleAlignment(.left)
         .rightButtons([

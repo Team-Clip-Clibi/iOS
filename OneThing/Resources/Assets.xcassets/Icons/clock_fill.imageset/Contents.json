@@ -1,7 +1,7 @@
 {
   "images" : [
     {
-      "filename" : "checkedBox.png",
+      "filename" : "clock_fill.svg",
       "idiom" : "universal"
     }
   ],
@@ -11,6 +11,6 @@
   },
   "properties" : {
     "preserves-vector-representation" : true,
-    "template-rendering-intent" : "original"
+    "template-rendering-intent" : "template"
   }
 }

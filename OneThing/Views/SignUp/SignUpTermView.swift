@@ -45,6 +45,8 @@ struct SignUpTermView: View {
                             ? "checkedBox"
                             : "uncheckedBox"
                         )
+                        .resizable()
+                        .frame(width: 32, height: 32)
                         .scaleEffect(viewModel.isAllTermsAccepted ? 1.1 : 1.0)
                         .animation(.spring(response: 0.3, dampingFraction: 0.5, blendDuration: 0.3), value: viewModel.isAllTermsAccepted)
                         Text("서비스 약관 모두 동의")
@@ -90,6 +92,8 @@ struct SignUpTermView: View {
                                     ? "checkedBox"
                                     : "uncheckedBox"
                                 )
+                                .resizable()
+                                .frame(width: 32, height: 32)
                                 .scaleEffect(term.isAccepted ? 1.1 : 1.0)
                                 .animation(.spring(response: 0.3, dampingFraction: 0.5, blendDuration: 0.3), value: term.isAccepted)
                                 
