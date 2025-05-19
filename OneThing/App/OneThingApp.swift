@@ -22,7 +22,26 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
         // Firebase Messaging delegate 설정
         Messaging.messaging().delegate = self
         
+        registerForPushNotifications()
+        
         return true
+    }
+    
+    func registerForPushNotifications() {
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
+            if let error = error {
+                print("푸시 권한 요청 에러: \(error.localizedDescription)")
+                return
+            }
+            
+            if granted {
+                DispatchQueue.main.async {
+                    UIApplication.shared.registerForRemoteNotifications()
+                }
+            } else {
+                print("푸시 권한 거부됨")
+            }
+        }
     }
     
     // APNS 등록 성공 시 호출: deviceToken을 Firebase Messaging에 전달
@@ -47,6 +66,7 @@ extension AppDelegate: MessagingDelegate {
     // APNS 토큰이 설정된 후 Firebase가 FCM 토큰을 갱신하면 호출됩니다.
     func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
         guard let token = fcmToken else { return }
+        
         print("Firebase FCM 토큰: \(token)")
         
         UserDefaults.standard.set(token, forKey: "firebaseToken")
