@@ -1,5 +1,5 @@
 //
-//  BannerDTO.swift
+//  BannerInfoDTO.swift
 //  OneThing
 //
 //  Created by 오현식 on 5/10/25.
@@ -7,12 +7,12 @@
 
 import Foundation
 
-enum BannerType: String {
+enum BannerInfoType: String {
     case home = "HOME"
     case login = "LOGIN"
 }
 
-struct BannerDTO: Codable {
+struct BannerInfoDTO: Codable {
     let banners: [Banner]
     
     init(from decoder: any Decoder) throws {
@@ -21,7 +21,7 @@ struct BannerDTO: Codable {
     }
 }
 
-extension BannerDTO {
+extension BannerInfoDTO {
     
     func toDomain() -> [BannerInfo] {
         return self.banners.map { BannerInfo(urlString: $0.imagePresignedUrl) }

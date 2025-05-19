@@ -1,5 +1,5 @@
 //
-//  NoticeDTO.swift
+//  NoticeInfoDTO.swift
 //  OneThing
 //
 //  Created by 오현식 on 5/9/25.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct NoticeDTO: Codable {
+struct NoticeInfoDTO: Codable {
     let noticeInfos: [NoticeInfo]
     
     init(from decoder: any Decoder) throws {

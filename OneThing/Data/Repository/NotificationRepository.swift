@@ -65,6 +65,31 @@ struct NotificationRepository {
         return try await self.networkService.get(endpoint: endpoint)
     }
     
+    func banners() async throws -> NotificationBannerDto {
+        let endpoint = EndPoint(
+            path: "/notifications/banner",
+            method: .get,
+            headers: [
+                "Content-Type": "application/json",
+                "Authorization": "Bearer \(TokenManager.shared.accessToken)"
+            ]
+        )
+        
+        return try await self.networkService.get(endpoint: endpoint)
+    }
+    
     // MARK: - PATCH
     
+    func updateBannerStatus(with id: Int) async throws -> HTTPURLResponse {
+        let endpoint = EndPoint(
+            path: "/notifications/banner/status/\(id)",
+            method: .patch,
+            headers: [
+                "Content-Type": "application/json",
+                "Authorization": "Bearer \(TokenManager.shared.accessToken)"
+            ]
+        )
+        
+        return try await self.networkService.patch(endpoint: endpoint)
+    }
 }

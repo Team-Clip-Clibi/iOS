@@ -11,6 +11,8 @@ struct TopBannerView: View {
     
     private(set) var description: String
     private(set) var title: String
+    private(set) var currentPage: Int
+    private(set) var totalPage: Int
     
     private(set) var closeTapAction: (() -> Void)
     
@@ -21,9 +23,26 @@ struct TopBannerView: View {
                     .otFont(.body1)
                     .foregroundStyle(.gray700)
                 
-                Text(self.title)
-                    .otFont(.subtitle1)
-                    .foregroundStyle(.purple400)
+                HStack {
+                    Text(self.title)
+                        .otFont(.subtitle1)
+                        .foregroundStyle(.purple400)
+                    
+                    Spacer()
+                    
+                    if self.totalPage == 1 {
+                        EmptyView()
+                    } else {
+                        Text("\(self.currentPage+1)/\(self.totalPage)")
+                            .otFont(.captionTwo)
+                            .foregroundStyle(.purple400)
+                            .background(
+                                RoundedRectangle(cornerRadius: 20)
+                                    .fill(.purple100)
+                                    .frame(width: 35, height: 22)
+                            )
+                    }
+                }
             }
             
             Spacer(minLength: 25)
@@ -50,6 +69,16 @@ struct TopBannerView: View {
     TopBannerView(
         description: "모임 매칭이 완료되었어요! 참석 여부를 알려주세요",
         title: "참석 결정하기",
+        currentPage: 0,
+        totalPage: 3,
+        closeTapAction: { }
+    )
+    
+    TopBannerView(
+        description: "모임 매칭이 완료되었어요! 참석 여부를 알려주세요",
+        title: "참석 결정하기",
+        currentPage: 0,
+        totalPage: 1,
         closeTapAction: { }
     )
 }
