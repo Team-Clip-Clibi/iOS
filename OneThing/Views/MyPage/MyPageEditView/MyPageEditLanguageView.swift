@@ -9,6 +9,8 @@ import SwiftUI
 
 struct MyPageEditLanguageView: View {
     
+    @State private var language: Language?
+    
     @Binding var pathManager: OTAppPathManager
     @Binding var viewModel: MyPageEditViewModel
     
@@ -26,8 +28,8 @@ struct MyPageEditLanguageView: View {
                 ForEach(Language.allCases, id: \.self) { option in
                     OTLButton(
                         buttonTitle: option.toKorean,
-                        action: { viewModel.language = option },
-                        isClicked: viewModel.language == option
+                        action: { self.language = option },
+                        isClicked: self.language == option
                     )
                 }
             }
@@ -44,7 +46,10 @@ struct MyPageEditLanguageView: View {
                 buttonTitle: "완료",
                 action: {
                     Task {
+                        viewModel.language = self.language
+                        
                         let result = try await viewModel.updateLanguage()
+                        
                         if result {
                             pathManager.pop()
                         }
@@ -56,7 +61,8 @@ struct MyPageEditLanguageView: View {
         }
         .task {
             Task {
-                try await viewModel.fetchLanguage()
+                self.language = viewModel.language
+                
                 pathManager.isTabBarHidden = true
             }
         }

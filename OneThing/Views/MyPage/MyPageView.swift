@@ -51,7 +51,22 @@ struct MyPageView: View {
                             OTLButton(
                                 buttonTitle: "프로필 수정",
                                 action: {
-                                    self.pathManager.myPagePaths.append(.editProfile)
+                                    Task {
+                                        do {
+                                            try await viewModel.fetchProfile()
+                                            try await viewModel.fetchJob()
+                                            try await viewModel.fetchRelationship()
+                                            try await viewModel.fetchDietary()
+                                            try await viewModel.fetchLanguage()
+                                            
+                                            // 모든 fetch가 끝난 뒤에 화면 이동
+                                            await MainActor.run {
+                                                pathManager.myPagePaths.append(.editProfile)
+                                            }
+                                        } catch {
+                                            throw NetworkError.fetchError
+                                        }
+                                    }
                                 },
                                 isClicked: false,
                                 pressed: true
@@ -72,7 +87,7 @@ struct MyPageView: View {
                             backgroundColor: Color.white100,
                             borderColor: Color.white100,
                             action: {
-                                pathManager.push(path: .notification)
+                                pathManager.push(path: OTMyPagePath.notification)
                             },
                             isClicked: false
                         )

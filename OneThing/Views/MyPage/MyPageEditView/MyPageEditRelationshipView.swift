@@ -15,6 +15,9 @@
 import SwiftUI
 
 struct MyPageEditRelationshipView: View {
+
+    @State private var status: RelationshipStatus?
+    @State private var isConsidered: Bool?
     
     @Binding var pathManager: OTAppPathManager
     @Binding var viewModel: MyPageEditViewModel
@@ -45,8 +48,8 @@ struct MyPageEditRelationshipView: View {
                         ForEach(RelationshipStatus.allCases) { status in
                             OTLButton(
                                 buttonTitle: status.toKorean,
-                                action: { viewModel.relationship?.status = status },
-                                isClicked: viewModel.relationship?.status == status
+                                action: { self.status = status },
+                                isClicked: self.status == status
                             )
                         }
                     }
@@ -67,8 +70,8 @@ struct MyPageEditRelationshipView: View {
                         ForEach(considerOptions, id: \.0) { selected, title in
                             OTLButton(
                                 buttonTitle: title,
-                                action: { viewModel.relationship?.isConsidered = selected },
-                                isClicked: viewModel.relationship?.isConsidered == selected
+                                action: { self.isConsidered = selected },
+                                isClicked: self.isConsidered == selected
                             )
                         }
                     }
@@ -86,19 +89,25 @@ struct MyPageEditRelationshipView: View {
                 buttonTitle: "완료",
                 action: {
                     Task {
+                        self.viewModel.relationship = RelationshipInfo(
+                            status: self.status,
+                            isConsidered: self.isConsidered
+                        )
                         let result = try await viewModel.updateRelationship()
                         if result {
                             pathManager.pop()
                         }
                     }
                 },
-                isClickable: viewModel.relationship?.status != nil && viewModel.relationship?.isConsidered != nil)
+                isClickable: self.status != nil && self.isConsidered != nil)
             .padding(.horizontal, 17)
             .padding(.top, 10)
         }
         .task {
             Task {
-                try await viewModel.fetchRelationship()
+                self.status = viewModel.relationship?.status
+                self.isConsidered = viewModel.relationship?.isConsidered
+                
                 pathManager.isTabBarHidden = true
             }
         }

@@ -19,7 +19,7 @@ class MyPageEditViewModel {
     var dietary: String = ""
     var otherText: String = ""
     
-    var language: Language = .korean
+    var language: Language?
     
     private var socialLoginUseCase: SocialLoginUseCase
     private var getProfileInfoUseCase: GetProfileInfoUseCase
@@ -71,21 +71,28 @@ class MyPageEditViewModel {
         return try await socialLoginUseCase.deleteAccount()
     }
     
+    @MainActor
     func fetchProfile() async throws {
         self.profileInfo = try await getProfileInfoUseCase.execute()
     }
     
+    @MainActor
     func fetchJob() async throws {
         self.jobInfo = try await getJobUseCase.execute()
     }
     
+    @MainActor
     func fetchRelationship() async throws {
         self.relationship = try await getRelationshipUseCase.execute()
     }
     
+    @MainActor
     func fetchDietary() async throws {
         let result = try await getDietaryUseCase.execute()
-        if result != "비건이에요" && result != "베지테리언이에요" && result != "글루텐프리를 지켜요" && result != "다 잘먹어요" {
+        if result == "" {
+            self.dietary = ""
+            self.otherText = ""
+        } else if result != "비건이에요" && result != "베지테리언이에요" && result != "글루텐프리를 지켜요" && result != "다 잘먹어요" {
             self.dietary = "기타"
             self.otherText = result
         } else {
@@ -93,6 +100,7 @@ class MyPageEditViewModel {
         }
     }
     
+    @MainActor
     func fetchLanguage() async throws {
         self.language = try await getLanguageUseCase.execute()
     }
@@ -125,6 +133,9 @@ class MyPageEditViewModel {
     }
     
     func updateLanguage() async throws -> Bool {
+        guard let language = language else {
+            return false
+        }
         return try await updateLanguageUseCase.execute(language: language)
     }
 }

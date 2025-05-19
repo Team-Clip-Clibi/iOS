@@ -14,9 +14,9 @@ struct GetLanguageUseCase {
         self.repository = repository
     }
     
-    func execute() async throws -> Language {
+    func execute() async throws -> Language? {
         let result = try await repository.usersLanguage()
-        
+
         return result.language
     }
 }

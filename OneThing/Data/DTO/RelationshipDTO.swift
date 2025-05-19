@@ -8,8 +8,8 @@
 import Foundation
 
 struct RelationshipDTO: Codable {
-    var relationshipStatus: RelationshipStatus
-    var isSameRelationshipConsidered: Bool
+    var relationshipStatus: RelationshipStatus?
+    var isSameRelationshipConsidered: Bool?
 }
 
 enum RelationshipStatus: String, CaseIterable, Identifiable, Codable {

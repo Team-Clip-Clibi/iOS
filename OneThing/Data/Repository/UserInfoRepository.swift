@@ -75,7 +75,7 @@ struct UserInfoRepository {
         )
         
         let dto: RetrieveUserProfileInfoDTO = try await networkService.get(endpoint: endpoint)
-        dump(dto.toDomain())
+
         return dto.toDomain()
     }
     

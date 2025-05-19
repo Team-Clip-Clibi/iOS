@@ -15,4 +15,5 @@ enum NetworkError: Error {
     case invalidIdToken
     case invalidSocialId
     case invalidFCMToken
+    case fetchError
 }

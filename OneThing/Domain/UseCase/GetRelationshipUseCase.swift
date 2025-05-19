@@ -17,7 +17,7 @@ struct GetRelationshipUseCase {
     
     func execute() async throws -> RelationshipInfo {
         let result = try await repository.usersRelationship()
-        
+
         return RelationshipInfo(
             status: result.relationshipStatus,
             isConsidered: result.isSameRelationshipConsidered

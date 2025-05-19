@@ -16,7 +16,7 @@ struct GetDietaryUseCase {
     
     func execute() async throws -> String {
         let result = try await repository.usersDietary()
-        
-        return result.dietaryOption
+    
+        return result.dietaryOption ?? ""
     }
 }
