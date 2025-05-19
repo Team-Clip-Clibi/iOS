@@ -159,15 +159,15 @@ enum NicknameRule {
     var message: String {
         switch self {
         case .nothing:
-            return "국문과 영문만 입력 가능합니다.(2~8자)"
+            return "국문과 영문만 입력 가능합니다. (2 ~ 8자)"
         case .normal:
-            return "국문과 영문만 입력 가능합니다.(2~8자)"
+            return "국문과 영문만 입력 가능합니다. (2 ~ 8자)"
         case .tooShort:
             return "*2자 이상 입력해주세요."
         case .tooLong:
             return "*최대 8자까지 가능해요."
         case .invalidCharacter:
-            return "*특수문자를 사용할 수 없습니다."
+            return "*닉네임은 숫자/특수문자를 사용할 수 없습니다."
         case .duplicate:
             return "이미 사용 중인 닉네임입니다."
         case .available:
