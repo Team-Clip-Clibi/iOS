@@ -14,6 +14,7 @@ final class TokenManager {
     
     private let accessTokenKey = "accessToken"
     private let refreshTokenKey = "refreshToken"
+    private let firebaseTokenKey = "firebaseToken"
     
     var accessToken: String {
         get { UserDefaults.standard.string(forKey: accessTokenKey) ?? "" }
@@ -23,6 +24,11 @@ final class TokenManager {
     var refreshToken: String {
         get { UserDefaults.standard.string(forKey: refreshTokenKey) ?? "" }
         set { UserDefaults.standard.set(newValue, forKey: refreshTokenKey) }
+    }
+    
+    var firebaseToken: String {
+        get { UserDefaults.standard.string(forKey: firebaseTokenKey) ?? "" }
+        set { UserDefaults.standard.set(newValue, forKey: firebaseTokenKey) }
     }
     
     func clearTokens() {

@@ -85,6 +85,10 @@ struct OTTabBarContainer: View {
     
     @State private var myPageViewModel = MyPageEditViewModel()
     
+    @State private var myPageNotificationViewModel = MyPageNotificationViewModel()
+    
+    @State private var myPageReportViewModel = MyPageReportViewModel()
+    
     @Binding var pathManager: OTAppPathManager
     
     init(pathManager: Binding<OTAppPathManager>) {
@@ -154,21 +158,29 @@ struct OTTabBarContainer: View {
                                         pathManager: $pathManager,
                                         viewModel: $myPageViewModel
                                     )
-                                case .report:
-                                    MyPageEditLanguageView(
+                                    
+                                case .notification:
+                                    MyPageNotificationView(
                                         pathManager: $pathManager,
-                                        viewModel: $myPageViewModel
+                                        viewModel: $myPageNotificationViewModel
+                                    )
+                                case .report:
+                                    MyPageReportMainView(
+                                        pathManager: $pathManager,
+                                        viewModel: $myPageReportViewModel
                                     )
                                 case .reportMatching:
-                                    MyPageEditLanguageView(
+                                    MyPageReportMatchingView(
                                         pathManager: $pathManager,
-                                        viewModel: $myPageViewModel
+                                        viewModel: $myPageReportViewModel
                                     )
                                 case .reportReason:
-                                    MyPageEditLanguageView(
+                                    MyPageReportReasonView(
                                         pathManager: $pathManager,
-                                        viewModel: $myPageViewModel
+                                        viewModel: $myPageReportViewModel
                                     )
+                                case .term:
+                                    MyPageTermView(pathManager: $pathManager)
                                 }
                             }
                     }

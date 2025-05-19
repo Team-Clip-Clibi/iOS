@@ -8,7 +8,7 @@
 import Foundation
 
 struct LanguageDTO: Codable {
-    var language: Language
+    var language: Language?
 }
 
 enum Language: String, Codable, CaseIterable, Identifiable {

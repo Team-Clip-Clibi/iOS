@@ -48,7 +48,7 @@ class SocialLoginUseCase {
         guard let socialId = await extractKakaoSocialID(idToken) else {
             throw NetworkError.invalidSocialId
         }
-        guard let firebaseToken = await getFCMToken() else {
+        guard let firebaseToken = sessionStore.firebaseToken, !firebaseToken.isEmpty else {
             throw NetworkError.invalidFCMToken
         }
         
@@ -64,7 +64,7 @@ class SocialLoginUseCase {
             firebaseToken: firebaseToken,
             isAllowNotify: true
         )
-        dump(signInDTO)
+
         do {
             let response = try await authRepository.usersSignIn(with: signInDTO)
             
@@ -104,7 +104,7 @@ class SocialLoginUseCase {
         
         do {
             let response = try await authRepository.usersSignup(with: signUpDTO)
-            dump(response)
+
             TokenManager.shared.accessToken = response.accessToken
             TokenManager.shared.refreshToken = response.refreshToken
         } catch {
@@ -159,7 +159,6 @@ class SocialLoginUseCase {
                         print(error)
                         continuation.resume(returning: nil)
                     } else {
-                        dump(oauthToken)
                         continuation.resume(returning: oauthToken?.idToken)
                     }
                 }
@@ -171,7 +170,6 @@ class SocialLoginUseCase {
                         print(error)
                         continuation.resume(returning: nil)
                     } else {
-                        dump(oauthToken)
                         continuation.resume(returning: oauthToken?.idToken)
                     }
                 }

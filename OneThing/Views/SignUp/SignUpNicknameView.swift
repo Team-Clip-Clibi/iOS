@@ -56,7 +56,7 @@ struct SignUpNicknameView: View {
                             nicknameRule = .tooShort
                         } else if newValue.count > 8 {
                             nicknameRule = .tooLong
-                        } else if newValue.range(of: "[^a-zA-Z0-9가-힣ㄱ-ㅎㅏ-ㅣ]", options: .regularExpression) != nil {
+                        } else if newValue.range(of: "[^a-zA-Z가-힣ㄱ-ㅎㅏ-ㅣ]", options: .regularExpression) != nil {
                             nicknameRule = .invalidCharacter
                         } else {
                             nicknameRule = .normal

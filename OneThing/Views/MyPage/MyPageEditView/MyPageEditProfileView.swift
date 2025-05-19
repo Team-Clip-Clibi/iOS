@@ -63,7 +63,7 @@ struct MyPageEditProfileView: View {
                                 .foregroundStyle(.gray600)
                             Spacer()
                         }
-                        InfoRow(title: "하는 일", value: "", isClickable: true, action: {
+                        InfoRow(title: "하는 일", value: viewModel.jobInfo.map { $0.toKorean }.joined(separator: ", "), isClickable: true, action: {
                             Task {
                                 withAnimation(.easeInOut(duration: 0.3)) {
                                     pathManager.isTabBarHidden = true
@@ -74,7 +74,7 @@ struct MyPageEditProfileView: View {
                                 pathManager.push(path: .editJob)
                             }
                         })
-                        InfoRow(title: "연애 상태", value: "", isClickable: true, action: {
+                        InfoRow(title: "연애 상태", value: viewModel.relationship?.status?.toKorean ?? "", isClickable: true, action: {
                           Task {
                             withAnimation(.easeInOut(duration: 0.3)) {
                                 pathManager.isTabBarHidden = true
@@ -86,7 +86,7 @@ struct MyPageEditProfileView: View {
                             
                         }
                         })
-                        InfoRow(title: "식단 제한", value: "", isClickable: true, action: {
+                        InfoRow(title: "식단 제한", value: viewModel.dietary, isClickable: true, action: {
                             Task {
                                 withAnimation(.easeInOut(duration: 0.3)) {
                                     pathManager.isTabBarHidden = true
@@ -97,7 +97,7 @@ struct MyPageEditProfileView: View {
                                 pathManager.push(path: .editDiet)
                             }
                         })
-                        InfoRow(title: "사용 언어", value: "", isClickable: true, action: {
+                        InfoRow(title: "사용 언어", value: viewModel.language?.toKorean ?? "", isClickable: true, action: {
                             Task {
                                 withAnimation(.easeInOut(duration: 0.3)) {
                                     pathManager.isTabBarHidden = true
@@ -157,6 +157,7 @@ struct MyPageEditProfileView: View {
                         firstAction: {
                             Task {
                                 if try await viewModel.deleteAccount() {
+                                    UserDefaultsSessionStore().deleteUserSession()
                                     pathManager.myPagePaths.removeAll()
                                     appStateManager.isSignedIn = false
                                 }
@@ -198,15 +199,6 @@ struct MyPageEditProfileView: View {
                     )
                 }
                 .ignoresSafeArea()
-            }
-        }
-        .onAppear {
-            Task {
-                do {
-                    try await self.viewModel.fetchProfile()
-                } catch {
-                    // Profile 정보 fetch 실패 동작 처리
-                }
             }
         }
         .navigationBarHidden(true)

@@ -9,6 +9,8 @@ import SwiftUI
 
 struct MyPageEditDietaryView: View {
     
+    @State private var dietary: String = ""
+    
     @Binding var pathManager: OTAppPathManager
     @Binding var viewModel: MyPageEditViewModel
     
@@ -35,8 +37,8 @@ struct MyPageEditDietaryView: View {
                 ForEach(dietaryOptions, id: \.self) { option in
                     OTLButton(
                         buttonTitle: option,
-                        action: { viewModel.dietary = option },
-                        isClicked: viewModel.dietary == option
+                        action: { self.dietary = option },
+                        isClicked: self.dietary == option
                     )
                 }
             }
@@ -44,7 +46,7 @@ struct MyPageEditDietaryView: View {
             .padding(.horizontal, 17)
             
             VStack(spacing: 0) {
-                if viewModel.dietary == "기타" {
+                if self.dietary == "기타" {
                     
                     Rectangle()
                         .fill(.gray200)
@@ -94,20 +96,24 @@ struct MyPageEditDietaryView: View {
                 buttonTitle: "완료",
                 action: {
                     Task {
+                        viewModel.dietary = self.dietary
+                        
                         let result = try await viewModel.updateDietary()
+                        
                         if result {
                             pathManager.pop()
                         }
                     }
                 },
-                isClickable: !viewModel.dietary.isEmpty)
+                isClickable: !self.dietary.isEmpty)
             .padding(.horizontal, 17)
             .padding(.top, 10)
         }
         .ignoresSafeArea(.keyboard)
         .task {
             Task {
-                try await viewModel.fetchDietary()
+                self.dietary = viewModel.dietary
+                
                 pathManager.isTabBarHidden = true
             }
         }

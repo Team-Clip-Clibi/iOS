@@ -27,7 +27,7 @@ struct UserInfoRepository {
     
     func usersLanguage() async throws -> LanguageDTO {
         let endpoint = EndPoint(
-            path: "/users/relationship",
+            path: "/users/language",
             method: .get,
             headers: [
                 "Content-Type": "application/json",
@@ -75,7 +75,7 @@ struct UserInfoRepository {
         )
         
         let dto: RetrieveUserProfileInfoDTO = try await networkService.get(endpoint: endpoint)
-        dump(dto.toDomain())
+
         return dto.toDomain()
     }
     

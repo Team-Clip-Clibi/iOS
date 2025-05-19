@@ -17,14 +17,6 @@ enum OTHomePath: Hashable, Equatable {
 enum OTMyMeetingPath: Hashable, Equatable {
     var id: String { UUID().uuidString }
     
-    case myPage
-    
-    case editProfile
-    
-    case notification
-    
-    case privacyAndPolicy
-    case reportMatching
 }
 
 enum OTMyPagePath: Hashable, Equatable {
@@ -38,7 +30,11 @@ enum OTMyPagePath: Hashable, Equatable {
     case editDiet
     case editLanguage
     
+    case notification
+    
     case report
     case reportMatching
     case reportReason
+    
+    case term
 }

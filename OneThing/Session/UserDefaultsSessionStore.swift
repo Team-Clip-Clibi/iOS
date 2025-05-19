@@ -36,4 +36,10 @@ final class UserDefaultsSessionStore: SessionStoring {
         get { defaults.string(forKey: Key.firebaseToken) }
         set { defaults.set(newValue, forKey: Key.firebaseToken) }
     }
+    
+    func deleteUserSession() {
+        defaults.removeObject(forKey: Key.socialId)
+        defaults.removeObject(forKey: Key.platform)
+        defaults.removeObject(forKey: Key.firebaseToken)
+    }
 }

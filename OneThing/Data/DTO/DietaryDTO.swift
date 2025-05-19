@@ -8,5 +8,5 @@
 import Foundation
 
 struct DietaryDTO: Codable {
-    var dietaryOption: String
+    var dietaryOption: String?
 }

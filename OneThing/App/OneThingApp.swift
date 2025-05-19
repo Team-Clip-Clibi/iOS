@@ -19,24 +19,29 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
         // UNUserNotificationCenter delegate 설정
         UNUserNotificationCenter.current().delegate = self
         
-        // 알림 권한 요청
-        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { granted, error in
-            if let error = error {
-                print("알림 권한 요청 에러: \(error.localizedDescription)")
-            }
-            if granted {
-                DispatchQueue.main.async {
-                    application.registerForRemoteNotifications()
-                }
-            } else {
-                print("사용자가 알림 권한을 거부했습니다.")
-            }
-        }
-        
         // Firebase Messaging delegate 설정
         Messaging.messaging().delegate = self
         
+        registerForPushNotifications()
+        
         return true
+    }
+    
+    func registerForPushNotifications() {
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
+            if let error = error {
+                print("푸시 권한 요청 에러: \(error.localizedDescription)")
+                return
+            }
+            
+            if granted {
+                DispatchQueue.main.async {
+                    UIApplication.shared.registerForRemoteNotifications()
+                }
+            } else {
+                print("푸시 권한 거부됨")
+            }
+        }
     }
     
     // APNS 등록 성공 시 호출: deviceToken을 Firebase Messaging에 전달
@@ -61,8 +66,10 @@ extension AppDelegate: MessagingDelegate {
     // APNS 토큰이 설정된 후 Firebase가 FCM 토큰을 갱신하면 호출됩니다.
     func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
         guard let token = fcmToken else { return }
+        
         print("Firebase FCM 토큰: \(token)")
-        // 여기서 서버에 토큰 전송 등 추가 작업을 수행합니다.
+        
+        UserDefaults.standard.set(token, forKey: "firebaseToken")
     }
 }
 
@@ -121,6 +128,9 @@ struct OneThingApp: App {
         } catch {
             self.appStateManager.isSignedIn = false
         }
+        
+        try await NotificationManager.shared.requestAuthorization()
+        HapticManager.shared.setEnable(true)
     }
 }
 
