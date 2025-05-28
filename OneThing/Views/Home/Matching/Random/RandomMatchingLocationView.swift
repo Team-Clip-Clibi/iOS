@@ -28,9 +28,6 @@ struct RandomMatchingLocationView: View {
     @State private var isReachedLimit: Bool = false
     @State private var isNextButtonEnabled: Bool = false
     
-    // TODO: Preview 용
-    private let locations = ["홍대/합정", "강남", "여의도/영등포", "요산/영등포", "건대/성수"]
-    
     var body: some View {
         
         VStack {
@@ -39,7 +36,7 @@ struct RandomMatchingLocationView: View {
                 .title(Constants.Text.naviTitle)
                 .hidesBottomSeparator(true)
                 .onBackButtonTap {
-                    self.viewModel.currentState.selectedLocations.removeAll()
+                    self.viewModel.initializeState(.location)
                     self.appPathManager.pop()
                 }
             
@@ -48,27 +45,17 @@ struct RandomMatchingLocationView: View {
             
             Spacer().frame(height: 32)
             
-            Text(Constants.Text.title)
-                .otFont(.heading2)
-                .multilineTextAlignment(.leading)
-                .foregroundStyle(.gray800)
-                .padding(.horizontal, 16)
-                .frame(maxWidth: .infinity, alignment: .leading)
-            
-            Spacer().frame(height: 2)
-            
-            Text(Constants.Text.subTitle)
-                .otFont(.subtitle2)
-                .multilineTextAlignment(.leading)
-                .foregroundStyle(self.isReachedLimit ? .red100: .gray600)
-                .padding(.horizontal, 16)
-                .frame(maxWidth: .infinity, alignment: .leading)
+            GuideMessageView(
+                isChangeSubTitleColor: $isReachedLimit,
+                title: Constants.Text.title,
+                subTitle: Constants.Text.subTitle
+            )
             
             Spacer().frame(height: 24)
             
             MultipleCheckBoxView(
-                state: SelectionState(
-                    items: self.locations.map { SelectionItem(title: $0) },
+                state: .init(
+                    items: self.viewModel.locations.map { .init(title: $0) },
                     selectLimit: 2
                 ),
                 isReachedLimit: $isReachedLimit,
@@ -78,20 +65,13 @@ struct RandomMatchingLocationView: View {
             
             Spacer()
             
-            Rectangle()
-                .frame(width: nil, height: 1)
-                .foregroundStyle(.gray200)
-            
-            Spacer().frame(height: 8)
-            
-            OTXXLButton(
-                buttonTitle: Constants.Text.nextButtonTitle,
-                action: {
+            BottomButton(
+                isClickable: $isNextButtonEnabled,
+                title: Constants.Text.nextButtonTitle,
+                buttonTapAction: {
                     self.appPathManager.push(path: .random(.topic))
-                },
-                isClickable: self.isNextButtonEnabled
+                }
             )
-            .padding(.horizontal, 16)
         }
         .navigationBarBackButtonHidden()
     }
