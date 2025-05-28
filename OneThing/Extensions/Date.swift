@@ -17,6 +17,31 @@ extension Date {
         return formatter.string(from: self)
     }
     
+    // 원띵 매칭 화면 날짜 선택
+    func findWeekendDates(affter days: Int = 21) -> [(String, String)] {
+        
+        var result = [(String, String)]()
+        
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "MM.dd"
+        
+        let calendar = Calendar.current
+        
+        for dayOffset in 0...days {
+            if let date = calendar.date(byAdding: .day, value: dayOffset, to: self) {
+                let weekday = calendar.component(.weekday, from: date)
+                
+                if let matchingDate = MatchingDate.allCases.first(where: { $0.weekday == weekday }) {
+                    let dateString = date.toString("MM.dd")
+                    result.append((dateString, matchingDate.rawValue))
+                }
+            }
+        }
+        
+        return result
+    }
+    
+    // 홈 화면 확정된 모임 D-day
     func infoReadableTimeTakenFromThis(to: Date) -> String {
 
         let from: TimeInterval = self.timeIntervalSince1970
@@ -43,6 +68,7 @@ extension Date {
         return "0분 전"
     }
     
+    // 알림 화면 알림 생성된 날짜
     var readNotiFormatted: String {
         return self.toString("M월 dd일")
     }
