@@ -7,33 +7,33 @@
 
 import SwiftUI
 
-struct SelectionItem: Identifiable, Equatable {
-    let id = UUID()
-    let title: String
-    var isSelected: Bool = false
-}
-
-struct SelectionState {
-    
-    var items: [SelectionItem]
-    var selectLimit: Int = .max
-    
-    var selectedCount: Int {
-        return self.items.filter { $0.isSelected }.count
-    }
-    var selectedItems: [SelectionItem] {
-        return self.items.filter { $0.isSelected }
-    }
-    var willReachedLimit: Bool {
-        return self.selectedCount >= self.selectLimit
-    }
-    
-    var isSelected: Bool {
-        return self.selectedCount > 0
-    }
-}
-
 struct MultipleCheckBoxView: View {
+
+    struct SelectionState {
+        
+        struct SelectionItem: Identifiable, Equatable {
+            let id = UUID()
+            let title: String
+            var isSelected: Bool = false
+        }
+        
+        var items: [SelectionItem]
+        var selectLimit: Int = .max
+        
+        var selectedCount: Int {
+            return self.items.filter { $0.isSelected }.count
+        }
+        var selectedItems: [SelectionItem] {
+            return self.items.filter { $0.isSelected }
+        }
+        var willReachedLimit: Bool {
+            return self.selectedCount >= self.selectLimit
+        }
+        
+        var isSelected: Bool {
+            return self.selectedCount > 0
+        }
+    }
     
     @State var state: SelectionState
     @Binding var isReachedLimit: Bool
@@ -49,7 +49,7 @@ struct MultipleCheckBoxView: View {
                     isOn: $state.items[index].isSelected
                 )
                 .padding(.horizontal, 16)
-                .toggleStyle(SelectionBoxStyle(backgroundTapAction: { config in
+                .toggleStyle(CheckBoxStyle(backgroundTapAction: { config in
                     
                     // 선택할 뷰이면서 선택 제한에 도달할 때
                     if self.state.items[index].isSelected == false, self.state.willReachedLimit {
@@ -66,4 +66,18 @@ struct MultipleCheckBoxView: View {
             }
         }
     }
+}
+
+#Preview {
+    let titles = ["1", "2", "3", "4", "5"]
+    
+    MultipleCheckBoxView(
+        state: .init(
+            items: titles.map { .init(title: $0) },
+            selectLimit: 2
+        ),
+        isReachedLimit: .constant(false),
+        isSelected: .constant(false),
+        selectedTitles: .constant([])
+    )
 }

@@ -54,4 +54,5 @@ struct CheckBoxForPreview: View {
 
 #Preview {
     CheckBoxForPreview()
+    CheckBoxForPreview(isOn: true)
 }
