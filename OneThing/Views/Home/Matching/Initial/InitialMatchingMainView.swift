@@ -1,28 +1,28 @@
 //
-//  RandomMatchingMainView.swift
+//  InitialMatchingMainView.swift
 //  OneThing
 //
-//  Created by 오현식 on 5/14/25.
+//  Created by 오현식 on 5/21/25.
 //
 
 import SwiftUI
 
-struct RandomMatchingMainView: View {
+struct InitialMatchingMainView: View {
     
     enum ConstText {
         
         static let naviTitle = "랜덤 모임 신청"
         
-        static let title = "매주 월요일 7시,\n랜덤 모임에서 만나요"
-        static let subTitle = "새로운 사람과 함께 다양한 이야기를 나눠요"
+        static let title = "모임 신청을 위해\n몇 가지 정보가 필요해요"
+        static let subTitle = "입력한 정보는 이후 자동으로 적용되며, 수정이 가능해요"
         
-        static let message = "질문이 인연이 되는 월요일\n함께할래요?"
+        static let message = "첫 모임 신청을 환영해요!"
         
         static let nextButtonTitle = "다음"
     }
     
     @Binding var appPathManager: OTAppPathManager
-    @Binding var viewModel: RandomMatchingViewModel
+    @Binding var viewModel: InitialMatchingViewModel
     
     var body: some View {
         
@@ -50,7 +50,13 @@ struct RandomMatchingMainView: View {
                     RoundedRectangle(cornerRadius: 24)
                         .fill(.purple100)
                     
-                    Image(.matchingInitial)
+                    VStack(spacing: 32) {
+                        Image(.matchingInitial)
+                        
+                        Text(ConstText.message)
+                            .otFont(.title1)
+                            .foregroundStyle(.gray800)
+                    }
                 }
                 .padding(.horizontal, 16)
                 .frame(maxWidth: .infinity)
@@ -62,9 +68,7 @@ struct RandomMatchingMainView: View {
             BottomButton(
                 isClickable: .constant(true),
                 title: ConstText.nextButtonTitle,
-                buttonTapAction: {
-                    self.appPathManager.push(path: .random(.location))
-                }
+                buttonTapAction: { self.appPathManager.push(path: .initial(.job)) }
             )
         }
         .navigationBarBackButtonHidden()
@@ -72,8 +76,8 @@ struct RandomMatchingMainView: View {
 }
 
 #Preview {
-    RandomMatchingMainView(
+    InitialMatchingMainView(
         appPathManager: .constant(OTAppPathManager()),
-        viewModel: .constant(RandomMatchingViewModel())
+        viewModel: .constant(InitialMatchingViewModel())
     )
 }

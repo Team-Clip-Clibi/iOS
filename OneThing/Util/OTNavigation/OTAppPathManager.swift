@@ -20,10 +20,27 @@ class OTAppPathManager {
     
     var isTabBarHidden: Bool = false
     
+    var nextPathWhenInitialFinished: OTHomePath.MatchingType?
+    
     // MARK: - Functions
 
     func push(path: OTHomePath) {
         self.homePaths.append(path)
+    }
+    
+    func pushWhenInitialFinished() {
+        self.homePaths.removeAll { path in
+            switch path {
+            case .initial(_): return true
+            default: return false
+            }
+        }
+        
+        guard let nextPath = self.nextPathWhenInitialFinished else { return }
+        switch nextPath {
+        case .oneThing: self.push(path: .oneThing(.main))
+        case .random: self.push(path: .random(.main))
+        }
     }
     
     func push(path: OTMyMeetingPath) {

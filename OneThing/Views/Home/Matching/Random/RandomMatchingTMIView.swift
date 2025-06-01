@@ -38,7 +38,7 @@ struct RandomMatchingTMIView: View {
                 .title(Constants.Text.naviTitle)
                 .hidesBottomSeparator(true)
                 .onBackButtonTap {
-                    self.viewModel.currentState.tmiContent = ""
+                    self.viewModel.initializeState(.tmi)
                     self.appPathManager.pop()
                 }
             
@@ -47,69 +47,30 @@ struct RandomMatchingTMIView: View {
             
             Spacer().frame(height: 32)
             
-            Text(Constants.Text.title)
-                .otFont(.heading2)
-                .multilineTextAlignment(.leading)
-                .foregroundStyle(.gray800)
-                .padding(.horizontal, 16)
-                .frame(maxWidth: .infinity, alignment: .leading)
+            GuideMessageView(
+                isChangeSubTitleColor: .constant(false),
+                title: Constants.Text.title
+            )
             
             Spacer().frame(height: 24)
             
-            ZStack {
-                RoundedRectangle(cornerRadius: 4)
-                    .fill(.purple100)
-                
-                Text(Constants.Text.subTitle)
-                    .otFont(.body1)
-                    .foregroundStyle(.gray800)
-                    .padding(.horizontal, 12)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-            }
-            .padding(.horizontal, 16)
-            .frame(maxWidth: .infinity)
-            .frame(height: 32)
-            
-            Spacer().frame(height: 4)
-            
-            VStack(spacing: 4) {
-                TextField(Constants.Text.placeholderText, text: $viewModel.currentState.tmiContent)
-                    .frame(height: 48)
-                    .overlay(
-                        Rectangle()
-                            .frame(width: nil, height: 1, alignment: .bottom)
-                            .foregroundStyle(.gray500),
-                        alignment: .bottom
-                    )
-                    .onChange(of: self.viewModel.currentState.tmiContent) { _, newText in
-                        let prefixText = String(newText.prefix(Constants.maxCharacters))
-                        self.viewModel.currentState.tmiContent = prefixText
-                        self.isCompleteButtonEnabled = prefixText.count >= 8
-                    }
-                
-                Text("\(self.viewModel.currentState.tmiLength)/\(Constants.maxCharacters)")
-                    .otFont(.captionTwo)
-                    .foregroundStyle(.gray700)
-                    .frame(maxWidth: .infinity, alignment: .trailing)
-            }
-            .padding(.horizontal, 16)
+            EnterContentView(
+                content: $viewModel.currentState.tmiContent,
+                buttonEnable: $isCompleteButtonEnabled,
+                title: Constants.Text.subTitle,
+                placeholder: Constants.Text.placeholderText,
+                maxCharacters: Constants.maxCharacters
+            )
             
             Spacer()
             
-            Rectangle()
-                .frame(width: nil, height: 1)
-                .foregroundStyle(.gray200)
-            
-            Spacer().frame(height: 8)
-            
-            OTXXLButton(
-                buttonTitle: Constants.Text.completeButtonTitle,
-                action: {
+            BottomButton(
+                isClickable: $isCompleteButtonEnabled,
+                title: Constants.Text.completeButtonTitle,
+                buttonTapAction: {
                     self.appPathManager.push(path: .random(.payment))
-                },
-                isClickable: self.isCompleteButtonEnabled
+                }
             )
-            .padding(.horizontal, 16)
         }
         .navigationBarBackButtonHidden()
     }

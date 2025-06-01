@@ -82,6 +82,8 @@ struct OTTabBarContainer: View {
     
     @State private var homeViewModel = HomeViewModel()
     @State private var notificationViewModel = NotificationViewModel()
+    @State private var initialMatchingViewModel = InitialMatchingViewModel()
+    @State private var oneThingMatchingViewModel = OneThingMatchingViewModel()
     @State private var randomMatchingViewModel = RandomMatchingViewModel()
     
     @State private var myPageViewModel = MyPageEditViewModel()
@@ -111,6 +113,71 @@ struct OTTabBarContainer: View {
                                         appPathManager: $pathManager,
                                         viewModel: $notificationViewModel
                                     )
+                                    
+                                case .initial(.main):
+                                    InitialMatchingMainView(
+                                        appPathManager: $pathManager,
+                                        viewModel: $initialMatchingViewModel
+                                    )
+                                case .initial(.job):
+                                    InitialMatchingSelectJobView(
+                                        appPathManager: $pathManager,
+                                        viewModel: $initialMatchingViewModel
+                                    )
+                                case .initial(.dietary):
+                                    InitialMatchingSelectDietaryView(
+                                        appPathManager: $pathManager,
+                                        viewModel: $initialMatchingViewModel
+                                    )
+                                case .initial(.language):
+                                    InitialMatchingSelectLanguageView(
+                                        appPathManager: $pathManager,
+                                        viewModel: $initialMatchingViewModel
+                                    )
+                                    
+                                case .oneThing(.main):
+                                    OneThingMatchingMainView(appPathManager: $pathManager)
+                                case .oneThing(.category):
+                                    OneThingMatchingCategoryView(
+                                        appPathManager: $pathManager,
+                                        viewModel: $oneThingMatchingViewModel
+                                    )
+                                case .oneThing(.topic):
+                                    OneThingMatchingTopicView(
+                                        appPathManager: $pathManager,
+                                        viewModel: $oneThingMatchingViewModel
+                                    )
+                                case .oneThing(.location):
+                                    OneThingMatchingLocationView(
+                                        appPathManager: $pathManager,
+                                        viewModel: $oneThingMatchingViewModel
+                                    )
+                                case .oneThing(.price):
+                                    OneThingMatchingPriceView(
+                                        appPathManager: $pathManager,
+                                        viewModel: $oneThingMatchingViewModel
+                                    )
+                                case .oneThing(.tmi):
+                                    OneThingMatchingTMIView(
+                                        appPathManager: $pathManager,
+                                        viewModel: $oneThingMatchingViewModel
+                                    )
+                                case .oneThing(.date):
+                                    OneThingMatchingDateView(
+                                        appPathManager: $pathManager,
+                                        viewModel: $oneThingMatchingViewModel
+                                    )
+                                case .oneThing(.payment):
+                                    OneThingMatchingPaymentView(
+                                        appPathManager: $pathManager,
+                                        viewModel: $oneThingMatchingViewModel
+                                    )
+                                case .oneThing(.complete):
+                                    OneThingMatchingCompleteView(
+                                        appPathManager: $pathManager,
+                                        viewModel: $oneThingMatchingViewModel
+                                    )
+                                    
                                 case .random(.main):
                                     RandomMatchingMainView(
                                         appPathManager: $pathManager,

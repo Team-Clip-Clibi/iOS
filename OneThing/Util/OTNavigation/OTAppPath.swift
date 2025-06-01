@@ -12,7 +12,33 @@ enum OTHomePath: Hashable, Equatable {
     
     case notification
     
+    enum MatchingType {
+        case oneThing
+        case random
+    }
+    
+    case initial(InitialMatching)
+    case oneThing(OneThingMatching)
     case random(RandomMatching)
+    
+    enum InitialMatching: Equatable, CaseIterable {
+        case main
+        case job
+        case dietary
+        case language
+    }
+    
+    enum OneThingMatching: Equatable {
+        case main
+        case category
+        case topic
+        case location
+        case price
+        case tmi
+        case date
+        case payment
+        case complete
+    }
     
     enum RandomMatching: Equatable {
         case main

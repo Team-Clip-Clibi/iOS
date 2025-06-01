@@ -1,29 +1,29 @@
 //
-//  RandomMatchingLocationView.swift
+//  OneThingMatchingCategoryView.swift
 //  OneThing
 //
-//  Created by 오현식 on 5/15/25.
+//  Created by 오현식 on 5/27/25.
 //
 
 import SwiftUI
 
-struct RandomMatchingLocationView: View {
+struct OneThingMatchingCategoryView: View {
     
     enum Constants {
         enum Text {
-            static let naviTitle = "랜덤 모임 신청"
+            static let naviTitle = "원띵 모임 신청"
             
-            static let title = "이번 랜덤 모임을 하고싶은\n지역을 선택해주세요"
-            static let subTitle = "최대 2개까지 선택할 수 있어요."
+            static let title = "원띵 모임의 카테고리를\n선택해주세요"
+            static let subTitle = "나누고 싶은 대화 주제의 카테고리를 선택해주세요"
             
             static let nextButtonTitle = "다음"
         }
         
-        static let progress = 1.0 / 3.0
+        static let progress = 1.0 / 6.0
     }
     
     @Binding var appPathManager: OTAppPathManager
-    @Binding var viewModel: RandomMatchingViewModel
+    @Binding var viewModel: OneThingMatchingViewModel
     
     @State private var isReachedLimit: Bool = false
     @State private var isNextButtonEnabled: Bool = false
@@ -36,7 +36,7 @@ struct RandomMatchingLocationView: View {
                 .title(Constants.Text.naviTitle)
                 .hidesBottomSeparator(true)
                 .onBackButtonTap {
-                    self.viewModel.initializeState(.location)
+                    self.viewModel.initializeState(.category)
                     self.appPathManager.pop()
                 }
             
@@ -53,14 +53,14 @@ struct RandomMatchingLocationView: View {
             
             Spacer().frame(height: 24)
             
-            MultipleCheckBoxView(
+            MultipleTextWithImageBoxView<OneThingCategory>(
                 state: .init(
-                    items: self.viewModel.locations.map { .init(title: $0) },
-                    selectLimit: 2
+                    items: OneThingCategory.allCases.map { .init(item: $0) },
+                    selectLimit: 1
                 ),
                 isReachedLimit: $isReachedLimit,
                 isSelected: $isNextButtonEnabled,
-                selectedTitles: $viewModel.currentState.selectedLocations
+                selectedItems: $viewModel.currentState.selectedCategory
             )
             
             Spacer()
@@ -68,9 +68,7 @@ struct RandomMatchingLocationView: View {
             BottomButton(
                 isClickable: $isNextButtonEnabled,
                 title: Constants.Text.nextButtonTitle,
-                buttonTapAction: {
-                    self.appPathManager.push(path: .random(.topic))
-                }
+                buttonTapAction: { self.appPathManager.push(path: .oneThing(.topic)) }
             )
         }
         .navigationBarBackButtonHidden()
@@ -78,8 +76,8 @@ struct RandomMatchingLocationView: View {
 }
 
 #Preview {
-    RandomMatchingLocationView(
+    OneThingMatchingCategoryView(
         appPathManager: .constant(OTAppPathManager()),
-        viewModel: .constant(RandomMatchingViewModel())
+        viewModel: .constant(OneThingMatchingViewModel())
     )
 }

@@ -1,32 +1,32 @@
 //
-//  RandomMatchingTopicView.swift
+//  OneThingMatchingTMIView.swift
 //  OneThing
 //
-//  Created by 오현식 on 5/15/25.
+//  Created by 오현식 on 5/27/25.
 //
 
 import SwiftUI
 
-struct RandomMatchingTopicView: View {
+struct OneThingMatchingTMIView: View {
     
     enum Constants {
         enum Text {
-            static let naviTitle = "랜덤 모임 신청"
+            static let naviTitle = "원띵 모임 신청"
             
-            static let title = "모임에서 나누고 싶은\n대화 주제를 입력해주세요"
-            static let subTitle = "ex. 유럽 여행기 대화 나눠요"
+            static let title = "모임에서 나눌 나의 TMI를\n입력해주세요"
+            static let subTitle = "ex. 저는 매년 생일마다 증명사진을 찍어서 모아요"
             
             static let placeholderText = "최소 8자, 최대 50자까지 입력할 수 있어요"
             
             static let nextButtonTitle = "다음"
         }
         
-        static let progress = 2.0 / 3.0
+        static let progress = 5.0 / 6.0
         static let maxCharacters = 50
     }
     
     @Binding var appPathManager: OTAppPathManager
-    @Binding var viewModel: RandomMatchingViewModel
+    @Binding var viewModel: OneThingMatchingViewModel
     
     @State private var isNextButtonEnabled: Bool = false
     
@@ -38,7 +38,7 @@ struct RandomMatchingTopicView: View {
                 .title(Constants.Text.naviTitle)
                 .hidesBottomSeparator(true)
                 .onBackButtonTap {
-                    self.viewModel.initializeState(.topic)
+                    self.viewModel.initializeState(.tmi)
                     self.appPathManager.pop()
                 }
             
@@ -55,7 +55,7 @@ struct RandomMatchingTopicView: View {
             Spacer().frame(height: 24)
             
             EnterContentView(
-                content: $viewModel.currentState.topicContent,
+                content: $viewModel.currentState.tmiContent,
                 buttonEnable: $isNextButtonEnabled,
                 title: Constants.Text.subTitle,
                 placeholder: Constants.Text.placeholderText,
@@ -67,9 +67,7 @@ struct RandomMatchingTopicView: View {
             BottomButton(
                 isClickable: $isNextButtonEnabled,
                 title: Constants.Text.nextButtonTitle,
-                buttonTapAction: {
-                    self.appPathManager.push(path: .random(.tmi))
-                }
+                buttonTapAction: { self.appPathManager.push(path: .oneThing(.date)) }
             )
         }
         .navigationBarBackButtonHidden()
@@ -77,8 +75,8 @@ struct RandomMatchingTopicView: View {
 }
 
 #Preview {
-    RandomMatchingTopicView(
+    OneThingMatchingTMIView(
         appPathManager: .constant(OTAppPathManager()),
-        viewModel: .constant(RandomMatchingViewModel())
+        viewModel: .constant(OneThingMatchingViewModel())
     )
 }
