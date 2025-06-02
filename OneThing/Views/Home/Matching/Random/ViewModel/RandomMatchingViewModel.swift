@@ -25,11 +25,26 @@ class RandomMatchingViewModel {
     
     var currentState: State
     
+    let locations = ["홍대/합정", "강남"]
+    
     init() {
         self.currentState = .init(
             selectedLocations: [],
             topicContent: "",
             tmiContent: ""
         )
+    }
+    
+    func initializeState(_ path: OTHomePath.RandomMatching) {
+        switch path {
+        case .location:
+            self.currentState.selectedLocations = []
+        case .topic:
+            self.currentState.topicContent = ""
+        case .tmi:
+            self.currentState.tmiContent = ""
+        default:
+            break
+        }
     }
 }

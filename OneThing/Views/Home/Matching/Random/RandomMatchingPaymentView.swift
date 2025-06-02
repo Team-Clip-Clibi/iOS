@@ -58,20 +58,11 @@ struct RandomMatchingPaymentView: View {
                     VStack {
                         Spacer().frame(height: 32)
                         
-                        VStack(spacing: 4) {
-                            Text(Constants.Text.title)
-                                .otFont(.heading2)
-                                .multilineTextAlignment(.leading)
-                                .foregroundStyle(.gray800)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                            
-                            Text(Constants.Text.subTitle)
-                                .otFont(.subtitle2)
-                                .multilineTextAlignment(.leading)
-                                .foregroundStyle(.gray600)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                        }
-                        .padding(.horizontal, 16)
+                        GuideMessageView(
+                            isChangeSubTitleColor: .constant(false),
+                            title: Constants.Text.title,
+                            subTitle: Constants.Text.subTitle
+                        )
                         
                         Spacer().frame(height: 32)
                         
@@ -176,18 +167,13 @@ struct RandomMatchingPaymentView: View {
                         
                         Spacer()
                         
-                        Rectangle()
-                            .frame(width: nil, height: 1)
-                            .foregroundStyle(.gray200)
-                        
-                        Spacer().frame(height: 8)
-                        
-                        OTXXLButton(
-                            buttonTitle: Constants.Text.paymentButtonTitle,
-                            action: { self.isRequestPaymentAlert = true },
-                            isClickable: true
+                        BottomButton(
+                            isClickable: .constant(true),
+                            title: Constants.Text.paymentButtonTitle,
+                            buttonTapAction: {
+                                self.isRequestPaymentAlert = true
+                            }
                         )
-                        .padding(.horizontal, 16)
                     }
                 }
             }

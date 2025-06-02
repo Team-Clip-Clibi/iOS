@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct SelectionBoxStyle: ToggleStyle {
+struct CheckBoxStyle: ToggleStyle {
     
     var backgroundTapAction: ((Configuration) -> Void)? = nil
     
@@ -48,10 +48,11 @@ struct CheckBoxForPreview: View {
         
         Toggle("text", isOn: $isOn)
             .padding(.horizontal, 16)
-            .toggleStyle(SelectionBoxStyle())
+            .toggleStyle(CheckBoxStyle())
     }
 }
 
 #Preview {
     CheckBoxForPreview()
+    CheckBoxForPreview(isOn: true)
 }

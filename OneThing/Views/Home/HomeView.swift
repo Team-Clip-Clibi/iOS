@@ -136,14 +136,32 @@ struct HomeView: View {
                                 .otFont(.title1)
                                 .foregroundStyle(.gray700)
                             
-                            RequestMeetingButton(category: .onething, backgroundTapAction: { })
+                            RequestMeetingButton(
+                                category: .onething,
+                                backgroundTapAction: {
+                                    self.appPathManager.isTabBarHidden = true
+                                    
+                                    if UserDefaults.isFirstMatching {
+                                        self.appPathManager.nextPathWhenInitialFinished = .oneThing
+                                        self.appPathManager.push(path: .initial(.main))
+                                    } else {
+                                        self.appPathManager.push(path: .oneThing(.main))
+                                    }
+                                }
+                            )
                             
                             HStack(spacing: 10) {
                                 RequestMeetingButton(
                                     category: .random,
                                     backgroundTapAction: {
                                         self.appPathManager.isTabBarHidden = true
-                                        self.appPathManager.push(path: .random(.main))
+                                        
+                                        if UserDefaults.isFirstMatching {
+                                            self.appPathManager.nextPathWhenInitialFinished = .random
+                                            self.appPathManager.push(path: .initial(.main))
+                                        } else {
+                                            self.appPathManager.push(path: .random(.main))
+                                        }
                                     }
                                 )
                                 RequestMeetingButton(category: .instant, backgroundTapAction: { })
