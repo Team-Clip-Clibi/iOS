@@ -18,7 +18,7 @@ extension Date {
     }
     
     // 원띵 매칭 화면 날짜 선택
-    func findWeekendDates(affter days: Int = 21) -> [(String, String)] {
+    func findWeekendDates(after days: Int = 21) -> [(String, String)] {
         
         var result = [(String, String)]()
         
