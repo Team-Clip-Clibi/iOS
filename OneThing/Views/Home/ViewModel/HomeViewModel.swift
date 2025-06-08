@@ -17,6 +17,7 @@ class HomeViewModel {
         fileprivate(set) var noticeInfos: [NoticeInfo]
         fileprivate(set) var matchingSummaryInfos: [MatchingSummaryInfo]
         fileprivate(set) var bannerInfos: [BannerInfo]
+        fileprivate(set) var isInMeeting: Bool
     }
     
     var currentState: State
@@ -26,6 +27,7 @@ class HomeViewModel {
     private let updateNotificationBannerUseCase: UpdateNotificationBannerUseCase
     private let noticeUseCase: GetNoticeUseCase
     private let matchingSummaryUseCase: GetMatchingSummaryUseCase
+    private let meetingInProgressUseCase: GetMeetingInProgressUseCase
     private let bannerUseCase: GetBannerUseCase
     
     init(
@@ -34,6 +36,7 @@ class HomeViewModel {
         updateNotificationBannerUseCase: UpdateNotificationBannerUseCase = UpdateNotificationBannerUseCase(),
         noticeUseCase: GetNoticeUseCase = GetNoticeUseCase(),
         matchingSummaryUseCase: GetMatchingSummaryUseCase = GetMatchingSummaryUseCase(),
+        meetingInProgressUseCase: GetMeetingInProgressUseCase = GetMeetingInProgressUseCase(),
         bannerUseCase: GetBannerUseCase = GetBannerUseCase()
     ) {
         
@@ -43,7 +46,8 @@ class HomeViewModel {
             isChangeSuccessForTopBannerStatus: false,
             noticeInfos: [],
             matchingSummaryInfos: [],
-            bannerInfos: []
+            bannerInfos: [],
+            isInMeeting: true
         )
         
         self.unReadNotificationUseCase = unReadNotificationUseCase
@@ -51,6 +55,7 @@ class HomeViewModel {
         self.updateNotificationBannerUseCase = updateNotificationBannerUseCase
         self.noticeUseCase = noticeUseCase
         self.matchingSummaryUseCase = matchingSummaryUseCase
+        self.meetingInProgressUseCase = meetingInProgressUseCase
         self.bannerUseCase = bannerUseCase
     }
     
@@ -107,6 +112,21 @@ class HomeViewModel {
             self.currentState.matchingSummaryInfos = try await self.matchingSummaryUseCase.execute()
         } catch {
             self.currentState.matchingSummaryInfos = []
+        }
+    }
+    
+    func meetingInProgress() async {
+        do {
+            let response = try await self.meetingInProgressUseCase.execute()
+            
+            await MainActor.run {
+                self.currentState.isInMeeting = response?.isToday == true
+            }
+        } catch {
+            
+            await MainActor.run {
+                self.currentState.isInMeeting = false
+            }
         }
     }
     
