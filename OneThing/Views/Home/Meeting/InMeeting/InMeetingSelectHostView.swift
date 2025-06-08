@@ -44,9 +44,10 @@ struct InMeetingSelectHostView: View {
                             .resizable()
                             .frame(width: 267, height: 223)
                         
-                        Text(Constants.Text.nextButtonTitle)
+                        Text(Constants.Text.content)
                             .otFont(.title1)
                             .foregroundStyle(.gray800)
+                            .multilineTextAlignment(.center)
                     }
                 }
                 .padding(.horizontal, 24)
