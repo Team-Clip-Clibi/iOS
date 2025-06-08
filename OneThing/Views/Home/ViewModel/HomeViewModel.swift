@@ -47,7 +47,7 @@ class HomeViewModel {
             noticeInfos: [],
             matchingSummaryInfos: [],
             bannerInfos: [],
-            isInMeeting: true
+            isInMeeting: false
         )
         
         self.unReadNotificationUseCase = unReadNotificationUseCase
