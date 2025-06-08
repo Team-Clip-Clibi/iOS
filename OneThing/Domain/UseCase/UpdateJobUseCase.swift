@@ -14,8 +14,8 @@ struct UpdateJobUseCase {
         self.repository = repository
     }
     
-    func execute(jobs: [JobType]) async throws -> Bool {
-        let statusCode = try await repository.usersJob(with: JobDTO(jobList: jobs)).statusCode
+    func execute(job: JobType) async throws -> Bool {
+        let statusCode = try await repository.usersJob(with: JobDTO(job: job)).statusCode
         return statusCode == 204
     }
 }
