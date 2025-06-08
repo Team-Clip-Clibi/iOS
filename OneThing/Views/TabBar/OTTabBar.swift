@@ -93,9 +93,14 @@ struct OTTabBarContainer: View {
     @State private var myPageReportViewModel = MyPageReportViewModel()
     
     @Binding var pathManager: OTAppPathManager
+    @Binding var inMeetingPathManager: OTInMeetingPathManager
     
-    init(pathManager: Binding<OTAppPathManager>) {
+    init(
+        pathManager: Binding<OTAppPathManager>,
+        inMeetingPathManager: Binding<OTInMeetingPathManager>
+    ) {
         self._pathManager = pathManager
+        self._inMeetingPathManager = inMeetingPathManager
     }
     
     var body: some View {
@@ -105,7 +110,11 @@ struct OTTabBarContainer: View {
                 switch pathManager.currentTab {
                 case .home:
                     NavigationStack(path: $pathManager.homePaths) {
-                        HomeView(appPathManager: $pathManager, viewModel: $homeViewModel)
+                        HomeView(
+                            appPathManager: $pathManager,
+                            viewModel: $homeViewModel,
+                            inMeetingPathManager: $inMeetingPathManager
+                        )
                             .navigationDestination(for: OTHomePath.self) { homePath in
                                 switch homePath {
                                 case .notification:
