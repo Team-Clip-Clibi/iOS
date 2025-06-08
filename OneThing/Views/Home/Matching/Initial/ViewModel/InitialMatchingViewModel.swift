@@ -80,11 +80,12 @@ class InitialMatchingViewModel {
 extension InitialMatchingViewModel {
     
     private func updateJob() async throws -> Bool {
-        do {
-            return try await self.updateJobUseCase.execute(jobs: self.currentState.selectedJobs)
-        } catch {
-            return false
-        }
+        true
+//        do {
+//            return try await self.updateJobUseCase.execute(jobs: self.currentState.selectedJobs)
+//        } catch {
+//            return false
+//        }
     }
     
     private func updateDietary() async throws -> Bool {

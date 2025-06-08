@@ -13,7 +13,7 @@ class MyPageEditViewModel {
     // MARK: - Properties
     
     var profileInfo: UserProfileInfo?
-    var jobInfo: [JobType] = []
+    var job: JobType?
     var relationship: RelationshipInfo?
     
     var dietary: String = ""
@@ -78,7 +78,8 @@ class MyPageEditViewModel {
     
     @MainActor
     func fetchJob() async throws {
-        self.jobInfo = try await getJobUseCase.execute()
+        self.job = try await getJobUseCase.execute()
+        print(self.job)
     }
     
     @MainActor
@@ -114,7 +115,10 @@ class MyPageEditViewModel {
     }
     
     func updateJob() async throws -> Bool {
-        return try await updateJobUseCase.execute(jobs: jobInfo)
+        guard let job = job else {
+            throw NetworkError.invalidRequestData
+        }
+        return try await updateJobUseCase.execute(job: job)
     }
     
     func updateRelationship() async throws -> Bool {

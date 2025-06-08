@@ -16,4 +16,6 @@ enum NetworkError: Error {
     case invalidSocialId
     case invalidFCMToken
     case fetchError
+    case invalidRequestData
+    
 }

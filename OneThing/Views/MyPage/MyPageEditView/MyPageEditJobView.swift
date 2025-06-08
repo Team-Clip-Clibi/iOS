@@ -11,7 +11,7 @@ struct MyPageEditJobView: View {
     
     @State private var isLimitErrorHighlighted = false
     @State private var shakeTrigger: CGFloat = 0
-    @State private var jobInfo: [JobType] = []
+    @State private var job: JobType?
     
     @Binding var pathManager: OTAppPathManager
     @Binding var viewModel: MyPageEditViewModel
@@ -51,7 +51,7 @@ struct MyPageEditJobView: View {
                     ForEach(JobType.allCases) { job in
                         OTSelectionButton(buttonTitle: job.toKorean, action: {
                             toggle(job)
-                        }, isClicked: self.jobInfo.contains(job))
+                        }, isClicked: self.job == job)
                     }
                 }
                 .padding(.top, 24)
@@ -67,7 +67,7 @@ struct MyPageEditJobView: View {
                 buttonTitle: "완료",
                 action: {
                     Task {
-                        viewModel.jobInfo = self.jobInfo
+                        viewModel.job = self.job
                         
                         let result = try await viewModel.updateJob()
                         
@@ -76,13 +76,13 @@ struct MyPageEditJobView: View {
                         }
                     }
                 },
-                isClickable: self.jobInfo.count != 0)
+                isClickable: self.job != nil)
             .padding(.horizontal, 17)
             .padding(.top, 10)
         }
         .task {
             Task {
-                self.jobInfo = viewModel.jobInfo
+                self.job = viewModel.job
 
                 pathManager.isTabBarHidden = true
             }
@@ -94,22 +94,7 @@ struct MyPageEditJobView: View {
     }
     
     private func toggle(_ job: JobType) {
-        if let index = self.jobInfo.firstIndex(of: job) {
-            self.jobInfo.remove(at: index) // 선택된 선택지 제거
-        } else if self.jobInfo.count < maxSelection {
-            self.jobInfo.append(job) // 최대 선택 개수보다 적을 경우 추가
-        } else {
-            withAnimation {
-                isLimitErrorHighlighted = true
-                HapticManager.shared.notification(type: .error)
-            }
-            
-            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                withAnimation {
-                    isLimitErrorHighlighted = false
-                }
-            }
-        }
+        self.job = job
     }
 }
 
