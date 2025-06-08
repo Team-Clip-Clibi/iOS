@@ -33,7 +33,7 @@ struct SignUpMainView: View {
                 // Carousel
                 TabView(selection: $currentPage) {
                     ForEach(0..<3, id: \.self) { index in
-                        CardView(card: viewModel.cards[index])
+                        BannerView(banner: viewModel.banners[index])
                             .tag(index)
                     }
                 }
@@ -100,12 +100,17 @@ struct SignUpMainView: View {
                 }
             }
         }
+        .onAppear {
+            Task {
+//                try await self.viewModel.fetchBanner()
+            }
+        }
     }
 }
 
 extension SignUpMainView {
-    struct CardView: View {
-        var card: Card
+    struct BannerView: View {
+        var banner: Banner
         
         var body: some View {
             ZStack {
@@ -114,18 +119,17 @@ extension SignUpMainView {
                     .frame(width: 360, height: 400)
                 
                 VStack(spacing: 12) {
-                    card.image
-                        .resizable()
+                    AsyncImage(url: URL(string: banner.imagePresignedUrl)!)
                         .background(.gray600)
                         .aspectRatio(contentMode: .fill)
                         .frame(width: 250, height: 250)
                         .clipShape(RoundedRectangle(cornerRadius: 24))
                     
-                    Text(card.mainText)
+                    Text(banner.headText)
                         .otFont(.heading3)
                         .foregroundStyle(.gray800)
                     
-                    Text(card.subText)
+                    Text(banner.subText)
                         .otFont(.subtitle2)
                         .foregroundStyle(.gray700)
                 }

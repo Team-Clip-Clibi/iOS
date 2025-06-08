@@ -8,7 +8,7 @@
 import Foundation
 
 struct JobDTO: Codable {
-    let jobList: [JobType]
+    let job: JobType?
 }
 
 enum JobType: String, Codable, CaseIterable, Identifiable {
