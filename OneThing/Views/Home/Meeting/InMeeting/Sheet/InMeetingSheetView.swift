@@ -20,7 +20,7 @@ struct InMeetingSheetView: View {
     @State private var dragOffset: CGFloat = 0
     @State private var isDragging: Bool = false
     
-    private let dismissThreshold: CGFloat = 0.2
+    private let dismissThreshold: CGFloat = 0.5
     
     var body: some View {
         
@@ -74,7 +74,7 @@ struct InMeetingSheetView: View {
                     .gesture(
                         DragGesture()
                             .onChanged { value in
-                                let height = value.translation.height
+                                let height = value.location.y
                                 
                                 self.isDragging = true
                                 self.dragOffset = height > 0 ? height: self.dragOffset
@@ -82,7 +82,7 @@ struct InMeetingSheetView: View {
                             .onEnded { value in
                                 self.isDragging = false
                                 let dismissHeight = geometry.size.height * self.heightRatio * self.dismissThreshold
-                                if value.translation.height >= dismissHeight {
+                                if value.location.y >= dismissHeight {
                                     self.dismiss()
                                 } else {
                                     withAnimation(.spring()) {
