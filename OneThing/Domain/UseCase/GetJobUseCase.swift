@@ -14,9 +14,9 @@ struct GetJobUseCase {
         self.repository = repository
     }
     
-    func execute() async throws -> [JobType] {
+    func execute() async throws -> JobType? {
         let result = try await repository.usersJob()
         
-        return result.jobList
+        return result.job
     }
 }

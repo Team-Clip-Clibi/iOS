@@ -26,6 +26,10 @@ extension BannerInfoDTO {
     func toDomain() -> [BannerInfo] {
         return self.banners.map { BannerInfo(urlString: $0.imagePresignedUrl) }
     }
+    
+    func toDomain() -> [Banner] {
+        return self.banners
+    }
 }
 
 struct Banner: Codable {

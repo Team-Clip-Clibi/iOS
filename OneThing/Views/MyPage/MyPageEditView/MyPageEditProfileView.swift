@@ -63,7 +63,7 @@ struct MyPageEditProfileView: View {
                                 .foregroundStyle(.gray600)
                             Spacer()
                         }
-                        InfoRow(title: "하는 일", value: viewModel.jobInfo.map { $0.toKorean }.joined(separator: ", "), isClickable: true, action: {
+                        InfoRow(title: "하는 일", value: viewModel.job?.toKorean ?? "", isClickable: true, action: {
                             Task {
                                 withAnimation(.easeInOut(duration: 0.3)) {
                                     pathManager.isTabBarHidden = true

@@ -12,21 +12,22 @@ class SignUpViewModel {
     
     // MARK: - Properties
     
-    var cards: [Card] = [
-        Card(
-            image: Image("apple"),
-            mainText: "한 가지 주제로 깊이 있게!",
-            subText: "원하는 대화, 원하는 사람과 함께해요."
+    // TODO: - 추후 Mock Repository 분리 필요
+    var banners: [Banner] = [
+        Banner(
+            imagePresignedUrl: "https://ifh.cc/g/KWjrDf.jpg",
+            headText: "첫번째 HeadText입니다.",
+            subText: "첫번째 SubText입니다."
         ),
-        Card(
-            image: Image("apple"),
-            mainText: "고민 없이 딱 맞는 모임 추천",
-            subText: "원하는 주제로 즉시 매칭해드려요."
+        Banner(
+            imagePresignedUrl: "https://ifh.cc/g/KWjrDf.jpg",
+            headText: "두번째 HeadText입니다.",
+            subText: "두번째 SubText입니다."
         ),
-        Card(
-            image: Image("apple"),
-            mainText: "길 잃을 필요 없이, 바로 연결",
-            subText: "나와 맞는 모임을 찾아드려요."
+        Banner(
+            imagePresignedUrl: "https://ifh.cc/g/KWjrDf.jpg",
+            headText: "세번째 HeadText입니다.",
+            subText: "세번째 SubText입니다."
         )
     ]
     
@@ -66,8 +67,21 @@ class SignUpViewModel {
         return true
     }
     
-    private var socialLoginUseCase = SocialLoginUseCase()
-    private var updateNicknameUseCase = UpdateNicknameUseCase()
+    private var socialLoginUseCase: SocialLoginUseCase
+    private var updateNicknameUseCase: UpdateNicknameUseCase
+    private let getBannerUseCase: GetBannerUseCase
+    
+    // MARK: - Initializer
+
+    init(
+        socialLoginUseCase: SocialLoginUseCase = SocialLoginUseCase(),
+        updateNicknameUseCase: UpdateNicknameUseCase = UpdateNicknameUseCase(),
+        getBannerUseCase: GetBannerUseCase = GetBannerUseCase()
+    ) {
+        self.socialLoginUseCase = socialLoginUseCase
+        self.updateNicknameUseCase = updateNicknameUseCase
+        self.getBannerUseCase = getBannerUseCase
+    }
     
     // MARK: - Functions
     
@@ -84,6 +98,14 @@ class SignUpViewModel {
             )
         } catch {
             print(error)
+        }
+    }
+    
+    @MainActor
+    func fetchBanner() async throws {
+        let result: [Banner] = try await getBannerUseCase.execute(with: BannerInfoType.login)
+        if !result.isEmpty {
+            self.banners = try await getBannerUseCase.execute(with: BannerInfoType.login)
         }
     }
     
@@ -134,7 +156,7 @@ class SignUpViewModel {
 
 
 struct Card {
-    var image: Image
+    var imageURL: String
     var mainText: String
     var subText: String
 }
