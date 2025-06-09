@@ -127,7 +127,7 @@ class HomeViewModel {
         } catch {
             
             await MainActor.run {
-                self.currentState.isInMeeting = false
+                self.currentState.meetingDate = nil
             }
         }
     }
