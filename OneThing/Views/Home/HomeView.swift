@@ -18,6 +18,8 @@ struct HomeView: View {
     
     @Binding var inMeetingPathManager: OTInMeetingPathManager
     
+    @StateObject private var dateManager: DateComparisonManager = DateComparisonManager()
+    
     @State private var topBannerCurrPage: Int = 0
     @State private var currentPage: Int = 0
     
@@ -255,6 +257,25 @@ struct HomeView: View {
             .task(id: self.viewModel.currentState.isChangeSuccessForTopBannerStatus) {
                 if self.viewModel.currentState.isChangeSuccessForTopBannerStatus {
                     await self.viewModel.topBanners()
+                }
+            }
+            .onChange(of: self.viewModel.currentState.meetingDate) { _, new in
+                
+                if let meetingDate = new, meetingDate.isToday {
+                    
+                    self.dateManager.startMonitoring(
+                        with: meetingDate,
+                        onTimeRangeChanged: { isWithinRange in
+                            Task { await self.viewModel.updateIsInMeeting(isWithinRange) }
+                        },
+                        onTimeExceeded: {
+                            Task { await self.viewModel.updateIsInMeeting(false) }
+                        }
+                    )
+                } else {
+                    
+                    self.dateManager.stopMonitoring()
+                    Task { await self.viewModel.updateIsInMeeting(false) }
                 }
             }
             // 모임 중 Sheet
