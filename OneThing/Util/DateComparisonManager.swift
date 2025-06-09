@@ -91,11 +91,11 @@ extension DateComparisonManager {
         let timeDifference = currentDate.timeIntervalSince(targetDate)
         let withinRange = timeDifference >= 0 && timeDifference <= Constants.timeRangeLimit
         
-        self.isWithinTimeRange = withinRange
-        
         if self.isWithinTimeRange != withinRange {
             self.onTimeRangeChanged?(withinRange)
         }
+        
+        self.isWithinTimeRange = withinRange
         
         // 시간 초과 시 자동 정지
         if withinRange == false {
