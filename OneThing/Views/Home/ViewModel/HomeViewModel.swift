@@ -17,6 +17,7 @@ class HomeViewModel {
         fileprivate(set) var noticeInfos: [NoticeInfo]
         fileprivate(set) var matchingSummaryInfos: [MatchingSummaryInfo]
         fileprivate(set) var bannerInfos: [BannerInfo]
+        fileprivate(set) var meetingDate: Date?
         fileprivate(set) var isInMeeting: Bool
     }
     
@@ -47,6 +48,7 @@ class HomeViewModel {
             noticeInfos: [],
             matchingSummaryInfos: [],
             bannerInfos: [],
+            meetingDate: nil,
             isInMeeting: false
         )
         
@@ -120,13 +122,20 @@ class HomeViewModel {
             let response = try await self.meetingInProgressUseCase.execute()
             
             await MainActor.run {
-                self.currentState.isInMeeting = response?.isToday == true
+                self.currentState.meetingDate = response
             }
         } catch {
             
             await MainActor.run {
                 self.currentState.isInMeeting = false
             }
+        }
+    }
+    
+    // TODO: 임시, 모임 중 바텀 싯 표시할 플로팅 뷰 표시 플래그
+    func updateIsInMeeting(_ isInMeeting: Bool) async {
+        await MainActor.run {
+            self.currentState.isInMeeting = isInMeeting
         }
     }
     
