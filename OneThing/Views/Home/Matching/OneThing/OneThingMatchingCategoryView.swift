@@ -54,6 +54,8 @@ struct OneThingMatchingCategoryView: View {
             Spacer().frame(height: 24)
             
             MultipleTextWithImageBoxView<OneThingCategory>(
+                viewType: .matching,
+                matrixs: [GridItem(), GridItem(), GridItem()],
                 state: .init(
                     items: OneThingCategory.allCases.map { .init(item: $0) },
                     selectLimit: 1

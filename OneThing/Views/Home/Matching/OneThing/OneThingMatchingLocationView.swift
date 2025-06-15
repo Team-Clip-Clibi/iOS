@@ -54,6 +54,7 @@ struct OneThingMatchingLocationView: View {
             Spacer().frame(height: 24)
             
             MultipleCheckBoxView(
+                viewType: .matching,
                 state: .init(
                     items: self.viewModel.locations.map { .init(title: $0) },
                     selectLimit: 2
