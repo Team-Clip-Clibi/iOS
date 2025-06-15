@@ -6,6 +6,19 @@
 //
 
 import SwiftUI
+import TossPayments
+
+enum PaymentResult: Identifiable, Equatable {
+  case success(TossPaymentsResult.Success)
+  case failure(TossPaymentsResult.Fail)
+
+  var id: String {
+    switch self {
+    case .success(let s): return "success_\(s.paymentKey)"
+    case .failure(let f): return "fail_\(f.errorCode)"
+    }
+  }
+}
 
 struct OneThingMatchingPaymentView: View {
     
@@ -31,6 +44,8 @@ struct OneThingMatchingPaymentView: View {
     @Binding var viewModel: OneThingMatchingViewModel
     
     @State var isRequestPaymentAlert: Bool = false
+    @State private var isTossPaymentSheetShown: Bool = false
+    @State private var paymentResult: PaymentResult?
     
     var body: some View {
         
@@ -100,7 +115,10 @@ struct OneThingMatchingPaymentView: View {
                 let action = AlertAction(
                         title: Constants.Text.alertConfirmButtonTitle,
                         style: .confirm,
-                        action: { }
+                        action: {
+                            self.isRequestPaymentAlert.toggle()
+                            self.isTossPaymentSheetShown.toggle()
+                        }
                     )
                 AlertView(
                     title: Constants.Text.alertTitle,
@@ -111,6 +129,15 @@ struct OneThingMatchingPaymentView: View {
             }
         }
         .navigationBarBackButtonHidden()
+        .fullScreenCover(isPresented: $isTossPaymentSheetShown) {
+            TossPaymentsView(isShowingFullScreen: $isTossPaymentSheetShown,
+                             paymentResult: $paymentResult)
+        }
+        .onChange(of: paymentResult) { _, newValue in
+            // TODO: - 토스 결제 결과에 따른 화면 핸들링 추가 필요
+            self.isTossPaymentSheetShown.toggle()
+            self.appPathManager.homePaths.removeAll()
+        }
     }
 }
 
