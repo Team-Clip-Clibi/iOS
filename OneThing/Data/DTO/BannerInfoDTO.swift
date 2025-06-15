@@ -13,27 +13,19 @@ enum BannerInfoType: String {
 }
 
 struct BannerInfoDTO: Codable {
-    let banners: [Banner]
-    
-    init(from decoder: any Decoder) throws {
-        let singleContainer = try decoder.singleValueContainer()
-        self.banners = try singleContainer.decode([Banner].self)
-    }
+    let imagePresignedUrl: String?
+    let headText: String?
+    let subText: String?
 }
 
-extension BannerInfoDTO {
-    
-    func toDomain() -> [BannerInfo] {
-        return self.banners.map { BannerInfo(urlString: $0.imagePresignedUrl) }
+extension Array where Element == BannerInfoDTO {
+    func toDomain() -> [HomeBannerInfo] {
+        return self.map { HomeBannerInfo(urlString: $0.imagePresignedUrl ?? "") }
     }
     
-    func toDomain() -> [Banner] {
-        return self.banners
+    func toDomain() -> [LoginBannerInfo] {
+        return self.map { LoginBannerInfo(imagePresignedUrl: $0.imagePresignedUrl ?? "",
+                                          headText: $0.headText ?? "",
+                                          subText: $0.subText ?? "")}
     }
-}
-
-struct Banner: Codable {
-    let imagePresignedUrl: String
-    let headText: String
-    let subText: String
 }
