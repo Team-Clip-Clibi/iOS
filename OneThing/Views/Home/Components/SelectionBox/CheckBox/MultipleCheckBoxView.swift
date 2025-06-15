@@ -35,6 +35,11 @@ struct MultipleCheckBoxView: View {
         }
     }
     
+    let viewType: CheckBoxStyle.ViewType
+    private var spacing: CGFloat {
+        return self.viewType == .matching ? 10: 12
+    }
+    
     @State var state: SelectionState
     @Binding var isReachedLimit: Bool
     @Binding var isSelected: Bool
@@ -42,27 +47,30 @@ struct MultipleCheckBoxView: View {
     
     var body: some View {
         
-        VStack(spacing: 10) {
+        VStack(spacing: self.spacing) {
             ForEach(self.state.items.indices, id: \.self) { index in
                 Toggle(
                     self.state.items[index].title,
                     isOn: $state.items[index].isSelected
                 )
                 .padding(.horizontal, 16)
-                .toggleStyle(CheckBoxStyle(backgroundTapAction: { config in
+                .toggleStyle(CheckBoxStyle(
+                    viewType: self.viewType,
+                    backgroundTapAction: { config in
                     
-                    // 선택할 뷰이면서 선택 제한에 도달할 때
-                    if self.state.items[index].isSelected == false, self.state.willReachedLimit {
-                        self.isReachedLimit = true
-                        return
+                        // 선택할 뷰이면서 선택 제한에 도달할 때
+                        if self.state.items[index].isSelected == false, self.state.willReachedLimit {
+                            self.isReachedLimit = true
+                            return
+                        }
+                        
+                        config.isOn.toggle()
+                        self.isReachedLimit = false
+                        
+                        self.isSelected = self.state.isSelected
+                        self.selectedTitles = self.state.selectedItems.map { $0.title }
                     }
-                    
-                    config.isOn.toggle()
-                    self.isReachedLimit = false
-                    
-                    self.isSelected = self.state.isSelected
-                    self.selectedTitles = self.state.selectedItems.map { $0.title }
-                }))
+                ))
             }
         }
     }
@@ -72,6 +80,18 @@ struct MultipleCheckBoxView: View {
     let titles = ["1", "2", "3", "4", "5"]
     
     MultipleCheckBoxView(
+        viewType: .matching,
+        state: .init(
+            items: titles.map { .init(title: $0) },
+            selectLimit: 2
+        ),
+        isReachedLimit: .constant(false),
+        isSelected: .constant(false),
+        selectedTitles: .constant([])
+    )
+    
+    MultipleCheckBoxView(
+        viewType: .meeting,
         state: .init(
             items: titles.map { .init(title: $0) },
             selectLimit: 2
