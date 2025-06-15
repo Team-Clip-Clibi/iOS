@@ -1,11 +1,11 @@
 //
-//  OneThingCategoryInfo.swift
+//  OneThingCategory.swift
 //  OneThing
 //
 //  Created by 오현식 on 5/27/25.
 //
 
-import UIKit
+import SwiftUI
 
 enum OneThingCategory: String, CaseIterable, Identifiable {
     case health = "HEALTH"
