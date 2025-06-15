@@ -48,11 +48,11 @@ enum FontStyle {
         switch self {
         case .heading1, .heading2, .heading3, .heading4:
             return .bold
-        case .title1, .subtitle1, .subtitle2, .caption1:
+        case .title1, .subtitle1, .subtitle2, .caption1, .body1:
             return .semibold
-        case .body1, .body3, .captionTwo:
+        case .body2, .captionTwo:
             return .medium
-        case .body2:
+        case .body3:
             return .regular
         }
     }
