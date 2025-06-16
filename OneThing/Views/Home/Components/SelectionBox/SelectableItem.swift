@@ -5,7 +5,7 @@
 //  Created by 오현식 on 5/25/25.
 //
 
-import Foundation
+import SwiftUI
 
 protocol SelectableItem: Identifiable, Equatable, CaseIterable {
     var displayText: String { get }
@@ -30,6 +30,18 @@ extension Language: SelectableItem{
 }
 
 extension OneThingCategory: SelectableItem {
+    var displayText: String {
+        return self.toKorean
+    }
+}
+
+extension MeetingReviewInfo: SelectableItem {
+    var displayText: String {
+        return self.toKorean
+    }
+}
+
+extension AttendeesInfo: SelectableItem {
     var displayText: String {
         return self.toKorean
     }

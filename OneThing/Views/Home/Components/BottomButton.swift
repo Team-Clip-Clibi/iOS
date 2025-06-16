@@ -26,6 +26,7 @@ struct BottomButton: View {
                 action: { self.buttonTapAction?() },
                 isClickable: self.isClickable
             )
+            .padding(.bottom, 12)
             .padding(.horizontal, 16)
         }
     }
