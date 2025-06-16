@@ -21,7 +21,7 @@ enum OTHomePath: Hashable, Equatable {
     case oneThing(OneThingMatching)
     case random(RandomMatching)
     
-    enum InitialMatching: Equatable, CaseIterable {
+    enum InitialMatching: Equatable {
         case main
         case job
         case dietary

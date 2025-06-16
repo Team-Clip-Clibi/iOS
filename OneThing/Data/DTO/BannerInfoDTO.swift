@@ -28,4 +28,8 @@ extension Array where Element == BannerInfoDTO {
                                           headText: $0.headText ?? "",
                                           subText: $0.subText ?? "")}
     }
+    
+    func toDomain() -> [Banner] {
+        return self.banners
+    }
 }

@@ -54,6 +54,7 @@ struct OneThingMatchingPriceView: View {
             Spacer().frame(height: 24)
             
             MultipleCheckBoxView(
+                viewType: .matching,
                 state: .init(
                     items: self.viewModel.prices.map { .init(title: $0) },
                     selectLimit: 1
