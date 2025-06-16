@@ -16,8 +16,14 @@ struct HomeView: View {
     @Binding var appPathManager: OTAppPathManager
     @Binding var viewModel: HomeViewModel
     
+    @Binding var inMeetingPathManager: OTInMeetingPathManager
+    
+    @StateObject private var dateManager: DateComparisonManager = DateComparisonManager()
+    
     @State private var topBannerCurrPage: Int = 0
     @State private var currentPage: Int = 0
+    
+    @State private var isInMeetingSheetPresented: Bool = false
     
     private let rows = [GridItem()]
     
@@ -28,7 +34,9 @@ struct HomeView: View {
             ZStack {
                 Color.gray100.ignoresSafeArea()
                 
-                // 네비게이션 바 + 공지/새소식
+                
+                // MARK: NavigationBar + Notice
+                
                 VStack {
                     NavigationBar()
                         .hidesBackButton(true)
@@ -51,10 +59,14 @@ struct HomeView: View {
                     
                     NoticeView(notices: self.viewModel.currentState.noticeInfos)
                     
-                    // 상단 배너 + 매칭된 모임 + 모임 신청 + 하단 배너
+                    
+                    // MARK: Top Banner + Matched Meeting + Request Meeting + Bottom Banner
+                    
                     ScrollView(.vertical, showsIndicators: false) {
                         
-                        // 상단 배너
+                        
+                        // MARK: Top Banner
+                        
                         if self.viewModel.currentState.topBannerInfos.isEmpty {
                             EmptyView()
                         } else {
@@ -89,11 +101,14 @@ struct HomeView: View {
                             Spacer().frame(height: 40)
                         }
                         
-                        // 매칭된 모임
+                        
+                        //MARK: Matched Meeting
+                        
                         VStack(alignment: .leading, spacing: 12) {
                             let matchingSummaryInfos = self.viewModel.currentState.matchingSummaryInfos
                             
                             HStack(spacing: 10) {
+                                // TODO: 임시, 유저 정보 저장 후 사용 필요
                                 Text("임시의 모임")
                                     .otFont(.title1)
                                     .foregroundStyle(.gray700)
@@ -130,7 +145,9 @@ struct HomeView: View {
                         
                         Spacer().frame(height: 40)
                         
-                        // 모임 신청
+                        
+                        // MARK: Request Meeting
+                        
                         VStack(alignment: .leading, spacing: 12) {
                             Text(ConstText.requestMeetingTitle)
                                 .otFont(.title1)
@@ -172,7 +189,9 @@ struct HomeView: View {
                         
                         Spacer().frame(height: 40)
                         
-                        // 하단 배너
+                        
+                        // MARK: Bottom Banner
+                        
                         VStack(spacing: 10) {
                             TabView(selection: $currentPage) {
                                 ForEach(
@@ -204,28 +223,67 @@ struct HomeView: View {
                     .padding(.top, self.viewModel.currentState.noticeInfos.isEmpty ? 0: 32)
                     // TODO: 새로고침 시 contentOffset 필요
                      .refreshable {
-                         await self.viewModel.isUnReadNotificationEmpty()
-                         await self.viewModel.topBanners()
-                         await self.viewModel.notice()
-                         await self.viewModel.matchingSummary()
-                         await self.viewModel.banners()
+                         await withTaskGroup(of: Void.self) { group in
+                             group.addTask { await self.viewModel.isUnReadNotificationEmpty() }
+                             group.addTask { await self.viewModel.topBanners() }
+                             group.addTask { await self.viewModel.notice() }
+                             group.addTask { await self.viewModel.matchingSummary() }
+                             group.addTask { await self.viewModel.meetingInProgress() }
+                             group.addTask { await self.viewModel.banners() }
+                         }
                      }
+                }
+                
+                
+                // MARK: In Meeting floating view
+                
+                if self.viewModel.currentState.isInMeeting {
+                    InMeetingFloatingView(onBackgroundTapped: { self.isInMeetingSheetPresented = true })
+                        .padding(.bottom, 12)
+                        .padding(.horizontal, 16)
+                        .frame(maxHeight: .infinity, alignment: .bottom)
                 }
             }
             .task {
-                await self.viewModel.isUnReadNotificationEmpty()
-                await self.viewModel.topBanners()
-                await self.viewModel.notice()
-                await self.viewModel.matchingSummary()
-                await self.viewModel.banners()
+                await withTaskGroup(of: Void.self) { group in
+                    group.addTask { await self.viewModel.isUnReadNotificationEmpty() }
+                    group.addTask { await self.viewModel.topBanners() }
+                    group.addTask { await self.viewModel.notice() }
+                    group.addTask { await self.viewModel.matchingSummary() }
+                    group.addTask { await self.viewModel.meetingInProgress() }
+                    group.addTask { await self.viewModel.banners() }
+                }
             }
             .task(id: self.viewModel.currentState.isChangeSuccessForTopBannerStatus) {
                 if self.viewModel.currentState.isChangeSuccessForTopBannerStatus {
                     await self.viewModel.topBanners()
                 }
             }
+            .onChange(of: self.viewModel.currentState.meetingDate) { _, new in
+                
+                if let meetingDate = new, meetingDate.isToday {
+                    
+                    self.dateManager.startMonitoring(
+                        with: meetingDate,
+                        onTimeRangeChanged: { isWithinRange in
+                            Task { await self.viewModel.updateIsInMeeting(isWithinRange) }
+                        },
+                        onTimeExceeded: {
+                            Task { await self.viewModel.updateIsInMeeting(false) }
+                        }
+                    )
+                } else {
+                    
+                    self.dateManager.stopMonitoring()
+                    Task { await self.viewModel.updateIsInMeeting(false) }
+                }
+            }
+            // 모임 중 Sheet
+            .inMeetingSheet(
+                inMeetingPathManager: $inMeetingPathManager,
+                isPresented: $isInMeetingSheetPresented
+            )
         }
-        
     }
 }
 
@@ -245,16 +303,12 @@ extension HomeView {
             }
         }
     }
-    
-    private func setupIndicator() {
-        UIPageControl.appearance().currentPageIndicatorTintColor = UIColor(.purple400)
-        UIPageControl.appearance().pageIndicatorTintColor = UIColor(.gray400)
-    }
 }
 
-// #Preview {
-//      HomeView(
-//         appPathManager: .constant(OTAppPathManager()),
-//         viewModel: .constant(HomeViewModel())
-//     )
-// }
+#Preview {
+     HomeView(
+        appPathManager: .constant(OTAppPathManager()),
+        viewModel: .constant(HomeViewModel()),
+        inMeetingPathManager: .constant(OTInMeetingPathManager())
+    )
+}

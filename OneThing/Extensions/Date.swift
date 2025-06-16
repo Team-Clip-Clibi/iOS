@@ -72,6 +72,11 @@ extension Date {
     var readNotiFormatted: String {
         return self.toString("M월 dd일")
     }
+    
+    // 모임 시간이 오늘인지 여부
+    var isToday: Bool {
+        return Calendar.current.isDateInToday(self)
+    }
 }
 
 extension Locale {

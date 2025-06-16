@@ -17,6 +17,8 @@ struct MainView: View {
     
     @State var appPathManager = OTAppPathManager()
     
+    @State var inMeetingPathManager = OTInMeetingPathManager()
+    
     init() {
         let kakaoNativeAppKey = (Bundle.main.infoDictionary?["KAKAO_NATIVE_APP_KEY"] as? String) ?? ""
         KakaoSDK.initSDK(appKey: kakaoNativeAppKey)
@@ -35,7 +37,7 @@ extension MainView {
     @ViewBuilder
     private var SignUpContainer: some View {
         if appStateManager.isSignedIn {
-            OTTabBarContainer(pathManager: $appPathManager)
+            OTTabBarContainer(pathManager: $appPathManager, inMeetingPathManager: $inMeetingPathManager)
         } else {
             SignUpMainView(authPathManager: $authPathManager)
                 .onOpenURL(perform: { url in

@@ -10,7 +10,7 @@ import SwiftUI
 enum FontStyle {
     case heading1, heading2, heading3, heading4
     case title1, subtitle1, subtitle2
-    case body1, body2
+    case body1, body2, body3
     case caption1, captionTwo
     
     var size: CGFloat {
@@ -22,7 +22,7 @@ enum FontStyle {
         case .title1: return 20
         case .subtitle1: return 18
         case .subtitle2: return 16
-        case .body1, .body2: return 14
+        case .body1, .body2, .body3: return 14
         case .caption1: return 12
         case .captionTwo: return 10
         }
@@ -38,7 +38,7 @@ enum FontStyle {
         case .title1: return 28
         case .subtitle1: return 26
         case .subtitle2: return 24
-        case .body1, .body2: return 20
+        case .body1, .body2, .body3: return 20
         case .caption1: return 18
         case .captionTwo: return 14
         }
@@ -50,7 +50,7 @@ enum FontStyle {
             return .bold
         case .title1, .subtitle1, .subtitle2, .caption1:
             return .semibold
-        case .body1, .captionTwo:
+        case .body1, .body3, .captionTwo:
             return .medium
         case .body2:
             return .regular
@@ -90,6 +90,7 @@ extension Font {
     
     static let body1 = FontStyle.body1.font
     static let body2 = FontStyle.body2.font
+    static let body3 = FontStyle.body3.font
     
     static let caption1 = FontStyle.caption1.font
     static let captionTwo = FontStyle.captionTwo.font
