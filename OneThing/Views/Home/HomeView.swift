@@ -156,13 +156,11 @@ struct HomeView: View {
                             RequestMeetingButton(
                                 category: .onething,
                                 backgroundTapAction: {
-                                    self.appPathManager.isTabBarHidden = true
                                     
-                                    if UserDefaults.isFirstMatching {
-                                        self.appPathManager.nextPathWhenInitialFinished = .oneThing
-                                        self.appPathManager.push(path: .initial(.main))
-                                    } else {
-                                        self.appPathManager.push(path: .oneThing(.main))
+                                    self.appPathManager.withTabBarHiddenThenNavigate {
+                                        let nextPath = UserDefaults.isFirstMatching ? OTHomePath.MatchingType.onething: nil
+                                        self.appPathManager.nextPathWhenInitialFinished = nextPath
+                                        self.appPathManager.push(path: UserDefaults.isFirstMatching ? .initial(.main): .onething(.main))
                                     }
                                 }
                             )
@@ -171,17 +169,14 @@ struct HomeView: View {
                                 RequestMeetingButton(
                                     category: .random,
                                     backgroundTapAction: {
-                                        self.appPathManager.isTabBarHidden = true
                                         
-                                        if UserDefaults.isFirstMatching {
-                                            self.appPathManager.nextPathWhenInitialFinished = .random
-                                            self.appPathManager.push(path: .initial(.main))
-                                        } else {
-                                            self.appPathManager.push(path: .random(.main))
+                                        self.appPathManager.withTabBarHiddenThenNavigate {
+                                            let nextPath = UserDefaults.isFirstMatching ? OTHomePath.MatchingType.random: nil
+                                            self.appPathManager.nextPathWhenInitialFinished = nextPath
+                                            self.appPathManager.push(path: UserDefaults.isFirstMatching ? .initial(.main): .random(.main))
                                         }
                                     }
                                 )
-                                RequestMeetingButton(category: .instant, backgroundTapAction: { })
                             }
                         }
                         .padding(.horizontal, 16)

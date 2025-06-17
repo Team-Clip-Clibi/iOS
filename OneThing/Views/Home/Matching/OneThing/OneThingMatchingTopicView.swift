@@ -67,7 +67,7 @@ struct OneThingMatchingTopicView: View {
             BottomButton(
                 isClickable: $isNextButtonEnabled,
                 title: Constants.Text.nextButtonTitle,
-                buttonTapAction: { self.appPathManager.push(path: .oneThing(.location)) }
+                buttonTapAction: { self.appPathManager.push(path: .onething(.location)) }
             )
         }
         .navigationBarBackButtonHidden()

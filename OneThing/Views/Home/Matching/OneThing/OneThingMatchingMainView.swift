@@ -61,7 +61,7 @@ struct OneThingMatchingMainView: View {
             BottomButton(
                 isClickable: .constant(true),
                 title: ConstText.nextButtonTitle,
-                buttonTapAction: { self.appPathManager.push(path: .oneThing(.category)) }
+                buttonTapAction: { self.appPathManager.push(path: .onething(.category)) }
             )
         }
         .navigationBarBackButtonHidden()

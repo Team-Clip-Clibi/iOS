@@ -108,7 +108,7 @@ struct OneThingMatchingDateView: View {
             BottomButton(
                 isClickable: $isNextButtonEnabled,
                 title: Constants.Text.nextButtonTitle,
-                buttonTapAction: { self.appPathManager.push(path: .oneThing(.payment)) }
+                buttonTapAction: { self.appPathManager.push(path: .onething(.payment)) }
             )
         }
         .navigationBarBackButtonHidden()
