@@ -16,9 +16,9 @@ struct RequestMeetingButton: View {
             static let randomTitle = "랜덤 모임"
             static let instantTitle = "번개 모임"
             
-            static let onethingDescription = "대화하고 싶은 단 하나의 주제를 나눠요"
-            static let randomDescription = "주제없이 만나요"
-            static let instantDescription = "오늘 만날 수 있어요"
+            static let onethingDescription = "대화하고 싶은 나만의 주제를 나눠요"
+            static let randomDescription = "매주 월요일 7시"
+            static let instantDescription = "오픈 예정이에요"
         }
         
         case onething
@@ -65,22 +65,9 @@ struct RequestMeetingButton: View {
     
     var body: some View {
         HStack {
-            if self.category == .onething {
-                ZStack {
-                    Color.purple100
-                    
-                    Image(self.category.image)
-                        .resizable()
-                        .frame(width: 38, height: 38)
-                        .foregroundStyle(.purple400)
-                }
-                .frame(width: 56, height: 56)
-                .clipShape(.rect(cornerRadius: 12))
-            } else {
-                Image(self.category.image)
-                    .resizable()
-                    .frame(width: 36, height: 36)
-            }
+            Image(self.category.image)
+                .resizable()
+                .frame(width: 44, height: 44)
             
             Spacer().frame(width: self.category == .onething ? 16: 12)
             
@@ -102,9 +89,9 @@ struct RequestMeetingButton: View {
         .frame(maxWidth: .infinity)
         .frame(height: 84)
         .background(.white100)
-        .clipShape(.rect(cornerRadius: 14))
+        .clipShape(.rect(cornerRadius: 16))
         .overlay(
-            RoundedRectangle(cornerRadius: 14)
+            RoundedRectangle(cornerRadius: 16)
                 .stroke(.gray100, lineWidth: 1)
         )
         .onTapGesture { self.backgroundTapAction() }
@@ -112,9 +99,15 @@ struct RequestMeetingButton: View {
 }
 
 #Preview {
-    RequestMeetingButton(category: .onething, backgroundTapAction: { })
-    HStack(spacing: 10) {
-        RequestMeetingButton(category: .random, backgroundTapAction: { })
-        RequestMeetingButton(category: .instant, backgroundTapAction: { })
+    ZStack {
+        Color.gray100
+        
+        VStack(spacing: 12) {
+            RequestMeetingButton(category: .onething, backgroundTapAction: { })
+            HStack(spacing: 12) {
+                RequestMeetingButton(category: .random, backgroundTapAction: { })
+                RequestMeetingButton(category: .instant, backgroundTapAction: { })
+            }
+        }
     }
 }
