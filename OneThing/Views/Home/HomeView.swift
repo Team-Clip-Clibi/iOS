@@ -109,8 +109,8 @@ struct HomeView: View {
                             let matchingSummaryInfos = self.viewModel.currentState.matchingSummaryInfos
                             
                             HStack(spacing: 10) {
-                                // TODO: 임시, 유저 정보 저장 후 사용 필요
-                                Text("임시의 모임")
+                                // TODO: 임시, 유저 정보는 전역으로 관리 필요
+                                Text("\(self.viewModel.currentState.nickname)의 모임")
                                     .otFont(.title1)
                                     .foregroundStyle(.gray700)
                                 
@@ -246,6 +246,7 @@ struct HomeView: View {
             }
             .task {
                 await withTaskGroup(of: Void.self) { group in
+                    group.addTask { await self.viewModel.profile() }
                     group.addTask { await self.viewModel.isUnReadNotificationEmpty() }
                     group.addTask { await self.viewModel.topBanners() }
                     group.addTask { await self.viewModel.notice() }
