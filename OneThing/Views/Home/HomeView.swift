@@ -23,6 +23,7 @@ struct HomeView: View {
     @State private var topBannerCurrPage: Int = 0
     @State private var currentPage: Int = 0
     
+    @State private var isPresentedPreparingAlert: Bool = false
     @State private var isInMeetingSheetPresented: Bool = false
     
     private let rows = [GridItem()]
@@ -165,7 +166,7 @@ struct HomeView: View {
                                 }
                             )
                             
-                            HStack(spacing: 10) {
+                            HStack(spacing: 12) {
                                 RequestMeetingButton(
                                     category: .random,
                                     backgroundTapAction: {
@@ -176,6 +177,10 @@ struct HomeView: View {
                                             self.appPathManager.push(path: UserDefaults.isFirstMatching ? .initial(.main): .random(.main))
                                         }
                                     }
+                                )
+                                RequestMeetingButton(
+                                    category: .instant,
+                                    backgroundTapAction: { self.isPresentedPreparingAlert = true }
                                 )
                             }
                         }
@@ -278,6 +283,7 @@ struct HomeView: View {
                 inMeetingPathManager: $inMeetingPathManager,
                 isPresented: $isInMeetingSheetPresented
             )
+            .showPreparing(isPresented: $isPresentedPreparingAlert)
         }
     }
 }
