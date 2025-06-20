@@ -281,7 +281,7 @@ struct HomeView: View {
                 }
             }
             // 모임 중 Sheet
-            .inMeetingSheet(
+            .showInMeetingSheet(
                 inMeetingPathManager: $inMeetingPathManager,
                 isPresented: $isInMeetingSheetPresented
             )

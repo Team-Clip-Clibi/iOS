@@ -17,16 +17,19 @@ struct InMeetingSheetView: View {
     let backgroundColor: Color
     let dismissWhenBackgroundTapped: Bool
     
+    @State private var height: CGFloat = 0
     @State private var dragOffset: CGFloat = 0
     @State private var isDragging: Bool = false
     
-    private let dismissThreshold: CGFloat = 0.5
+    private let dismissThreshold: CGFloat = 0.8
     
     var body: some View {
         
         GeometryReader { geometry in
             
             self.backgroundColor
+                // dimView 페이드 인/아웃
+                .opacity(self.isPresented ? 1: 0)
                 .onTapGesture {
                     if self.dismissWhenBackgroundTapped {
                         self.dismiss()
@@ -64,10 +67,10 @@ struct InMeetingSheetView: View {
                                     InMeetingCompleteView(inMeetingPathManager: $inMeetingPathManager)
                                 }
                             }
-                            .frame(maxWidth: .infinity, maxHeight: .infinity)
                         }
                     }
-                    .frame(height: geometry.size.height * self.heightRatio)
+                    .frame(maxWidth: .infinity)
+                    .frame(height: self.height)
                     .background(.white100)
                     .clipShape(.rect(topLeadingRadius: 20, topTrailingRadius: 20))
                     .offset(y: max(self.dragOffset, 0))
@@ -91,16 +94,23 @@ struct InMeetingSheetView: View {
                                 }
                             }
                     )
-                    .animation(self.isDragging ? nil: .spring(), value: self.dragOffset)
                     .task {
+                        // 바텀 싯이 표시 될 때, main 화면을 표시하기 위해 사용
                         if self.inMeetingPathManager.paths.isEmpty {
                             self.inMeetingPathManager.paths.append(.main)
                         }
                     }
+                    // path가 비었으면 모임이 완료되었다고 판단
                     .onChange(of: self.inMeetingPathManager.paths.isEmpty) { old, new in
                         if old == false, new {
-                            self.isPresented = false
+                            self.dismiss()
                         }
+                    }
+                }
+                .onAppear {
+                    // 바텀 싯이 표시될 때, 애니메이션
+                    withAnimation(.easeOut(duration: 0.3)) {
+                        self.height = geometry.size.height * self.heightRatio
                     }
                 }
         }
@@ -111,7 +121,11 @@ struct InMeetingSheetView: View {
 extension InMeetingSheetView {
     
     private func dismiss() {
-        withAnimation(.easeOut(duration: 0.2)) {
+        // 바텀 싯이 사라질 때, 애니메이션
+        withAnimation(.easeIn(duration: 0.3)) {
+            self.height = 0
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
             self.isPresented = false
         }
     }

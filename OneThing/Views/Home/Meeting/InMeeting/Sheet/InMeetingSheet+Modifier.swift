@@ -1,5 +1,5 @@
 //
-//  InMeetingSheet.swift
+//  InMeetingSheet+Modifier.swift
 //  OneThing
 //
 //  Created by 오현식 on 6/5/25.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct InMeetingSheet: ViewModifier {
+struct InMeetingSheetModifier: ViewModifier {
     
     @Binding var inMeetingPathManager: OTInMeetingPathManager
     @Binding var isPresented: Bool
@@ -45,24 +45,27 @@ struct InMeetingSheet: ViewModifier {
                         backgroundColor: self.backgroundColor,
                         dismissWhenBackgroundTapped: self.dismissWhenBackgroundTapped
                     )
+                    // 기본 transition 제거
+                    .transition(.identity)
                 }
             }
+            .animation(.easeInOut(duration: 0.3), value: self.isPresented)
     }
 }
 
 extension View {
     
-    func inMeetingSheet(
+    func showInMeetingSheet(
         inMeetingPathManager: Binding<OTInMeetingPathManager>,
         isPresented: Binding<Bool>,
-        heightRatio: CGFloat = 0.92,
+        heightRatio: CGFloat = 0.9,
         cornerRadius: CGFloat = 20,
         backgroundColor: Color = .black.opacity(0.4),
         dismissWhenBackgroundTapped: Bool = true
     ) -> some View {
         
         self.modifier(
-            InMeetingSheet(
+            InMeetingSheetModifier(
                 inMeetingPathManager: inMeetingPathManager,
                 isPresented: isPresented,
                 heightRatio: heightRatio,
