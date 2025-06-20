@@ -14,7 +14,7 @@ enum OTInMeetingPath: Hashable, Equatable {
     case selectHost
     case introduce
     case tmi
-    case oneThing
+    case onething
     case content
     case complete
 }

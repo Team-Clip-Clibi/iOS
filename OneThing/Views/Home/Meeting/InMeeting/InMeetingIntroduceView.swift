@@ -20,9 +20,8 @@ struct InMeetingIntroduceView: View {
     }
     
     @Binding var inMeetingPathManager: OTInMeetingPathManager
+    @Binding var viewModel: InMeetingViewModel
     
-    // TODO: 서버 요청 필요
-    let nicknames = ["민만밈", "미도리야", "바쿠고", "내이름은코난", "탐정이죠", "heaong", "햄햄", "흐으흐음"]
     let cols = [GridItem()]
     
     var body: some View {
@@ -39,8 +38,11 @@ struct InMeetingIntroduceView: View {
             
             ScrollView(.vertical, showsIndicators: false) {
                 LazyVGrid(columns: self.cols) {
-                    ForEach(self.nicknames.indices, id: \.self) { index in
-                        self.setupGridItem(self.nicknames[index], with: index+1)
+                    ForEach(self.viewModel.currentState.nicknames.indices, id: \.self) { index in
+                        self.setupGridItem(
+                            self.viewModel.currentState.nicknames[index],
+                            with: index+1
+                        )
                     }
                     .padding(.horizontal, 24)
                 }   
@@ -94,5 +96,8 @@ extension InMeetingIntroduceView {
 }
 
 #Preview {
-    InMeetingIntroduceView(inMeetingPathManager: .constant(OTInMeetingPathManager()))
+    InMeetingIntroduceView(
+        inMeetingPathManager: .constant(OTInMeetingPathManager()),
+        viewModel: .constant(InMeetingViewModel(nicknames: [], quizs: [], onethings: [:]))
+    )
 }
