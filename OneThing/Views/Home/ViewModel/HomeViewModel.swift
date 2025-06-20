@@ -167,3 +167,17 @@ class HomeViewModel {
         }
     }
 }
+
+extension HomeViewModel {
+    
+    func viewModelForInMeeting() -> Binding<InMeetingViewModel> {
+        
+        return .constant(
+            InMeetingViewModel(
+                nicknames: self.currentState.inMeetingInfo?.nicknameList ?? [],
+                quizs: self.currentState.inMeetingInfo?.quizList ?? [],
+                onethings: self.currentState.inMeetingInfo?.oneThingMap
+            )
+        )
+    }
+}

@@ -10,6 +10,7 @@ import SwiftUI
 struct InMeetingSheetView: View {
     
     @Binding var inMeetingPathManager: OTInMeetingPathManager
+    @Binding var inMeetingViewModel: InMeetingViewModel
     @Binding var isPresented: Bool
     
     let heightRatio: CGFloat
@@ -56,11 +57,20 @@ struct InMeetingSheetView: View {
                                 case .selectHost:
                                     InMeetingSelectHostView(inMeetingPathManager: $inMeetingPathManager)
                                 case .introduce:
-                                    InMeetingIntroduceView(inMeetingPathManager: $inMeetingPathManager)
+                                    InMeetingIntroduceView(
+                                        inMeetingPathManager: $inMeetingPathManager,
+                                        viewModel: $inMeetingViewModel
+                                    )
                                 case .tmi:
-                                    InMeetingTMIView(inMeetingPathManager: $inMeetingPathManager)
-                                case .oneThing:
-                                    InMeetingOneThingView(inMeetingPathManager: $inMeetingPathManager)
+                                    InMeetingTMIView(
+                                        inMeetingPathManager: $inMeetingPathManager,
+                                        viewModel: $inMeetingViewModel
+                                    )
+                                case .onething:
+                                    InMeetingOnethingView(
+                                        inMeetingPathManager: $inMeetingPathManager,
+                                        viewModel: $inMeetingViewModel
+                                    )
                                 case .content:
                                     InMeetingContentView(inMeetingPathManager: $inMeetingPathManager)
                                 case .complete:
