@@ -35,20 +35,30 @@ struct InMeetingOneThingView: View {
             
             Spacer().frame(height: 32)
             
-            ScrollView(.vertical, showsIndicators: false) {
+            if let onethings = self.viewModel.currentState.onethings, onethings.isEmpty == false {
+                
                 VStack(spacing: 20) {
-                    TabView(selection: $currentPage) {
-                        ForEach(
-                            0..<OneThingInfo.mock.count,
-                            id: \.self
-                        ) { page in
-                            self.setupGridItem(OneThingInfo.mock[page])
-                                .tag(page)
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        LazyHStack {
+                            ForEach(
+                                0..<onethings.count,
+                                id: \.self
+                            ) { page in
+                                self.setupGridItem(
+                                    onethings[page],
+                                    nickname: self.viewModel.currentState.nicknames[page]
+                                )
+                                    .tag(page)
+                            }
                         }
+                        .scrollTargetLayout()
                     }
-                    .tabViewStyle(.page(indexDisplayMode: .never))
+                    .scrollTargetBehavior(.viewAligned)
+                    .scrollPosition(id: Binding($currentPage))
+                    .safeAreaPadding(.horizontal, 24)
                     
-                    Text("\(OneThingInfo.mock[self.currentPage].number)/\(OneThingInfo.mock.count)")
+                    let number = onethings[self.currentPage].number
+                    Text("\(number)/\(self.viewModel.currentState.onethingCount)")
                         .otFont(.caption1)
                         .foregroundStyle(.gray500)
                 }
