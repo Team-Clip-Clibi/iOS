@@ -5,7 +5,7 @@
 //  Created by 윤동주 on 4/6/25.
 //
 
-import Foundation
+import SwiftUI
 
 @Observable
 class HomeViewModel {
@@ -19,6 +19,7 @@ class HomeViewModel {
         fileprivate(set) var matchingSummaryInfos: [MatchingSummaryInfo]
         fileprivate(set) var bannerInfos: [HomeBannerInfo]
         fileprivate(set) var meetingDate: Date?
+        fileprivate(set) var inMeetingInfo: InMeetingInfo?
         fileprivate(set) var isInMeeting: Bool
     }
     
@@ -54,6 +55,7 @@ class HomeViewModel {
             matchingSummaryInfos: [],
             bannerInfos: [],
             meetingDate: nil,
+            inMeetingInfo: nil,
             isInMeeting: false
         )
         
@@ -142,12 +144,14 @@ class HomeViewModel {
             let response = try await self.meetingInProgressUseCase.execute()
             
             await MainActor.run {
-                self.currentState.meetingDate = response
+                self.currentState.meetingDate = response.meetingDate
+                self.currentState.inMeetingInfo = response.inMeetingInfo
             }
         } catch {
             
             await MainActor.run {
                 self.currentState.meetingDate = nil
+                self.currentState.inMeetingInfo = nil
             }
         }
     }

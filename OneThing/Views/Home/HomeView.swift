@@ -283,6 +283,7 @@ struct HomeView: View {
             // 모임 중 Sheet
             .showInMeetingSheet(
                 inMeetingPathManager: $inMeetingPathManager,
+                inMeetingVieWModel: self.viewModel.viewModelForInMeeting(),
                 isPresented: $isInMeetingSheetPresented
             )
             .showPreparing(isPresented: $isPresentedPreparingAlert)
