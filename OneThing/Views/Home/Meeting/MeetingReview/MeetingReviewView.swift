@@ -218,10 +218,17 @@ struct MeetingReviewView: View {
             BottomButton(
                 isClickable: $isCompleteButtonEnabled,
                 title: Constants.Text.completeButtonTitle,
-                buttonTapAction: {  }
+                buttonTapAction: {
+                    Task {
+                        await self.viewModel.submit()
+                    }
+                }
             )
         }
         .navigationBarBackButtonHidden()
+        .onChange(of: self.viewModel.currentState.isSuccess) { _, new in
+            if new { self.appPathManager.pop() }
+        }
     }
 }
 

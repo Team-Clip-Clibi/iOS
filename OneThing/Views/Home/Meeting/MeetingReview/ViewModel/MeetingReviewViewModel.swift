@@ -17,6 +17,7 @@ class MeetingReviewViewModel {
         fileprivate(set) var reviewContent: String
         fileprivate(set) var attendee: AttendeesInfo?
         fileprivate(set) var noShowMembers: [String]
+        fileprivate(set) var isSuccess: Bool
     }
     var currentState: State
     
@@ -56,6 +57,7 @@ class MeetingReviewViewModel {
             reviewContent: "",
             attendee: nil,
             noShowMembers: [],
+            isSuccess: false
         )
         
         self.submitMeetingReviewUseCase = submitMeetingReviewUseCase
@@ -107,5 +109,30 @@ class MeetingReviewViewModel {
         }
     }
     
+    func submit() async {
+        
+        guard let mood = self.currentState.selectedMood else { return }
+        
+        do {
+            let isSuccess = try await self.submitMeetingReviewUseCase.execute(
+                mood: mood,
+                positivePoints: self.currentState.selectedPositivePoints.joined(separator: ", "),
+                negativePoints: self.currentState.selectedNegativePoints.joined(separator: ", "),
+                reviewContent: self.currentState.reviewContent,
+                noShowMembers: self.currentState.noShowMembers.joined(separator: ", "),
+                isMemberAllAttended: self.currentState.attendee == .all,
+                matchingId: self.id,
+                matchingType: self.type
+            )
+            
+            await MainActor.run {
+                self.currentState.isSuccess = isSuccess
+            }
+        } catch {
+            
+            await MainActor.run {
+                self.currentState.isSuccess = false
+            }
+        }
     }
 }
