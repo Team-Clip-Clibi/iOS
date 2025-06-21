@@ -46,3 +46,5 @@ enum MeetingReviewInfo: String, CaseIterable, Identifiable {
         }
     }
 }
+
+extension MeetingReviewInfo: Codable { }

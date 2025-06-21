@@ -15,10 +15,7 @@ struct MatchingProgressStatusDto: Codable {
     let checkedMatchingStart: Bool
 }
 
-extension MatchingProgressStatusDto {
-    
-    enum MatchingType: String, Codable {
-        case oneThing   = "ONE_THING"
-        case random     = "RANDOM"
-    }
+enum MatchingType: String, Codable {
+    case oneThing   = "ONE_THING"
+    case random     = "RANDOM"
 }
