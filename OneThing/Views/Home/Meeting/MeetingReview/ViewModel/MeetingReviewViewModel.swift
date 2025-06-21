@@ -11,8 +11,12 @@ import SwiftUI
 class MeetingReviewViewModel {
     
     struct State: Equatable {
-        private(set) var selectedPositivePoints: [String]
-        private(set) var selectedNegativePoints: [String]
+        fileprivate(set) var selectedMood: MeetingReviewInfo?
+        fileprivate(set) var selectedPositivePoints: [String]
+        fileprivate(set) var selectedNegativePoints: [String]
+        fileprivate(set) var reviewContent: String
+        fileprivate(set) var attendee: AttendeesInfo?
+        fileprivate(set) var noShowMembers: [String]
     }
     var currentState: State
     
@@ -31,13 +35,77 @@ class MeetingReviewViewModel {
         "시간과 장소가 마음에 안들어요",
         "약속 시간을 지키지 않은 멤버가 많았어요"
     ]
-    // TODO: 임시, 모임 닉네임 조회 필요
-    let members = ["미도리아", "바쿠고", "우라라카", "올마이트"]
     
-    init() {
+    let nicknames: [String]
+    let id: String
+    let type: MatchingType
+    
+    let submitMeetingReviewUseCase: SubmitMeetingReviewUseCase
+    
+    init(
+        submitMeetingReviewUseCase: SubmitMeetingReviewUseCase = SubmitMeetingReviewUseCase(),
+        nicknames: [String],
+        id: String,
+        type: MatchingType
+    ) {
+        
         self.currentState = .init(
+            selectedMood: nil,
             selectedPositivePoints: [],
-            selectedNegativePoints: []
+            selectedNegativePoints: [],
+            reviewContent: "",
+            attendee: nil,
+            noShowMembers: [],
         )
+        
+        self.submitMeetingReviewUseCase = submitMeetingReviewUseCase
+        
+        self.nicknames = nicknames
+        self.id = id
+        self.type = type
+    }
+    
+    func selectMood(_ mood: MeetingReviewInfo) async {
+        
+        await MainActor.run {
+            self.currentState.selectedMood = mood
+        }
+    }
+    
+    func selectPositivePoint(_ content: [String]) async {
+        
+        await MainActor.run {
+            self.currentState.selectedPositivePoints = content
+        }
+    }
+    
+    func selectNegativePoint(_ content: [String]) async {
+        
+        await MainActor.run {
+            self.currentState.selectedNegativePoints = content
+        }
+    }
+    
+    func reviewContent(_ content: String) async {
+        
+        await MainActor.run {
+            self.currentState.reviewContent = content
+        }
+    }
+    
+    func selectAttendee(_ attendee: AttendeesInfo) async {
+        
+        await MainActor.run {
+            self.currentState.attendee = attendee
+        }
+    }
+    
+    func selectNoShowMembers(_ members: [String]) async {
+        
+        await MainActor.run {
+            self.currentState.noShowMembers = members
+        }
+    }
+    
     }
 }
