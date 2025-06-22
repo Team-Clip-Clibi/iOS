@@ -125,13 +125,13 @@ extension SignUpMainView {
                         .frame(width: 250, height: 250)
                         .clipShape(RoundedRectangle(cornerRadius: 24))
                     
-                    Text(banner.headText)
-                        .otFont(.heading3)
-                        .foregroundStyle(.gray800)
-                    
-                    Text(banner.subText)
-                        .otFont(.subtitle2)
-                        .foregroundStyle(.gray700)
+                    // Text(banner.headText)
+                    //     .otFont(.heading3)
+                    //     .foregroundStyle(.gray800)
+                    //
+                    // Text(banner.subText)
+                    //     .otFont(.subtitle2)
+                    //     .foregroundStyle(.gray700)
                 }
             }
         }

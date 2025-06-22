@@ -16,18 +16,21 @@ class SignUpViewModel {
     var banners: [Banner] = [
         Banner(
             imagePresignedUrl: "https://ifh.cc/g/KWjrDf.jpg",
-            headText: "첫번째 HeadText입니다.",
-            subText: "첫번째 SubText입니다."
+            // headText: "첫번째 HeadText입니다.",
+            // subText: "첫번째 SubText입니다."
+            text: "text입니다."
         ),
         Banner(
             imagePresignedUrl: "https://ifh.cc/g/KWjrDf.jpg",
-            headText: "두번째 HeadText입니다.",
-            subText: "두번째 SubText입니다."
+            // headText: "두번째 HeadText입니다.",
+            // subText: "두번째 SubText입니다."
+            text: "text입니다."
         ),
         Banner(
             imagePresignedUrl: "https://ifh.cc/g/KWjrDf.jpg",
-            headText: "세번째 HeadText입니다.",
-            subText: "세번째 SubText입니다."
+            // headText: "세번째 HeadText입니다.",
+            // subText: "세번째 SubText입니다."
+            text: "text입니다."
         )
     ]
     

@@ -34,6 +34,5 @@ extension BannerInfoDTO {
 
 struct Banner: Codable {
     let imagePresignedUrl: String
-    let headText: String
-    let subText: String
+    let text: String?
 }
