@@ -221,6 +221,7 @@ struct HomeView: View {
                         .frame(height: 136)
                     }
                     .padding(.top, self.viewModel.currentState.noticeInfos.isEmpty ? 0: 32)
+                    .padding(.bottom, 32)
                     // TODO: 새로고침 시 contentOffset 필요
                      .refreshable {
                          await withTaskGroup(of: Void.self) { group in
@@ -293,17 +294,9 @@ extension HomeView {
     
     private func setupBanner(with urlString: String) -> some View {
         
-        AsyncImage(url: URL(string: urlString)) { phase in
-            switch phase {
-            case let .success(image):
-                image
-                    .resizable()
-                    .scaledToFill()
-                    .frame(height: 110)
-            default:
-                EmptyView()
-            }
-        }
+        AsyncSVGImage(urlString: urlString)
+            .frame(maxWidth: .infinity)
+            .frame(height: 110)
     }
 }
 
