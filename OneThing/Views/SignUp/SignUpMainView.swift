@@ -118,7 +118,7 @@ extension SignUpMainView {
                     .fill(Color.purple100)
                     .frame(width: 360, height: 400)
                 
-                VStack(spacing: 12) {
+                VStack(spacing: 32) {
                     AsyncImage(url: URL(string: banner.imagePresignedUrl)!) { phase in
                         
                         switch phase {
@@ -135,14 +135,10 @@ extension SignUpMainView {
                     }
                     .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
                     
-                    Text(banner.headText)
+                    Text(banner.text)
                         .otFont(.title1)
                         .foregroundStyle(.gray800)
                         .multilineTextAlignment(.center)
-                    
-                    Text(banner.subText)
-                        .otFont(.subtitle2)
-                        .foregroundStyle(.gray700)
                 }
             }
         }

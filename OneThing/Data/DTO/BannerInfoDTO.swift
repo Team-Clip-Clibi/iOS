@@ -14,8 +14,7 @@ enum BannerInfoType: String {
 
 struct BannerInfoDTO: Codable {
     let imagePresignedUrl: String?
-    let headText: String?
-    let subText: String?
+    let text: String?
 }
 
 extension Array where Element == BannerInfoDTO {
@@ -25,11 +24,6 @@ extension Array where Element == BannerInfoDTO {
     
     func toDomain() -> [LoginBannerInfo] {
         return self.map { LoginBannerInfo(imagePresignedUrl: $0.imagePresignedUrl ?? "",
-                                          headText: $0.headText ?? "",
-                                          subText: $0.subText ?? "")}
-    }
-    
-    func toDomain() -> [Banner] {
-        return self.banners
+                                          text: $0.text ?? "")}
     }
 }

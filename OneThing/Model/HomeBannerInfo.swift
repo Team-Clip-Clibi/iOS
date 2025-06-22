@@ -14,6 +14,5 @@ struct HomeBannerInfo: Equatable, Identifiable {
 
 struct LoginBannerInfo: Equatable {
     let imagePresignedUrl: String
-    let headText: String
-    let subText: String
+    let text: String
 }
