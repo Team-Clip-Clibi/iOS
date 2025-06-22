@@ -23,6 +23,7 @@ struct HomeView: View {
     @State private var topBannerCurrPage: Int = 0
     @State private var currentPage: Int = 0
     
+    @State private var isPresentedPreparingAlert: Bool = false
     @State private var isInMeetingSheetPresented: Bool = false
     
     private let rows = [GridItem()]
@@ -108,8 +109,8 @@ struct HomeView: View {
                             let matchingSummaryInfos = self.viewModel.currentState.matchingSummaryInfos
                             
                             HStack(spacing: 10) {
-                                // TODO: 임시, 유저 정보 저장 후 사용 필요
-                                Text("임시의 모임")
+                                // TODO: 임시, 유저 정보는 전역으로 관리 필요
+                                Text("\(self.viewModel.currentState.nickname)의 모임")
                                     .otFont(.title1)
                                     .foregroundStyle(.gray700)
                                 
@@ -156,32 +157,31 @@ struct HomeView: View {
                             RequestMeetingButton(
                                 category: .onething,
                                 backgroundTapAction: {
-                                    self.appPathManager.isTabBarHidden = true
                                     
-                                    if UserDefaults.isFirstMatching {
-                                        self.appPathManager.nextPathWhenInitialFinished = .oneThing
-                                        self.appPathManager.push(path: .initial(.main))
-                                    } else {
-                                        self.appPathManager.push(path: .oneThing(.main))
+                                    self.appPathManager.withTabBarHiddenThenNavigate {
+                                        let nextPath = UserDefaults.isFirstMatching ? OTHomePath.MatchingType.onething: nil
+                                        self.appPathManager.nextPathWhenInitialFinished = nextPath
+                                        self.appPathManager.push(path: UserDefaults.isFirstMatching ? .initial(.main): .onething(.main))
                                     }
                                 }
                             )
                             
-                            HStack(spacing: 10) {
+                            HStack(spacing: 12) {
                                 RequestMeetingButton(
                                     category: .random,
                                     backgroundTapAction: {
-                                        self.appPathManager.isTabBarHidden = true
                                         
-                                        if UserDefaults.isFirstMatching {
-                                            self.appPathManager.nextPathWhenInitialFinished = .random
-                                            self.appPathManager.push(path: .initial(.main))
-                                        } else {
-                                            self.appPathManager.push(path: .random(.main))
+                                        self.appPathManager.withTabBarHiddenThenNavigate {
+                                            let nextPath = UserDefaults.isFirstMatching ? OTHomePath.MatchingType.random: nil
+                                            self.appPathManager.nextPathWhenInitialFinished = nextPath
+                                            self.appPathManager.push(path: UserDefaults.isFirstMatching ? .initial(.main): .random(.main))
                                         }
                                     }
                                 )
-                                RequestMeetingButton(category: .instant, backgroundTapAction: { })
+                                RequestMeetingButton(
+                                    category: .instant,
+                                    backgroundTapAction: { self.isPresentedPreparingAlert = true }
+                                )
                             }
                         }
                         .padding(.horizontal, 16)
@@ -221,6 +221,7 @@ struct HomeView: View {
                         .frame(height: 136)
                     }
                     .padding(.top, self.viewModel.currentState.noticeInfos.isEmpty ? 0: 32)
+                    .padding(.bottom, 32)
                     // TODO: 새로고침 시 contentOffset 필요
                      .refreshable {
                          await withTaskGroup(of: Void.self) { group in
@@ -246,6 +247,7 @@ struct HomeView: View {
             }
             .task {
                 await withTaskGroup(of: Void.self) { group in
+                    group.addTask { await self.viewModel.profile() }
                     group.addTask { await self.viewModel.isUnReadNotificationEmpty() }
                     group.addTask { await self.viewModel.topBanners() }
                     group.addTask { await self.viewModel.notice() }
@@ -283,6 +285,7 @@ struct HomeView: View {
                 inMeetingPathManager: $inMeetingPathManager,
                 isPresented: $isInMeetingSheetPresented
             )
+            .showPreparing(isPresented: $isPresentedPreparingAlert)
         }
     }
 }
@@ -291,17 +294,9 @@ extension HomeView {
     
     private func setupBanner(with urlString: String) -> some View {
         
-        AsyncImage(url: URL(string: urlString)) { phase in
-            switch phase {
-            case let .success(image):
-                image
-                    .resizable()
-                    .scaledToFill()
-                    .frame(height: 110)
-            default:
-                EmptyView()
-            }
-        }
+        AsyncSVGImage(urlString: urlString)
+            .frame(maxWidth: .infinity)
+            .frame(height: 110)
     }
 }
 

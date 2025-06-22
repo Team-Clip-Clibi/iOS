@@ -22,8 +22,27 @@ class APIClient {
         urlRequest.httpMethod = endpoint.method.rawValue
         urlRequest.allHTTPHeaderFields = endpoint.headers
         
+        // URLRequest 콘솔 로그
+        LoggingManager.request(
+            """
+                URL: \(urlRequest.url?.absoluteString ?? "nil")
+                Method: \(urlRequest.httpMethod ?? "nil")
+                Headers: \(urlRequest.allHTTPHeaderFields ?? [:])
+            """
+        )
+        
         do {
             let (data, response) = try await URLSession.shared.data(for: urlRequest)
+            
+            // Data 콘솔 로그, Data == nil일 때, None
+            if let jsonObject = try? JSONSerialization.jsonObject(with: data, options: []),
+               let prettyData = try? JSONSerialization.data(withJSONObject: jsonObject, options: .prettyPrinted),
+               let prettyString = String(data: prettyData, encoding: .utf8) {
+                LoggingManager.response(prettyString)
+            } else {
+                LoggingManager.response("None")
+            }
+            
             guard let httpResponse = response as? HTTPURLResponse, (200...299).contains(httpResponse.statusCode) else {
                 throw NetworkError.invalidHttpStatusCode(code: (response as? HTTPURLResponse)?.statusCode ?? 0)
             }
@@ -57,7 +76,25 @@ class APIClient {
         urlRequest.httpBody = try JSONEncoder().encode(body)
         urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
         
+        // URLRequest 콘솔 로그
+        LoggingManager.request(
+            """
+                URL: \(urlRequest.url?.absoluteString ?? "nil")
+                Method: \(urlRequest.httpMethod ?? "nil")
+                Headers: \(urlRequest.allHTTPHeaderFields ?? [:])
+            """
+        )
+        
         let (data, response) = try await URLSession.shared.data(for: urlRequest)
+        
+        // Data 콘솔 로그, Data == nil일 때, None
+        if let jsonObject = try? JSONSerialization.jsonObject(with: data, options: []),
+           let prettyData = try? JSONSerialization.data(withJSONObject: jsonObject, options: .prettyPrinted),
+           let prettyString = String(data: prettyData, encoding: .utf8) {
+            LoggingManager.response(prettyString)
+        } else {
+            LoggingManager.response("None")
+        }
         
         guard let httpResponse = response as? HTTPURLResponse, (200...299).contains(httpResponse.statusCode) else {
             dump((response as? HTTPURLResponse)?.statusCode)
@@ -91,11 +128,23 @@ class APIClient {
         urlRequest.httpBody = try JSONEncoder().encode(body)
         urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
         
+        // URLRequest 콘솔 로그
+        LoggingManager.request(
+            """
+                URL: \(urlRequest.url?.absoluteString ?? "nil")
+                Method: \(urlRequest.httpMethod ?? "nil")
+                Headers: \(urlRequest.allHTTPHeaderFields ?? [:])
+            """
+        )
+        
         let (_, response) = try await URLSession.shared.data(for: urlRequest)
         
         guard let httpResponse = response as? HTTPURLResponse, (200...299).contains(httpResponse.statusCode) else {
             throw NetworkError.invalidHttpStatusCode(code: (response as? HTTPURLResponse)?.statusCode ?? 0)
         }
+        
+        // StatusCodee 콘솔 로그
+        LoggingManager.response("StatusCode: \(httpResponse.statusCode)")
         
         return httpResponse
     }
@@ -111,11 +160,23 @@ class APIClient {
         urlRequest.httpBody = try JSONEncoder().encode(body)
         urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
         
+        // URLRequest 콘솔 로그
+        LoggingManager.request(
+            """
+                URL: \(urlRequest.url?.absoluteString ?? "nil")
+                Method: \(urlRequest.httpMethod ?? "nil")
+                Headers: \(urlRequest.allHTTPHeaderFields ?? [:])
+            """
+        )
+        
         let (_, response) = try await URLSession.shared.data(for: urlRequest)
         guard let httpResponse = response as? HTTPURLResponse,
               (200...299).contains(httpResponse.statusCode) else {
             throw NetworkError.invalidHttpStatusCode(code: (response as? HTTPURLResponse)?.statusCode ?? 0)
         }
+        
+        // StatusCodee 콘솔 로그
+        LoggingManager.response("StatusCode: \(httpResponse.statusCode)")
         
         return httpResponse
     }
@@ -130,11 +191,24 @@ class APIClient {
         urlRequest.allHTTPHeaderFields = endpoint.headers
         urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
         
+        // URLRequest 콘솔 로그
+        LoggingManager.request(
+            """
+                URL: \(urlRequest.url?.absoluteString ?? "nil")
+                Method: \(urlRequest.httpMethod ?? "nil")
+                Headers: \(urlRequest.allHTTPHeaderFields ?? [:])
+            """
+        )
+        
         let (_, response) = try await URLSession.shared.data(for: urlRequest)
         guard let httpResponse = response as? HTTPURLResponse,
               (200...299).contains(httpResponse.statusCode) else {
             throw NetworkError.invalidHttpStatusCode(code: (response as? HTTPURLResponse)?.statusCode ?? 0)
         }
+        
+        // StatusCodee 콘솔 로그
+        LoggingManager.response("StatusCode: \(httpResponse.statusCode)")
+        
         return httpResponse
     }
     
@@ -148,11 +222,23 @@ class APIClient {
         urlRequest.allHTTPHeaderFields = endpoint.headers
         urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
         
+        // URLRequest 콘솔 로그
+        LoggingManager.request(
+            """
+                URL: \(urlRequest.url?.absoluteString ?? "nil")
+                Method: \(urlRequest.httpMethod ?? "nil")
+                Headers: \(urlRequest.allHTTPHeaderFields ?? [:])
+            """
+        )
+        
         let (_, response) = try await URLSession.shared.data(for: urlRequest)
         guard let httpResponse = response as? HTTPURLResponse,
               (200...299).contains(httpResponse.statusCode) else {
             throw NetworkError.invalidHttpStatusCode(code: (response as? HTTPURLResponse)?.statusCode ?? 0)
         }
+        
+        // StatusCodee 콘솔 로그
+        LoggingManager.response("StatusCode: \(httpResponse.statusCode)")
         
         return httpResponse
     }

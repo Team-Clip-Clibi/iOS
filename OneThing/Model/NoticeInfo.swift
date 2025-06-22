@@ -33,7 +33,7 @@ extension NoticeInfo: Codable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.noticeType = try container.decode(Category.self, forKey: .noticeType)
         self.content = try container.decode(String.self, forKey: .content)
-        self.link = try container.decode(String.self, forKey: .link)
+        self.link = (try? container.decode(String.self, forKey: .link)) ?? ""
     }
 }
 extension NoticeInfo.Category: Codable { }
