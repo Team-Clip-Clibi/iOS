@@ -34,7 +34,7 @@ class OneThingMatchingViewModel {
         )
     }
     
-    func initializeState(_ path: OTHomePath.OneThingMatching) {
+    func initializeState(_ path: OTHomePath.OnethingMatching) {
         switch path {
         case .category:
             self.currentState.selectedCategory = []

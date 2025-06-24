@@ -38,7 +38,7 @@ class OTAppPathManager {
         
         guard let nextPath = self.nextPathWhenInitialFinished else { return }
         switch nextPath {
-        case .oneThing: self.push(path: .oneThing(.main))
+        case .onething: self.push(path: .onething(.main))
         case .random: self.push(path: .random(.main))
         }
     }

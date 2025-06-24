@@ -11,18 +11,21 @@ import Foundation
 class HomeViewModel {
     
     struct State: Equatable {
+        fileprivate(set) var nickname: String
         fileprivate(set) var isUnReadNotificationEmpty: Bool
         fileprivate(set) var topBannerInfos: [NotificationBannerInfo]
         fileprivate(set) var isChangeSuccessForTopBannerStatus: Bool
         fileprivate(set) var noticeInfos: [NoticeInfo]
         fileprivate(set) var matchingSummaryInfos: [MatchingSummaryInfo]
-        fileprivate(set) var bannerInfos: [BannerInfo]
+        fileprivate(set) var bannerInfos: [HomeBannerInfo]
         fileprivate(set) var meetingDate: Date?
         fileprivate(set) var isInMeeting: Bool
     }
     
     var currentState: State
     
+    // TODO: 임시, 유저 정보는 전역으로 관리 필요
+    private let getProfileUseCase: GetProfileInfoUseCase
     private let unReadNotificationUseCase: GetUnReadNotificationUseCase
     private let getNotificationBannerUseCase: GetNotificationBannerUseCase
     private let updateNotificationBannerUseCase: UpdateNotificationBannerUseCase
@@ -32,6 +35,7 @@ class HomeViewModel {
     private let bannerUseCase: GetBannerUseCase
     
     init(
+        getProfileUseCase: GetProfileInfoUseCase = GetProfileInfoUseCase(),
         unReadNotificationUseCase: GetUnReadNotificationUseCase = GetUnReadNotificationUseCase(),
         getNotificationBannerUseCase: GetNotificationBannerUseCase = GetNotificationBannerUseCase(),
         updateNotificationBannerUseCase: UpdateNotificationBannerUseCase = UpdateNotificationBannerUseCase(),
@@ -42,6 +46,7 @@ class HomeViewModel {
     ) {
         
         self.currentState = State(
+            nickname: "",
             isUnReadNotificationEmpty: true,
             topBannerInfos: [],
             isChangeSuccessForTopBannerStatus: false,
@@ -52,6 +57,7 @@ class HomeViewModel {
             isInMeeting: false
         )
         
+        self.getProfileUseCase = getProfileUseCase
         self.unReadNotificationUseCase = unReadNotificationUseCase
         self.getNotificationBannerUseCase = getNotificationBannerUseCase
         self.updateNotificationBannerUseCase = updateNotificationBannerUseCase
@@ -59,6 +65,20 @@ class HomeViewModel {
         self.matchingSummaryUseCase = matchingSummaryUseCase
         self.meetingInProgressUseCase = meetingInProgressUseCase
         self.bannerUseCase = bannerUseCase
+    }
+    
+    func profile() async {
+        do {
+            let profileInfo = try await self.getProfileUseCase.execute()
+            
+            await MainActor.run {
+                self.currentState.nickname = profileInfo.nickname
+            }
+        } catch {
+            await MainActor.run {
+                self.currentState.nickname = ""
+            }
+        }
     }
     
     func isUnReadNotificationEmpty() async {

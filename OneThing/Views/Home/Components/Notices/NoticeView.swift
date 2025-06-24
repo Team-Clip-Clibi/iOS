@@ -35,7 +35,10 @@ struct NoticeView: View {
             .frame(maxWidth: .infinity)
             .frame(height: 34)
             .background(Color.gray200)
-            .onTapGesture { self.openURL(URL(string: notice.link)!) }
+            .onTapGesture {
+                guard let url = URL(string: notice.link) else { return }
+                self.openURL(url)
+            }
         } else {
             EmptyView()
         }

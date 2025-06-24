@@ -7,45 +7,35 @@
 
 import SwiftUI
 
-struct AlertAction {
-    
-    enum Style {
-        case confirm
-    }
-    
-    typealias Action = () -> Void
-    
-    let tag = UUID()
-    let title: String
-    let style: Style
-    let action: Action
-}
-
-extension AlertAction: Equatable {
-    
-    static func == (lhs: AlertAction, rhs: AlertAction) -> Bool {
-        return lhs.tag == rhs.tag
-    }
-}
-
 struct AlertView: View {
     
-    private(set) var title: String
-    private(set) var message: String
-    private(set) var actions: [AlertAction]
+    @Binding var isPresented: Bool
     
-    private(set) var dismissWhenBackgroundTapped: (() -> Void)?
+    let imageResource: ImageResource?
+    let title: String
+    let message: String
+    let actions: [AlertAction]
+    
+    let dismissWhenBackgroundTapped: Bool
     
     var body: some View {
         
         ZStack {
             Color.black.opacity(0.4).ignoresSafeArea()
                 .onTapGesture {
-                    self.dismissWhenBackgroundTapped?()
+                    if self.dismissWhenBackgroundTapped { self.isPresented = false }
                 }
             
             ZStack {
                 VStack {
+                    if let imageResource = self.imageResource {
+                        Spacer().frame(height: 24)
+                        
+                        Image(imageResource)
+                            .resizable()
+                            .frame(width: 82, height: 82)
+                    }
+                    
                     Spacer().frame(height: 24)
                     
                     Text(self.title)
@@ -77,6 +67,7 @@ struct AlertView: View {
             }
             .padding(.horizontal, 35)
         }
+        .background(ClearBackgroundView())
     }
     
     private func setupButtons(_ actions: [AlertAction]) -> some View {
@@ -93,8 +84,59 @@ struct AlertView: View {
     }
 }
 
+extension AlertView {
+    
+    // 이미지 및 백그라운드 탭 액션이 없을 때
+    init(
+        isPresented: Binding<Bool>,
+        title: String,
+        message: String,
+        actions: [AlertAction]
+    ) {
+        self._isPresented = isPresented
+        self.imageResource = nil
+        self.title = title
+        self.message = message
+        self.actions = actions
+        self.dismissWhenBackgroundTapped = false
+    }
+    
+    // 백그라운드 탭 액션만 없을 때
+    init(
+        isPresented: Binding<Bool>,
+        imageResource: ImageResource,
+        title: String,
+        message: String,
+        actions: [AlertAction]
+    ) {
+        self._isPresented = isPresented
+        self.imageResource = imageResource
+        self.title = title
+        self.message = message
+        self.actions = actions
+        self.dismissWhenBackgroundTapped = false
+    }
+    
+    // 이미지만 없을 때
+    init(
+        isPresented: Binding<Bool>,
+        title: String,
+        message: String,
+        actions: [AlertAction],
+        dismissWhenBackgroundTapped: Bool
+    ) {
+        self._isPresented = isPresented
+        self.imageResource = nil
+        self.title = title
+        self.message = message
+        self.actions = actions
+        self.dismissWhenBackgroundTapped = dismissWhenBackgroundTapped
+    }
+}
+
 #Preview {
     AlertView(
+        isPresented: .constant(true),
         title: "원띵은 토스페이 결제만 가능해요",
         message: "토스 앱이 없다면, 설치 후 결제를 진행해주세요.",
         actions: [.init(title: "확인", style: .confirm, action: { })]

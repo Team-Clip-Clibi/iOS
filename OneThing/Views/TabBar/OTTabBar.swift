@@ -144,44 +144,44 @@ struct OTTabBarContainer: View {
                                         viewModel: $initialMatchingViewModel
                                     )
                                     
-                                case .oneThing(.main):
+                                case .onething(.main):
                                     OneThingMatchingMainView(appPathManager: $pathManager)
-                                case .oneThing(.category):
+                                case .onething(.category):
                                     OneThingMatchingCategoryView(
                                         appPathManager: $pathManager,
                                         viewModel: $oneThingMatchingViewModel
                                     )
-                                case .oneThing(.topic):
+                                case .onething(.topic):
                                     OneThingMatchingTopicView(
                                         appPathManager: $pathManager,
                                         viewModel: $oneThingMatchingViewModel
                                     )
-                                case .oneThing(.location):
+                                case .onething(.location):
                                     OneThingMatchingLocationView(
                                         appPathManager: $pathManager,
                                         viewModel: $oneThingMatchingViewModel
                                     )
-                                case .oneThing(.price):
+                                case .onething(.price):
                                     OneThingMatchingPriceView(
                                         appPathManager: $pathManager,
                                         viewModel: $oneThingMatchingViewModel
                                     )
-                                case .oneThing(.tmi):
+                                case .onething(.tmi):
                                     OneThingMatchingTMIView(
                                         appPathManager: $pathManager,
                                         viewModel: $oneThingMatchingViewModel
                                     )
-                                case .oneThing(.date):
+                                case .onething(.date):
                                     OneThingMatchingDateView(
                                         appPathManager: $pathManager,
                                         viewModel: $oneThingMatchingViewModel
                                     )
-                                case .oneThing(.payment):
+                                case .onething(.payment):
                                     OneThingMatchingPaymentView(
                                         appPathManager: $pathManager,
                                         viewModel: $oneThingMatchingViewModel
                                     )
-                                case .oneThing(.complete):
+                                case .onething(.complete):
                                     OneThingMatchingCompleteView(
                                         appPathManager: $pathManager,
                                         viewModel: $oneThingMatchingViewModel
