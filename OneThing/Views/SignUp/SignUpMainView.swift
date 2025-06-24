@@ -32,7 +32,7 @@ struct SignUpMainView: View {
                 
                 // Carousel
                 TabView(selection: $currentPage) {
-                    ForEach(0..<3, id: \.self) { index in
+                    ForEach(0..<viewModel.banners.count, id: \.self) { index in
                         BannerView(banner: viewModel.banners[index])
                             .tag(index)
                     }
@@ -42,7 +42,7 @@ struct SignUpMainView: View {
                 .padding(.top, 16)
                 
                 HStack(spacing: 8) {
-                    ForEach(0..<3, id: \.self) { index in
+                    ForEach(0..<viewModel.banners.count, id: \.self) { index in
                         Capsule()
                             .fill(index == currentPage ? Color.purple300 : Color.gray300)
                             .frame(width: index == currentPage ? 16 : 10, height: 10)
@@ -102,7 +102,7 @@ struct SignUpMainView: View {
         }
         .onAppear {
             Task {
-//                try await self.viewModel.fetchBanner()
+                try await self.viewModel.fetchBanner()
             }
         }
     }
@@ -110,28 +110,35 @@ struct SignUpMainView: View {
 
 extension SignUpMainView {
     struct BannerView: View {
-        var banner: Banner
+        var banner: LoginBannerInfo
         
         var body: some View {
             ZStack {
                 RoundedRectangle(cornerRadius: 24)
-                    .fill(Color.gray100)
+                    .fill(Color.purple100)
                     .frame(width: 360, height: 400)
                 
-                VStack(spacing: 12) {
-                    AsyncImage(url: URL(string: banner.imagePresignedUrl)!)
-                        .background(.gray600)
-                        .aspectRatio(contentMode: .fill)
-                        .frame(width: 250, height: 250)
-                        .clipShape(RoundedRectangle(cornerRadius: 24))
+                VStack(spacing: 32) {
+                    AsyncImage(url: URL(string: banner.imagePresignedUrl)!) { phase in
+                        
+                        switch phase {
+                        case .success(let image):
+                            image
+                                .resizable()
+                                .scaledToFit()
+                                .frame(height: 210)
+                                .clipped()
+                        default:
+                            Color.gray600
+                                .frame(width: 210, height: 210)
+                        }
+                    }
+                    .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
                     
-                    // Text(banner.headText)
-                    //     .otFont(.heading3)
-                    //     .foregroundStyle(.gray800)
-                    //
-                    // Text(banner.subText)
-                    //     .otFont(.subtitle2)
-                    //     .foregroundStyle(.gray700)
+                    Text(banner.text)
+                        .otFont(.title1)
+                        .foregroundStyle(.gray800)
+                        .multilineTextAlignment(.center)
                 }
             }
         }

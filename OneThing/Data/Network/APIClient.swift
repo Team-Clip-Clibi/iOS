@@ -48,8 +48,16 @@ class APIClient {
             }
             do {
                 let decodedData = try JSONDecoder().decode(T.self, from: data)
+                
+                if let jsonString = String(data: data, encoding: .utf8) {
+                    print("서버에서 받은 raw data: \(jsonString)")
+                } else {
+                    print("문자열 Decoding 실패")
+                }
+                
                 return decodedData
-            } catch {
+            } catch let decodingError{
+                print("Decoding 오류 발생: \(decodingError.localizedDescription)")
                 throw NetworkError.decodeError
             }
         } catch {
@@ -89,13 +97,22 @@ class APIClient {
         }
         
         guard let httpResponse = response as? HTTPURLResponse, (200...299).contains(httpResponse.statusCode) else {
+            dump((response as? HTTPURLResponse)?.statusCode)
             throw NetworkError.invalidHttpStatusCode(code: (response as? HTTPURLResponse)?.statusCode ?? 0)
         }
         
         do {
             let decodedData = try JSONDecoder().decode(T.self, from: data)
+            
+            if let jsonString = String(data: data, encoding: .utf8) {
+                print("서버에서 받은 raw data: \(jsonString)")
+            } else {
+                print("문자열 Decoding 실패")
+            }
+            
             return (decodedData, httpResponse)
-        } catch {
+        } catch let decodingError{
+            print("Decoding 오류 발생: \(decodingError.localizedDescription)")
             throw NetworkError.decodeError
         }
     }

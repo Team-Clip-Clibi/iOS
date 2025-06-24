@@ -17,7 +17,7 @@ class HomeViewModel {
         fileprivate(set) var isChangeSuccessForTopBannerStatus: Bool
         fileprivate(set) var noticeInfos: [NoticeInfo]
         fileprivate(set) var matchingSummaryInfos: [MatchingSummaryInfo]
-        fileprivate(set) var bannerInfos: [BannerInfo]
+        fileprivate(set) var bannerInfos: [HomeBannerInfo]
         fileprivate(set) var meetingDate: Date?
         fileprivate(set) var isInMeeting: Bool
     }

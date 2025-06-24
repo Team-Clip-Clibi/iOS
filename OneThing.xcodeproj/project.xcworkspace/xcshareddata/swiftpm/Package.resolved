@@ -1,5 +1,5 @@
 {
-  "originHash" : "ea0a2f095078b6ef9898a1708fbd211307c182bf941900306878350ba29df186",
+  "originHash" : "68e5cb42d26d3a9c98775d66617822265b06dd03fcec2c7d8bc2a4d58ceb70d0",
   "pins" : [
     {
       "identity" : "abseil-cpp-binary",
@@ -116,6 +116,15 @@
       "state" : {
         "revision" : "b7e1104502eca3a213b46303391ca4d3bc8ddec1",
         "version" : "2.30910.0"
+      }
+    },
+    {
+      "identity" : "payment-sdk-ios",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/tosspayments/payment-sdk-ios.git",
+      "state" : {
+        "revision" : "6675653c776b352ae8bf47ab13fe8e326d47b27c",
+        "version" : "0.1.34"
       }
     },
     {

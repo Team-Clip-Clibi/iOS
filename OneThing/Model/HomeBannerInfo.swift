@@ -7,7 +7,12 @@
 
 import Foundation
 
-struct BannerInfo: Equatable, Identifiable {
+struct HomeBannerInfo: Equatable, Identifiable {
     var id: String = UUID().uuidString
     let urlString: String
+}
+
+struct LoginBannerInfo: Equatable {
+    let imagePresignedUrl: String
+    let text: String
 }

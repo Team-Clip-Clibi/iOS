@@ -13,26 +13,7 @@ class SignUpViewModel {
     // MARK: - Properties
     
     // TODO: - 추후 Mock Repository 분리 필요
-    var banners: [Banner] = [
-        Banner(
-            imagePresignedUrl: "https://ifh.cc/g/KWjrDf.jpg",
-            // headText: "첫번째 HeadText입니다.",
-            // subText: "첫번째 SubText입니다."
-            text: "text입니다."
-        ),
-        Banner(
-            imagePresignedUrl: "https://ifh.cc/g/KWjrDf.jpg",
-            // headText: "두번째 HeadText입니다.",
-            // subText: "두번째 SubText입니다."
-            text: "text입니다."
-        ),
-        Banner(
-            imagePresignedUrl: "https://ifh.cc/g/KWjrDf.jpg",
-            // headText: "세번째 HeadText입니다.",
-            // subText: "세번째 SubText입니다."
-            text: "text입니다."
-        )
-    ]
+    var banners: [LoginBannerInfo] = []
     
     var terms: [Term] = [
         Term(
@@ -106,7 +87,7 @@ class SignUpViewModel {
     
     @MainActor
     func fetchBanner() async throws {
-        let result: [Banner] = try await getBannerUseCase.execute(with: BannerInfoType.login)
+        let result: [LoginBannerInfo] = try await getBannerUseCase.execute(with: BannerInfoType.login)
         if !result.isEmpty {
             self.banners = try await getBannerUseCase.execute(with: BannerInfoType.login)
         }

@@ -15,7 +15,6 @@ class OTAuthPathManager {
     
     func push(path: OTAuthPath) {
         self.paths.append(path)
-        print(paths)
     }
     
     func pop() {
