@@ -107,34 +107,8 @@ struct OneThingMatchingPaymentView: View {
                     )
                 }
             }
-            
-            if self.isRequestPaymentAlert {
-                let action = AlertAction(
-                        title: Constants.Text.alertConfirmButtonTitle,
-                        style: .confirm,
-                        action: {
-                            self.isRequestPaymentAlert.toggle()
-                            self.isTossPaymentSheetShown.toggle()
-                        }
-                    )
-                AlertView(
-                    title: Constants.Text.alertTitle,
-                    message: Constants.Text.alertMessage,
-                    actions: [action],
-                    dismissWhenBackgroundTapped: { self.isRequestPaymentAlert = false }
-                )
-            }
         }
         .navigationBarBackButtonHidden()
-        .fullScreenCover(isPresented: $isTossPaymentSheetShown) {
-            TossPaymentsView(isShowingFullScreen: $isTossPaymentSheetShown,
-                             paymentResult: $paymentResult)
-        }
-        .onChange(of: paymentResult) { _, newValue in
-            // TODO: - 토스 결제 결과에 따른 화면 핸들링 추가 필요
-            self.isTossPaymentSheetShown.toggle()
-            self.appPathManager.homePaths.removeAll()
-        }
         .showAlert(
             isPresented: $isRequestPaymentAlert,
             title: Constants.Text.alertTitle,
@@ -143,11 +117,25 @@ struct OneThingMatchingPaymentView: View {
                 AlertAction(
                     title: Constants.Text.alertConfirmButtonTitle,
                     style: .confirm,
-                    action: { }
+                    action: {
+                        self.isRequestPaymentAlert = false
+                        self.isTossPaymentSheetShown.toggle()
+                    }
                 )
             ],
             dismissWhenBackgroundTapped: true
         )
+        .fullScreenCover(isPresented: $isTossPaymentSheetShown) {
+            TossPaymentsView(isShowingFullScreen: $isTossPaymentSheetShown,
+                             paymentResult: $paymentResult)
+        }
+        .onChange(of: paymentResult) { _, newValue in
+            // TODO: - 토스 결제 결과에 따른 화면 핸들링 추가 필요
+            self.isTossPaymentSheetShown.toggle()
+            if let result = newValue, case .success = result {
+                self.appPathManager.homePaths.removeAll()
+            }
+        }
     }
 }
 
