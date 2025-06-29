@@ -26,7 +26,15 @@ struct TossPaymentsView: View {
         .toolbar { closeToolbar }
         .onChange(of: viewModel.processSuccess) { _, newValue in
             if let success = newValue {
-                paymentResult = .success(success)
+                Task {
+                    let isPaymentAPISuccess =  try await viewModel.confirmPayments()
+                    if isPaymentAPISuccess {
+                        paymentResult = .success(success)
+                    } else {
+                        // Toss 결제는 성공했으나 API 호출 시 에러 발생한 경우
+                        paymentResult = .apiFailure
+                    }
+                }
             }
         }
         .onChange(of: viewModel.processFail) { _, newValue in
@@ -116,17 +124,20 @@ final class TossPaymentsViewModel: TossPaymentsDelegate {
                                                                                   oneThingCategory: .health)
     }
     
-    func confirmPayments() async throws {
+    func confirmPayments() async throws -> Bool {
         guard let result = processSuccess,
               let _ = oneThingResponse else {
-            return
+            return false
         }
         
-        try await confirmPaymentUseCase.execute(
+        let isPaymentCompleted = try await confirmPaymentUseCase.execute(
             paymentKey: result.paymentKey,
             orderId: result.orderId,
             orderType: .oneThing
         )
+        
+        return isPaymentCompleted
+        
     }
     
     func requestPayment(info: WidgetPaymentInfo) {
@@ -136,10 +147,6 @@ final class TossPaymentsViewModel: TossPaymentsDelegate {
     /// 결제 성공 시
     func handleSuccessResult(_ success: TossPaymentsResult.Success) {
         processSuccess = success
-        Task {
-            try await confirmPayments()
-        }
-        dump(success)
     }
     
     /// 결제 실패 시

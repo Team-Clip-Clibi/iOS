@@ -79,7 +79,6 @@ class MyPageEditViewModel {
     @MainActor
     func fetchJob() async throws {
         self.job = try await getJobUseCase.execute()
-        print(self.job)
     }
     
     @MainActor

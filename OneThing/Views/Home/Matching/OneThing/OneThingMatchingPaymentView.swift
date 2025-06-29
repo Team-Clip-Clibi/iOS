@@ -9,15 +9,17 @@ import SwiftUI
 import TossPayments
 
 enum PaymentResult: Identifiable, Equatable {
-  case success(TossPaymentsResult.Success)
-  case failure(TossPaymentsResult.Fail)
-
-  var id: String {
-    switch self {
-    case .success(let s): return "success_\(s.paymentKey)"
-    case .failure(let f): return "fail_\(f.errorCode)"
+    case success(TossPaymentsResult.Success)
+    case failure(TossPaymentsResult.Fail)
+    case apiFailure
+    
+    var id: String {
+        switch self {
+        case .success(let s): return "success_\(s.paymentKey)"
+        case .failure(let f): return "fail_\(f.errorCode)"
+        case .apiFailure: return "Payment API failure"
+        }
     }
-  }
 }
 
 struct OneThingMatchingPaymentView: View {
@@ -131,10 +133,11 @@ struct OneThingMatchingPaymentView: View {
                              oneThingMatchingViewModel: $viewModel)
         }
         .onChange(of: paymentResult) { _, newValue in
-            // TODO: - 토스 결제 결과에 따른 화면 핸들링 추가 필요
             self.isTossPaymentSheetShown.toggle()
             if let result = newValue, case .success = result {
-                self.appPathManager.homePaths.removeAll()
+                self.appPathManager.homePaths.append(.onething(.paySuccess))
+            } else {
+                self.appPathManager.homePaths.append(.onething(.payFail))
             }
         }
     }
