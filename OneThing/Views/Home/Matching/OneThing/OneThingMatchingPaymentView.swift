@@ -117,19 +117,25 @@ struct OneThingMatchingPaymentView: View {
                 AlertAction(
                     title: Constants.Text.alertConfirmButtonTitle,
                     style: .confirm,
-                    action: { }
+                    action: {
+                        self.isRequestPaymentAlert = false
+                        self.isTossPaymentSheetShown.toggle()
+                    }
                 )
             ],
             dismissWhenBackgroundTapped: true
         )
         .fullScreenCover(isPresented: $isTossPaymentSheetShown) {
             TossPaymentsView(isShowingFullScreen: $isTossPaymentSheetShown,
-                             paymentResult: $paymentResult)
+                             paymentResult: $paymentResult,
+                             oneThingMatchingViewModel: $viewModel)
         }
         .onChange(of: paymentResult) { _, newValue in
             // TODO: - 토스 결제 결과에 따른 화면 핸들링 추가 필요
             self.isTossPaymentSheetShown.toggle()
-            self.appPathManager.homePaths.removeAll()
+            if let result = newValue, case .success = result {
+                self.appPathManager.homePaths.removeAll()
+            }
         }
     }
 }

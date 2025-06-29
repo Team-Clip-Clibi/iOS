@@ -97,7 +97,6 @@ class APIClient {
         }
         
         guard let httpResponse = response as? HTTPURLResponse, (200...299).contains(httpResponse.statusCode) else {
-            dump((response as? HTTPURLResponse)?.statusCode)
             throw NetworkError.invalidHttpStatusCode(code: (response as? HTTPURLResponse)?.statusCode ?? 0)
         }
         
