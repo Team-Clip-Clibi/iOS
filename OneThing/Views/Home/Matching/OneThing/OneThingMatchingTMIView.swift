@@ -67,7 +67,7 @@ struct OneThingMatchingTMIView: View {
             BottomButton(
                 isClickable: $isNextButtonEnabled,
                 title: Constants.Text.nextButtonTitle,
-                buttonTapAction: { self.appPathManager.push(path: .oneThing(.date)) }
+                buttonTapAction: { self.appPathManager.push(path: .onething(.date)) }
             )
         }
         .navigationBarBackButtonHidden()

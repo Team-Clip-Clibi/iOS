@@ -6,6 +6,19 @@
 //
 
 import SwiftUI
+import TossPayments
+
+enum PaymentResult: Identifiable, Equatable {
+  case success(TossPaymentsResult.Success)
+  case failure(TossPaymentsResult.Fail)
+
+  var id: String {
+    switch self {
+    case .success(let s): return "success_\(s.paymentKey)"
+    case .failure(let f): return "fail_\(f.errorCode)"
+    }
+  }
+}
 
 struct OneThingMatchingPaymentView: View {
     
@@ -31,86 +44,98 @@ struct OneThingMatchingPaymentView: View {
     @Binding var viewModel: OneThingMatchingViewModel
     
     @State var isRequestPaymentAlert: Bool = false
+    @State private var isTossPaymentSheetShown: Bool = false
+    @State private var paymentResult: PaymentResult?
     
     var body: some View {
         
-        ZStack {
+        VStack {
             
-            VStack {
+            NavigationBar()
+                .title(Constants.Text.naviTitle)
+                .hidesBottomSeparator(true)
+                .onBackButtonTap { self.appPathManager.pop() }
+            
+            ZStack {
+                Color.gray100.ignoresSafeArea()
                 
-                NavigationBar()
-                    .title(Constants.Text.naviTitle)
-                    .hidesBottomSeparator(true)
-                    .onBackButtonTap { self.appPathManager.pop() }
-                
-                ZStack {
-                    Color.gray100.ignoresSafeArea()
+                VStack {
+                    Spacer().frame(height: 32)
                     
-                    VStack {
-                        Spacer().frame(height: 32)
+                    GuideMessageView(
+                        isChangeSubTitleColor: .constant(false),
+                        title: Constants.Text.title,
+                        subTitle: Constants.Text.subTitle
+                    )
+                    
+                    Spacer().frame(height: 32)
+                    
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 12)
+                            .fill(.white100)
                         
-                        GuideMessageView(
-                            isChangeSubTitleColor: .constant(false),
-                            title: Constants.Text.title,
-                            subTitle: Constants.Text.subTitle
-                        )
-                        
-                        Spacer().frame(height: 32)
-                        
-                        ZStack {
-                            RoundedRectangle(cornerRadius: 12)
-                                .fill(.white100)
-                            
-                            HStack(spacing: 12) {
-                                Image(.discount)
-                                    .resizable()
-                                    .frame(width: 36, height: 36)
-                                    .padding(.leading, 16)
-                                    
+                        HStack(spacing: 12) {
+                            Image(.discount)
+                                .resizable()
+                                .frame(width: 36, height: 36)
+                                .padding(.leading, 16)
                                 
-                                VStack(spacing: 2) {
-                                    Text(Constants.Text.eventTitle)
-                                        .otFont(.caption1)
-                                        .foregroundStyle(.purple400)
-                                        .frame(maxWidth: .infinity, alignment: .leading)
-                                    
-                                    Text(Constants.Text.eventSubTitle)
-                                        .otFont(.subtitle2)
-                                        .foregroundStyle(.gray800)
-                                        .frame(maxWidth: .infinity, alignment: .leading)
-                                }
+                            
+                            VStack(spacing: 2) {
+                                Text(Constants.Text.eventTitle)
+                                    .otFont(.caption1)
+                                    .foregroundStyle(.purple400)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                
+                                Text(Constants.Text.eventSubTitle)
+                                    .otFont(.subtitle2)
+                                    .foregroundStyle(.gray800)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
                             }
                         }
-                        .padding(.horizontal, 16)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 68)
-                    
-                        Spacer()
-                        
-                        BottomButton(
-                            isClickable: .constant(true),
-                            title: Constants.Text.paymentButtonTitle,
-                            buttonTapAction: { self.isRequestPaymentAlert = true }
-                        )
                     }
-                }
-            }
-            
-            if self.isRequestPaymentAlert {
-                let action = AlertAction(
-                        title: Constants.Text.alertConfirmButtonTitle,
-                        style: .confirm,
-                        action: { }
+                    .padding(.horizontal, 16)
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 68)
+                
+                    Spacer()
+                    
+                    BottomButton(
+                        isClickable: .constant(true),
+                        title: Constants.Text.paymentButtonTitle,
+                        buttonTapAction: { self.isRequestPaymentAlert = true }
                     )
-                AlertView(
-                    title: Constants.Text.alertTitle,
-                    message: Constants.Text.alertMessage,
-                    actions: [action],
-                    dismissWhenBackgroundTapped: { self.isRequestPaymentAlert = false }
-                )
+                }
             }
         }
         .navigationBarBackButtonHidden()
+        .showAlert(
+            isPresented: $isRequestPaymentAlert,
+            title: Constants.Text.alertTitle,
+            message: Constants.Text.alertMessage,
+            actions: [
+                AlertAction(
+                    title: Constants.Text.alertConfirmButtonTitle,
+                    style: .confirm,
+                    action: {
+                        self.isRequestPaymentAlert = false
+                        self.isTossPaymentSheetShown.toggle()
+                    }
+                )
+            ],
+            dismissWhenBackgroundTapped: true
+        )
+        .fullScreenCover(isPresented: $isTossPaymentSheetShown) {
+            TossPaymentsView(isShowingFullScreen: $isTossPaymentSheetShown,
+                             paymentResult: $paymentResult)
+        }
+        .onChange(of: paymentResult) { _, newValue in
+            // TODO: - 토스 결제 결과에 따른 화면 핸들링 추가 필요
+            self.isTossPaymentSheetShown.toggle()
+            if let result = newValue, case .success = result {
+                self.appPathManager.homePaths.removeAll()
+            }
+        }
     }
 }
 

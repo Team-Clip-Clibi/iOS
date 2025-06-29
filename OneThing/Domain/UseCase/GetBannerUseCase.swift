@@ -14,7 +14,11 @@ struct GetBannerUseCase {
         self.repository = repository
     }
     
-    func execute(with bannerInfoType: BannerInfoType) async throws -> [BannerInfo] {
+    func execute(with bannerInfoType: BannerInfoType) async throws -> [HomeBannerInfo] {
+        return try await self.repository.banners(with: bannerInfoType).toDomain()
+    }
+    
+    func execute(with bannerInfoType: BannerInfoType) async throws -> [LoginBannerInfo] {
         return try await self.repository.banners(with: bannerInfoType).toDomain()
     }
 }

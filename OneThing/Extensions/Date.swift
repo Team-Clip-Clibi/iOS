@@ -18,7 +18,7 @@ extension Date {
     }
     
     // 원띵 매칭 화면 날짜 선택
-    func findWeekendDates(affter days: Int = 21) -> [(String, String)] {
+    func findWeekendDates(after days: Int = 21) -> [(String, String)] {
         
         var result = [(String, String)]()
         
@@ -71,6 +71,11 @@ extension Date {
     // 알림 화면 알림 생성된 날짜
     var readNotiFormatted: String {
         return self.toString("M월 dd일")
+    }
+    
+    // 모임 시간이 오늘인지 여부
+    var isToday: Bool {
+        return Calendar.current.isDateInToday(self)
     }
 }
 

@@ -54,6 +54,7 @@ struct OneThingMatchingLocationView: View {
             Spacer().frame(height: 24)
             
             MultipleCheckBoxView(
+                viewType: .matching,
                 state: .init(
                     items: self.viewModel.locations.map { .init(title: $0) },
                     selectLimit: 2
@@ -68,7 +69,7 @@ struct OneThingMatchingLocationView: View {
             BottomButton(
                 isClickable: $isNextButtonEnabled,
                 title: Constants.Text.nextButtonTitle,
-                buttonTapAction: { self.appPathManager.push(path: .oneThing(.price)) }
+                buttonTapAction: { self.appPathManager.push(path: .onething(.price)) }
             )
         }
         .navigationBarBackButtonHidden()

@@ -93,9 +93,14 @@ struct OTTabBarContainer: View {
     @State private var myPageReportViewModel = MyPageReportViewModel()
     
     @Binding var pathManager: OTAppPathManager
+    @Binding var inMeetingPathManager: OTInMeetingPathManager
     
-    init(pathManager: Binding<OTAppPathManager>) {
+    init(
+        pathManager: Binding<OTAppPathManager>,
+        inMeetingPathManager: Binding<OTInMeetingPathManager>
+    ) {
         self._pathManager = pathManager
+        self._inMeetingPathManager = inMeetingPathManager
     }
     
     var body: some View {
@@ -105,7 +110,11 @@ struct OTTabBarContainer: View {
                 switch pathManager.currentTab {
                 case .home:
                     NavigationStack(path: $pathManager.homePaths) {
-                        HomeView(appPathManager: $pathManager, viewModel: $homeViewModel)
+                        HomeView(
+                            appPathManager: $pathManager,
+                            viewModel: $homeViewModel,
+                            inMeetingPathManager: $inMeetingPathManager
+                        )
                             .navigationDestination(for: OTHomePath.self) { homePath in
                                 switch homePath {
                                 case .notification:
@@ -135,44 +144,44 @@ struct OTTabBarContainer: View {
                                         viewModel: $initialMatchingViewModel
                                     )
                                     
-                                case .oneThing(.main):
+                                case .onething(.main):
                                     OneThingMatchingMainView(appPathManager: $pathManager)
-                                case .oneThing(.category):
+                                case .onething(.category):
                                     OneThingMatchingCategoryView(
                                         appPathManager: $pathManager,
                                         viewModel: $oneThingMatchingViewModel
                                     )
-                                case .oneThing(.topic):
+                                case .onething(.topic):
                                     OneThingMatchingTopicView(
                                         appPathManager: $pathManager,
                                         viewModel: $oneThingMatchingViewModel
                                     )
-                                case .oneThing(.location):
+                                case .onething(.location):
                                     OneThingMatchingLocationView(
                                         appPathManager: $pathManager,
                                         viewModel: $oneThingMatchingViewModel
                                     )
-                                case .oneThing(.price):
+                                case .onething(.price):
                                     OneThingMatchingPriceView(
                                         appPathManager: $pathManager,
                                         viewModel: $oneThingMatchingViewModel
                                     )
-                                case .oneThing(.tmi):
+                                case .onething(.tmi):
                                     OneThingMatchingTMIView(
                                         appPathManager: $pathManager,
                                         viewModel: $oneThingMatchingViewModel
                                     )
-                                case .oneThing(.date):
+                                case .onething(.date):
                                     OneThingMatchingDateView(
                                         appPathManager: $pathManager,
                                         viewModel: $oneThingMatchingViewModel
                                     )
-                                case .oneThing(.payment):
+                                case .onething(.payment):
                                     OneThingMatchingPaymentView(
                                         appPathManager: $pathManager,
                                         viewModel: $oneThingMatchingViewModel
                                     )
-                                case .oneThing(.complete):
+                                case .onething(.complete):
                                     OneThingMatchingCompleteView(
                                         appPathManager: $pathManager,
                                         viewModel: $oneThingMatchingViewModel

@@ -81,7 +81,9 @@ extension InitialMatchingViewModel {
     
     private func updateJob() async throws -> Bool {
         do {
-            return try await self.updateJobUseCase.execute(jobs: self.currentState.selectedJobs)
+            guard let selectedJob = self.currentState.selectedJobs.last else { return false }
+            
+            return try await self.updateJobUseCase.execute(job: selectedJob)
         } catch {
             return false
         }

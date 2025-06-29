@@ -54,6 +54,8 @@ struct OneThingMatchingCategoryView: View {
             Spacer().frame(height: 24)
             
             MultipleTextWithImageBoxView<OneThingCategory>(
+                viewType: .matching,
+                matrixs: [GridItem(), GridItem(), GridItem()],
                 state: .init(
                     items: OneThingCategory.allCases.map { .init(item: $0) },
                     selectLimit: 1
@@ -68,7 +70,7 @@ struct OneThingMatchingCategoryView: View {
             BottomButton(
                 isClickable: $isNextButtonEnabled,
                 title: Constants.Text.nextButtonTitle,
-                buttonTapAction: { self.appPathManager.push(path: .oneThing(.topic)) }
+                buttonTapAction: { self.appPathManager.push(path: .onething(.topic)) }
             )
         }
         .navigationBarBackButtonHidden()
