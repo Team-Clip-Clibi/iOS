@@ -33,7 +33,7 @@ struct OneThingMatchingFailView: View {
                 .hidesBottomSeparator(false)
                 .rightButtons([
                     Button {
-                        self.appPathManager.pop(count: 2)
+                        self.appPathManager.popToRoot()
                     } label: {
                         Image(.closeOutlined)
                             .resizable()
