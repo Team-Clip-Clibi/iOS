@@ -16,9 +16,11 @@ struct OneThingOrderRequest: Codable {
     let oneThingCategory: OneThingCategory
 }
 
-enum District: String, Codable, CaseIterable {
+enum District: String, Codable, CaseIterable, Identifiable {
     case hongdaeHapjeong = "HONGDAE_HAPJEONG"
     case gangnam         = "GANGNAM"
+    
+    var id: String { self.rawValue }
     
     var toKorean: String {
         switch self {
@@ -58,10 +60,12 @@ enum TimeSlot: String, Codable, CaseIterable {
     }
 }
 
-enum BudgetRange: String, Codable, CaseIterable {
+enum BudgetRange: String, Codable, CaseIterable, Identifiable {
     case low    = "LOW"
     case medium = "MEDIUM"
     case high   = "HIGH"
+    
+    var id: String { self.rawValue }
     
     var toKorean: String {
         switch self {
