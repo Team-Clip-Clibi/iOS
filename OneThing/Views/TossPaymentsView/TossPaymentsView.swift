@@ -44,7 +44,7 @@ struct TossPaymentsView: View {
         }
         .onAppear {
             Task {
-                try await self.viewModel.getOneThingOrder()
+                try await self.viewModel.getOneThingOrder(self.oneThingMatchingViewModel.currentState)
             }
         }
     }
@@ -115,13 +115,35 @@ final class TossPaymentsViewModel: TossPaymentsDelegate {
         widget.delegate = self
     }
     
-    func getOneThingOrder() async throws {
-        self.oneThingResponse = try await self.createOneThingOrderUseCase.execute(topic: "ㅂㅂㅂㅂㅂㅂㅂㅂ",
-                                                                                  district: .gangnam,
-                                                                                  preferredDates: [.init(date: "2025-07-06", timeSlot: .dinner)],
-                                                                                  tmiContent: "ㅂㅂㅂㅂㅂㅂㅂㅂ",
-                                                                                  oneThingBudgetRange: .high,
-                                                                                  oneThingCategory: .health)
+    func getOneThingOrder(_ state: OneThingMatchingViewModel.State) async throws {
+        // self.oneThingResponse = try await self.createOneThingOrderUseCase.execute(
+        //     topic: "ㅂㅂㅂㅂㅂㅂㅂㅂ",
+        //     district: .gangnam,
+        //     preferredDates: [.init(date: "2025-07-06", timeSlot: .dinner)],
+        //     tmiContent: "ㅂㅂㅂㅂㅂㅂㅂㅂ",
+        //     oneThingBudgetRange: .high,
+        //     oneThingCategory: .health
+        // )
+        do {
+            let district: District = state.selectedDistrict.last!
+            let preferredDates: [PreferredDate] = state.selectedDates.map {
+                .init(date: $0.changeDateSeparator(from: ".", to: "-"), timeSlot: .dinner)
+            }
+            let oneThingBudgetRange: BudgetRange = state.selectedBudgetRange.last!
+            let oneThingCategory: OneThingCategory = state.selectedCategory.last!
+            
+            self.oneThingResponse = try await self.createOneThingOrderUseCase.execute(
+                topic: state.topicContent,
+                district: district,
+                preferredDates: preferredDates,
+                tmiContent: state.tmiContent,
+                oneThingBudgetRange: oneThingBudgetRange,
+                oneThingCategory: oneThingCategory
+            )
+        } catch {
+            LoggingManager.error("OneThingOrderViewModel: getOneThingOrder Error: \(error)")
+        }
+        
     }
     
     func confirmPayments() async throws -> Bool {
