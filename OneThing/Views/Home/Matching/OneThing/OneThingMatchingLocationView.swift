@@ -53,15 +53,16 @@ struct OneThingMatchingLocationView: View {
             
             Spacer().frame(height: 24)
             
-            MultipleCheckBoxView(
+            
+            MultipleCheckBoxView<District>(
                 viewType: .matching,
                 state: .init(
-                    items: self.viewModel.locations.map { .init(title: $0) },
-                    selectLimit: 2
+                    items: District.allCases.map { .init(item: $0) },
+                    selectionLimit: 2
                 ),
                 isReachedLimit: $isReachedLimit,
                 isSelected: $isNextButtonEnabled,
-                selectedTitles: $viewModel.currentState.selectedLocations
+                selectedItems: $viewModel.currentState.selectedDistrict
             )
             
             Spacer()

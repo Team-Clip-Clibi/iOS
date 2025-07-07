@@ -27,7 +27,6 @@ struct InitialMatchingSelectDietaryView: View {
     @Binding var appPathManager: OTAppPathManager
     @Binding var viewModel: InitialMatchingViewModel
     
-    @State private var isReachedLimit: Bool = false
     @State private var isNextButtonEnabled: Bool = false
     
     var body: some View {
@@ -48,7 +47,7 @@ struct InitialMatchingSelectDietaryView: View {
             Spacer().frame(height: 32)
             
             GuideMessageView(
-                isChangeSubTitleColor: $isReachedLimit,
+                isChangeSubTitleColor: .constant(false),
                 title: Constants.Text.title,
                 subTitle: Constants.Text.subTitle
             )
@@ -60,9 +59,10 @@ struct InitialMatchingSelectDietaryView: View {
                 MultipleOnlyTextBoxView<DietaryType>(
                     state: .init(
                         items: DietaryType.allCases.map { .init(item: $0) },
-                        selectLimit: 1
+                        selectionLimit: 1,
+                        changeWhenIsReachedLimit: true
                     ),
-                    isReachedLimit: $isReachedLimit,
+                    isReachedLimit: .constant(false),
                     isSelected: $isNextButtonEnabled,
                     selectedItems: $viewModel.currentState.selectedDietaries,
                     cols: [GridItem()],

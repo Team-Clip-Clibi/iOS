@@ -16,13 +16,13 @@ struct AttendeesCheckView: View {
         }
     }
     
-    let members: [String]
+    let members: [MemberInfo]
     
     @Binding var isAttendeesSelected: Bool
     @Binding var selectedAttendees: [AttendeesInfo]
     
     @Binding var isNoShowMembersSelected: Bool
-    @Binding var selectedNoShowMembers: [String]
+    @Binding var selectedNoShowMembers: [MemberInfo]
     
     @State private var hasNoShowMembers: Bool = false
     
@@ -41,7 +41,8 @@ struct AttendeesCheckView: View {
             MultipleOnlyTextBoxView<AttendeesInfo>(
                 state: .init(
                     items: AttendeesInfo.allCases.map { .init(item: $0) },
-                    selectLimit: 1
+                    selectionLimit: 1,
+                    changeWhenIsReachedLimit: true
                 ),
                 isReachedLimit: .constant(false),
                 isSelected: $isAttendeesSelected,
@@ -75,12 +76,12 @@ struct AttendeesCheckView: View {
                 
                 Spacer().frame(height: 16)
                 
-                MultipleCheckBoxView(
+                MultipleCheckBoxView<MemberInfo>(
                     viewType: .meeting,
-                    state: .init(items: self.members.map { .init(title: $0) }),
+                    state: .init(items: self.members.map { .init(item: $0) }),
                     isReachedLimit: .constant(false),
                     isSelected: $isNoShowMembersSelected,
-                    selectedTitles: $selectedNoShowMembers
+                    selectedItems: $selectedNoShowMembers
                 )
             }
         }
