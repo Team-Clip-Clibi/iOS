@@ -321,6 +321,7 @@ struct HomeView: View {
                         style: .primary,
                         action: {
                             guard let info = self.viewModel.currentState.meetingReviewInfo else { return }
+                            self.isMeetingReviewAlertPresented = false
                             self.appPathManager.push(path: .meetingReview(info))
                         }
                     ),
