@@ -15,7 +15,7 @@ struct SubmitMeetingReviewUseCase {
     }
     
     func execute(
-        mood: MeetingReviewInfo,
+        mood: MeetingReviewMood,
         positivePoints: String,
         negativePoints: String,
         reviewContent: String,

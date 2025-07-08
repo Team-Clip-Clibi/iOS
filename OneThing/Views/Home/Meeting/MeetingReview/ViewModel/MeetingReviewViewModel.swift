@@ -11,7 +11,7 @@ import SwiftUI
 class MeetingReviewViewModel {
     
     struct State: Equatable {
-        fileprivate(set) var selectedMood: MeetingReviewInfo?
+        fileprivate(set) var selectedMood: MeetingReviewMood?
         fileprivate(set) var selectedPositivePoints: [String]
         fileprivate(set) var selectedNegativePoints: [String]
         fileprivate(set) var reviewContent: String
@@ -67,7 +67,7 @@ class MeetingReviewViewModel {
         self.type = type
     }
     
-    func selectMood(_ mood: MeetingReviewInfo) async {
+    func selectMood(_ mood: MeetingReviewMood) async {
         
         await MainActor.run {
             self.currentState.selectedMood = mood

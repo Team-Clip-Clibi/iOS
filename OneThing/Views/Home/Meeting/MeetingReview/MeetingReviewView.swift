@@ -27,7 +27,7 @@ struct MeetingReviewView: View {
     @Binding var viewModel: MeetingReviewViewModel
     
     @State private var isReviewSelected: Bool = false
-    @State private var selectedReview: [MeetingReviewInfo] = []
+    @State private var selectedReview: [MeetingReviewMood] = []
     @State private var isMeetingWasPositive: Bool = false
     
     @State private var isPositivePointsSelected: Bool = false
@@ -65,11 +65,11 @@ struct MeetingReviewView: View {
             
             Spacer().frame(height: 32)
             
-            MultipleTextWithImageBoxView<MeetingReviewInfo>(
+            MultipleTextWithImageBoxView<MeetingReviewMood>(
                 viewType: .meeting,
                 matrixs: [GridItem()],
                 state: .init(
-                    items: MeetingReviewInfo.allCases.map { .init(item: $0) },
+                    items: MeetingReviewMood.allCases.map { .init(item: $0) },
                     selectLimit: 1
                 ),
                 isReachedLimit: .constant(false),

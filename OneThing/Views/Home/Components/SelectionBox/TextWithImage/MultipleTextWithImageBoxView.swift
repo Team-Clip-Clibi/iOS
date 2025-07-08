@@ -92,9 +92,9 @@ struct MultipleTextWithImageBoxView<T: SelectableItem>: View {
             case .meeting:
                 LazyHGrid(rows: self.matrixs, spacing: 15) {
                     ForEach(self.state.items.indices, id: \.self) { index in
-                        let selected = (self.state.items[index].item as? MeetingReviewInfo)?
+                        let selected = (self.state.items[index].item as? MeetingReviewMood)?
                             .selectedImageResource ?? .apple
-                        let unSelected = (self.state.items[index].item as? MeetingReviewInfo)?
+                        let unSelected = (self.state.items[index].item as? MeetingReviewMood)?
                             .unSelectedImageResource ?? .apple
                         
                         Toggle(
@@ -143,11 +143,11 @@ struct MultipleTextWithImageBoxView<T: SelectableItem>: View {
         selectedItems: .constant([])
     )
     
-    MultipleTextWithImageBoxView<MeetingReviewInfo>(
+    MultipleTextWithImageBoxView<MeetingReviewMood>(
         viewType: .meeting,
         matrixs: [GridItem()],
         state: .init(
-            items: MeetingReviewInfo.allCases.map { .init(item: $0) },
+            items: MeetingReviewMood.allCases.map { .init(item: $0) },
             selectLimit: 1
         ),
         isReachedLimit: .constant(false),

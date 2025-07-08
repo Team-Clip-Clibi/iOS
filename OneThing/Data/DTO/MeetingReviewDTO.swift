@@ -8,7 +8,7 @@
 import Foundation
 
 struct MeetingReviewDTO {
-    let mood: MeetingReviewInfo
+    let mood: MeetingReviewMood
     let positivePoints: String
     let negativePoints: String
     let reviewContent: String
