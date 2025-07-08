@@ -176,12 +176,24 @@ extension HomeViewModel {
     
     func viewModelForInMeeting() -> Binding<InMeetingViewModel> {
         
-        return .constant(
-            InMeetingViewModel(
-                nicknames: self.currentState.inMeetingInfo?.nicknameList ?? [],
-                quizs: self.currentState.inMeetingInfo?.quizList ?? [],
-                onethings: self.currentState.inMeetingInfo?.oneThingMap
+        if let inMeetingInfo = self.currentState.inMeetingInfo {
+            
+            return .constant(
+                InMeetingViewModel(inMeetingInfo: inMeetingInfo)
             )
-        )
+        } else {
+            
+            return .constant(
+                InMeetingViewModel(
+                    inMeetingInfo: InMeetingInfo(
+                        matchingId: "",
+                        matchingType: .oneThing,
+                        nicknameList: [],
+                        quizList: [],
+                        oneThingMap: [:]
+                    )
+                )
+            )
+        }
     }
 }

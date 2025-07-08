@@ -8,6 +8,8 @@
 import Foundation
 
 struct InMeetingInfo: Equatable {
+    let matchingId: String
+    let matchingType: MatchingType
     let nicknameList: [String]
     let quizList: [String]
     let oneThingMap: [String: String]

@@ -11,31 +11,41 @@ import Foundation
 class InMeetingViewModel {
     
     struct State {
+        fileprivate(set) var matchingId: String
+        fileprivate(set) var matchingType: MatchingType
         fileprivate(set) var nicknames: [String]
         fileprivate(set) var quizs: [String]
-        fileprivate(set) var onethings: [OnethingInfo]?
+        fileprivate(set) var onethings: [OnethingInfo]
+        fileprivate(set) var isMeetingEnded: Bool
         
-        var onethingCount: Int {
-            return self.onethings?.count ?? 0
-        }
+        var onethingCount: Int { return self.onethings.count }
     }
     
+    let initalState: State
     var currentState: State
     
+    let editMeetingEndUseCase: EditMeetingEndUseCase
+    
     init(
-        nicknames: [String],
-        quizs: [String],
-        onethings: [String: String]?
+        editMeetingEndUseCase: EditMeetingEndUseCase = EditMeetingEndUseCase(),
+        inMeetingInfo: InMeetingInfo
     ) {
-        var onethingInfos: [OnethingInfo]?
-        if let onethings = onethings {
-            onethingInfos = onethings.enumerated().map { index, element in
-                OnethingInfo(number: index+1, category: element.key, message: element.value)
-            }
-        } else {
-            onethingInfos = nil
+        self.editMeetingEndUseCase = editMeetingEndUseCase
+        
+        let onethingInfos = inMeetingInfo.oneThingMap.enumerated().map { index, element in
+            OnethingInfo(number: index+1, category: element.key, message: element.value)
         }
         
-        self.currentState = State(nicknames: nicknames, quizs: quizs, onethings: onethingInfos)
+        self.initalState = State(
+            matchingId: inMeetingInfo.matchingId,
+            matchingType: inMeetingInfo.matchingType,
+            nicknames: inMeetingInfo.nicknameList,
+            quizs: inMeetingInfo.quizList,
+            onethings: onethingInfos,
+            isMeetingEnded: false
+        )
+        self.currentState = self.initalState
+    }
+    
     }
 }
