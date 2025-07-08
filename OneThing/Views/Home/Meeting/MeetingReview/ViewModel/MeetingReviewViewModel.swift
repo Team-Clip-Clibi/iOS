@@ -10,6 +10,12 @@ import SwiftUI
 @Observable
 class MeetingReviewViewModel {
     
+    struct InitialInfo: Equatable, Hashable {
+        let nicknames: [String]
+        let matchingId: String
+        let matchingtype: MatchingType
+    }
+    
     struct State: Equatable {
         fileprivate(set) var selectedMood: MeetingReviewMood?
         fileprivate(set) var selectedPositivePoints: [String]
@@ -37,17 +43,12 @@ class MeetingReviewViewModel {
         "약속 시간을 지키지 않은 멤버가 많았어요"
     ]
     
-    let nicknames: [String]
-    let id: String
-    let type: MatchingType
-    
     let submitMeetingReviewUseCase: SubmitMeetingReviewUseCase
+    let initalInfo: InitialInfo
     
     init(
         submitMeetingReviewUseCase: SubmitMeetingReviewUseCase = SubmitMeetingReviewUseCase(),
-        nicknames: [String],
-        id: String,
-        type: MatchingType
+        initalInfo: InitialInfo
     ) {
         
         self.currentState = .init(
@@ -61,10 +62,7 @@ class MeetingReviewViewModel {
         )
         
         self.submitMeetingReviewUseCase = submitMeetingReviewUseCase
-        
-        self.nicknames = nicknames
-        self.id = id
-        self.type = type
+        self.initalInfo = initalInfo
     }
     
     func selectMood(_ mood: MeetingReviewMood) async {
@@ -121,8 +119,8 @@ class MeetingReviewViewModel {
                 reviewContent: self.currentState.reviewContent,
                 noShowMembers: self.currentState.noShowMembers.joined(separator: ", "),
                 isMemberAllAttended: self.currentState.attendee == .all,
-                matchingId: self.id,
-                matchingType: self.type
+                matchingId: self.initalInfo.matchingId,
+                matchingType: self.initalInfo.matchingtype
             )
             
             await MainActor.run {

@@ -182,7 +182,7 @@ struct MeetingReviewView: View {
                     Spacer().frame(height: 32)
                     
                     AttendeesCheckView(
-                        members: self.viewModel.nicknames,
+                        members: self.viewModel.initalInfo.nicknames,
                         isAttendeesSelected: $isAttendeesSelected,
                         selectedAttendees: $selectedAttendees,
                         isNoShowMembersSelected: $isNoShowMembersSelected,
@@ -258,6 +258,10 @@ extension MeetingReviewView {
 #Preview {
     MeetingReviewView(
         appPathManager: .constant(OTAppPathManager()),
-        viewModel: .constant(MeetingReviewViewModel(nicknames: [], id: "123", type: .random))
+        viewModel: .constant(
+            MeetingReviewViewModel(
+                initalInfo: .init(nicknames: [], matchingId: "", matchingtype: .oneThing)
+            )
+        )
     )
 }
