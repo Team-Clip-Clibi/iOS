@@ -69,6 +69,19 @@ struct InMeetingCompleteView: View {
             .padding(.horizontal, 24)
         }
         .navigationBarBackButtonHidden()
+        .onChange(of: self.viewModel.currentState.isMeetingEnded) { _, new in
+            if new {
+                NotificationCenter.default.post(
+                    name: .showMeetingReviewAlert,
+                    object: [
+                        "nicknames": self.viewModel.initalState.nicknames,
+                        "matchingId": self.viewModel.initalState.matchingId,
+                        "matchingType": self.viewModel.initalState.matchingType
+                    ]
+                )
+                self.inMeetingPathManager.popToRoot()
+            }
+        }
     }
 }
 
