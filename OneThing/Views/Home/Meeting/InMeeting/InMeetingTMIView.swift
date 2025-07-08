@@ -38,8 +38,8 @@ struct InMeetingTMIView: View {
             
             ScrollView(.vertical, showsIndicators: false) {
                 LazyVGrid(columns: self.cols) {
-                    ForEach(self.viewModel.currentState.quizs.indices, id: \.self) { index in
-                        self.setupGridItem(self.viewModel.currentState.quizs[index], with: index+1)
+                    ForEach(self.viewModel.initalState.quizs.indices, id: \.self) { index in
+                        self.setupGridItem(self.viewModel.initalState.quizs[index], with: index+1)
                     }
                 }
                 .padding(.horizontal, 24)
@@ -97,6 +97,16 @@ extension InMeetingTMIView {
 #Preview {
     InMeetingTMIView(
         inMeetingPathManager: .constant(OTInMeetingPathManager()),
-        viewModel: .constant(InMeetingViewModel(nicknames: [], quizs: [], onethings: [:]))
+        viewModel: .constant(
+            InMeetingViewModel(
+                inMeetingInfo: InMeetingInfo(
+                    matchingId: "",
+                    matchingType: .oneThing,
+                    nicknameList: [],
+                    quizList: [],
+                    oneThingMap: [:]
+                )
+            )
+        )
     )
 }

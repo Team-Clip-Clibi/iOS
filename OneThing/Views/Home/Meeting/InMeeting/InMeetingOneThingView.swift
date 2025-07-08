@@ -36,7 +36,8 @@ struct InMeetingOnethingView: View {
             
             Spacer().frame(height: 32)
             
-            if let onethings = self.viewModel.currentState.onethings, onethings.isEmpty == false {
+            let onethings = self.viewModel.initalState.onethings
+            if onethings.isEmpty == false {
                 
                 VStack(spacing: 20) {
                     ScrollView(.horizontal, showsIndicators: false) {
@@ -47,7 +48,7 @@ struct InMeetingOnethingView: View {
                             ) { page in
                                 self.setupGridItem(
                                     onethings[page],
-                                    nickname: self.viewModel.currentState.nicknames[page]
+                                    nickname: self.viewModel.initalState.nicknames[page]
                                 )
                                     .tag(page)
                             }
@@ -72,7 +73,7 @@ struct InMeetingOnethingView: View {
             OTXXLButton(
                 buttonTitle: Constants.Text.nextButtonTitle,
                 action: { self.inMeetingPathManager.push(path: .content) },
-                isClickable: (self.currentPage+1) == self.viewModel.currentState.onethingCount
+                isClickable: (self.currentPage+1) == self.viewModel.initalState.onethingCount
             )
             .padding(.bottom, 12)
             .padding(.horizontal, 24)
@@ -130,6 +131,16 @@ extension InMeetingOnethingView {
 #Preview {
     InMeetingOnethingView(
         inMeetingPathManager: .constant(OTInMeetingPathManager()),
-        viewModel: .constant(InMeetingViewModel(nicknames: [], quizs: [], onethings: [:]))
+        viewModel: .constant(
+            InMeetingViewModel(
+                inMeetingInfo: InMeetingInfo(
+                    matchingId: "",
+                    matchingType: .oneThing,
+                    nicknameList: [],
+                    quizList: [],
+                    oneThingMap: [:]
+                )
+            )
+        )
     )
 }

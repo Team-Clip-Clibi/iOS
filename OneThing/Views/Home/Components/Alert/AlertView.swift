@@ -70,7 +70,12 @@ struct AlertView: View {
         .background(ClearBackgroundView())
     }
     
-    private func setupButtons(_ actions: [AlertAction]) -> some View {
+    
+}
+
+private extension AlertView {
+    
+    func setupButtons(_ actions: [AlertAction]) -> some View {
         VStack(spacing: 10) {
             ForEach(actions, id: \.tag) { action in
                 OTMButton(
@@ -81,6 +86,26 @@ struct AlertView: View {
                 .tag(action.tag)
             }
         }
+    }
+    
+    func button(_ action: AlertAction) -> some View {
+        Button(
+            action: { action.action() },
+            label: {
+                Text(action.title)
+                    .otFont(.subtitle2)
+                    .fontWeight(.semibold)
+                    .foregroundStyle(action.foregroundColor)
+            }
+        )
+        .padding(.vertical, 12)
+        .frame(maxWidth: .infinity)
+        .frame(height: 48)
+        .background(
+            RoundedRectangle(cornerRadius: 12)
+                .fill(action.backgrounColor)
+        )
+        .clipShape(.rect(cornerRadius: 12))
     }
 }
 
@@ -139,6 +164,6 @@ extension AlertView {
         isPresented: .constant(true),
         title: "원띵은 토스페이 결제만 가능해요",
         message: "토스 앱이 없다면, 설치 후 결제를 진행해주세요.",
-        actions: [.init(title: "확인", style: .confirm, action: { })]
+        actions: [.init(title: "확인", style: .primary, action: { })]
     )
 }

@@ -74,7 +74,10 @@ struct InMeetingSheetView: View {
                                 case .content:
                                     InMeetingContentView(inMeetingPathManager: $inMeetingPathManager)
                                 case .complete:
-                                    InMeetingCompleteView(inMeetingPathManager: $inMeetingPathManager)
+                                    InMeetingCompleteView(
+                                        inMeetingPathManager: $inMeetingPathManager,
+                                        viewModel: $inMeetingViewModel
+                                    )
                                 }
                             }
                         }
