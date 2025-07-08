@@ -47,5 +47,22 @@ class InMeetingViewModel {
         self.currentState = self.initalState
     }
     
+    func meetingEnded() async {
+        
+        do {
+            let isMeetingEnded = try await self.editMeetingEndUseCase.execute(
+                type: self.initalState.matchingType,
+                with: self.initalState.matchingId
+            )
+            
+            await MainActor.run {
+                self.currentState.isMeetingEnded = isMeetingEnded
+            }
+        } catch {
+            
+            await MainActor.run {
+                self.currentState.isMeetingEnded = false
+            }
+        }
     }
 }

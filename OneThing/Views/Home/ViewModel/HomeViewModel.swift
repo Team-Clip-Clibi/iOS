@@ -21,6 +21,8 @@ class HomeViewModel {
         fileprivate(set) var meetingDate: Date?
         fileprivate(set) var inMeetingInfo: InMeetingInfo?
         fileprivate(set) var isInMeeting: Bool
+        // TODO: 임시, 모임 후기 용
+        fileprivate(set) var meetingReviewInfo: MeetingReviewViewModel.InitialInfo?
     }
     
     var currentState: State
@@ -56,7 +58,8 @@ class HomeViewModel {
             bannerInfos: [],
             meetingDate: nil,
             inMeetingInfo: nil,
-            isInMeeting: false
+            isInMeeting: false,
+            meetingReviewInfo: nil
         )
         
         self.getProfileUseCase = getProfileUseCase
@@ -156,6 +159,14 @@ class HomeViewModel {
         }
     }
     
+    func banners() async {
+        do {
+            self.currentState.bannerInfos = try await self.bannerUseCase.execute(with: .home)
+        } catch {
+            self.currentState.bannerInfos = []
+        }
+    }
+    
     // TODO: 임시, 모임 중 바텀 싯 표시할 플로팅 뷰 표시 플래그
     func updateIsInMeeting(_ isInMeeting: Bool) async {
         await MainActor.run {
@@ -163,11 +174,10 @@ class HomeViewModel {
         }
     }
     
-    func banners() async {
-        do {
-            self.currentState.bannerInfos = try await self.bannerUseCase.execute(with: .home)
-        } catch {
-            self.currentState.bannerInfos = []
+    func updateMeetingReviewInfo(_ meetingReviewInfo: MeetingReviewViewModel.InitialInfo) async {
+        
+        await MainActor.run {
+            self.currentState.meetingReviewInfo = meetingReviewInfo
         }
     }
 }
