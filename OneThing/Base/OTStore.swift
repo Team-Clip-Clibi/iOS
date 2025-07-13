@@ -69,7 +69,7 @@ extension OTStore {
         // 'processStream'에서 yield된 각 프로세스가 이 루프를 통해 하나씩 전달됩니다.
         for await process in stream {
             // 3. UI 업데이트는 항상 메인 액터(MainActor)에서 이루어져야 하기 때문에,
-                // 'MainActor.run' 블록 내에서 상태를 업데이트합니다.
+            // 'MainActor.run' 블록 내에서 상태를 업데이트합니다.
             await MainActor.run {
                 self.state = self.reduce(state: self.state, process: process)
             }
