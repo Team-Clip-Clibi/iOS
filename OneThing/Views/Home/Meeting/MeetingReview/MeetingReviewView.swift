@@ -31,16 +31,16 @@ struct MeetingReviewView: View {
     @State private var isMeetingWasPositive: Bool = false
     
     @State private var isPositivePointsSelected: Bool = false
-    @State private var selectedPositivePoints: [String] = []
+    @State private var selectedPositivePoints: [PositivePoint] = []
     @State private var isNegativePointsSelected: Bool = false
-    @State private var selectedNegativePoints: [String] = []
+    @State private var selectedNegativePoints: [NegativePoint] = []
     
     @State private var reviewContent: String = ""
     
     @State private var isAttendeesSelected: Bool = false
     @State private var selectedAttendees: [AttendeesInfo] = []
     @State private var isNoShowMembersSelected: Bool = false
-    @State private var selectedNoShowMembers: [String] = []
+    @State private var selectedNoShowMembers: [MemberInfo] = []
     
     @State private var isCompleteButtonEnabled: Bool = false
     
@@ -69,8 +69,9 @@ struct MeetingReviewView: View {
                 viewType: .meeting,
                 matrixs: [GridItem()],
                 state: .init(
-                    items: MeetingReviewMood.allCases.map { .init(item: $0) },
-                    selectLimit: 1
+                    items: MeetingReviewInfo.allCases.map { .init(item: $0) },
+                    selectionLimit: 1,
+                    changeWhenIsReachedLimit: true
                 ),
                 isReachedLimit: .constant(false),
                 isSelected: $isReviewSelected,
@@ -119,7 +120,6 @@ struct MeetingReviewView: View {
                             
                             PositivePointsView(
                                 title: Constants.Text.positivePointsTopTitle,
-                                messages: self.viewModel.positivePotintsContents,
                                 isSelected: $isPositivePointsSelected,
                                 positivePoints: $selectedPositivePoints
                             )
@@ -127,7 +127,6 @@ struct MeetingReviewView: View {
                             
                             NegativePointsView(
                                 title: Constants.Text.negativePointsTopTitle,
-                                messages: self.viewModel.negativePointsContents,
                                 isSelected: $isNegativePointsSelected,
                                 nagativePoints: $selectedNegativePoints
                             )
@@ -137,7 +136,6 @@ struct MeetingReviewView: View {
                             
                             NegativePointsView(
                                 title: Constants.Text.negativePointsBottomTitle,
-                                messages: self.viewModel.negativePointsContents,
                                 isSelected: $isNegativePointsSelected,
                                 nagativePoints: $selectedNegativePoints
                             )
@@ -145,7 +143,6 @@ struct MeetingReviewView: View {
                             
                             PositivePointsView(
                                 title: Constants.Text.positivePointsBottomTitle,
-                                messages: self.viewModel.positivePotintsContents,
                                 isSelected: $isPositivePointsSelected,
                                 positivePoints: $selectedPositivePoints
                             )
@@ -182,7 +179,7 @@ struct MeetingReviewView: View {
                     Spacer().frame(height: 32)
                     
                     AttendeesCheckView(
-                        members: self.viewModel.initalInfo.nicknames,
+                        members: self.viewModel.members.map { .init(member: $0) },
                         isAttendeesSelected: $isAttendeesSelected,
                         selectedAttendees: $selectedAttendees,
                         isNoShowMembersSelected: $isNoShowMembersSelected,

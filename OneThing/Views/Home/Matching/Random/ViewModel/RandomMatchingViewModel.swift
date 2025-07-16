@@ -11,7 +11,7 @@ import Foundation
 class RandomMatchingViewModel {
     
     struct State: Equatable {
-        var selectedLocations: [String]
+        var selectedDistrict: [District]
         var topicContent: String
         var tmiContent: String
         
@@ -25,11 +25,9 @@ class RandomMatchingViewModel {
     
     var currentState: State
     
-    let locations = ["홍대/합정", "강남"]
-    
     init() {
         self.currentState = .init(
-            selectedLocations: [],
+            selectedDistrict: [],
             topicContent: "",
             tmiContent: ""
         )
@@ -38,7 +36,7 @@ class RandomMatchingViewModel {
     func initializeState(_ path: OTHomePath.RandomMatching) {
         switch path {
         case .location:
-            self.currentState.selectedLocations = []
+            self.currentState.selectedDistrict = []
         case .topic:
             self.currentState.topicContent = ""
         case .tmi:

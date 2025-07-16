@@ -10,10 +10,9 @@ import SwiftUI
 struct PositivePointsView: View {
     
     let title: String
-    let messages: [String]
     
     @Binding var isSelected: Bool
-    @Binding var positivePoints: [String]
+    @Binding var positivePoints: [PositivePoint]
     
     var body: some View {
         
@@ -25,12 +24,12 @@ struct PositivePointsView: View {
                 .padding(.horizontal, 16)
                 .frame(maxWidth: .infinity, alignment: .leading)
             
-            MultipleCheckBoxView(
+            MultipleCheckBoxView<PositivePoint>(
                 viewType: .meeting,
-                state: .init(items: self.messages.map { .init(title: $0) }),
+                state: .init(items: PositivePoint.allCases.map { .init(item: $0) }),
                 isReachedLimit: .constant(false),
                 isSelected: $isSelected,
-                selectedTitles: $positivePoints
+                selectedItems: $positivePoints
             )
         }
     }
@@ -39,13 +38,6 @@ struct PositivePointsView: View {
 #Preview {
     PositivePointsView(
         title: "title",
-        messages: [
-            "대화가 흥미로웠어요",
-            "멤버들이 적극적으로 참여했어요",
-            "진행이 매끄러웠어요",
-            "분위기가 편안하고 즐거웠어요",
-            "시간과 장소가 적절했어요"
-        ],
         isSelected: .constant(false),
         positivePoints: .constant([])
     )

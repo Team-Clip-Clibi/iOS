@@ -259,7 +259,9 @@ struct HomeView: View {
                     group.addTask { await self.viewModel.notice() }
                     group.addTask { await self.viewModel.matchingSummary() }
                     group.addTask { await self.viewModel.meetingInProgress() }
-                    group.addTask { await self.viewModel.banners() }
+                    if self.viewModel.currentState.bannerInfos.isEmpty {
+                        group.addTask { await self.viewModel.banners() }
+                    }
                 }
             }
             .task(id: self.viewModel.currentState.isChangeSuccessForTopBannerStatus) {
