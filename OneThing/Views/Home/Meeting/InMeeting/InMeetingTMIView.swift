@@ -20,9 +20,8 @@ struct InMeetingTMIView: View {
     }
     
     @Binding var inMeetingPathManager: OTInMeetingPathManager
+    @Binding var viewModel: InMeetingViewModel
     
-    // TODO: 서버 요청 필요
-    let tmis = ["데이팅앱을 운영하고 있어요", "축구를 좋아해요", "영국 어학연수 가는 것이 목표에요", "제주도 스탭을 했었어요", "어릴 때 개그 극단 들어간 적 있어요", "축구를 좋아해요", "축구를 좋아해요", "축구를 좋아해요"]
     let cols = [GridItem(), GridItem()]
     
     var body: some View {
@@ -39,8 +38,8 @@ struct InMeetingTMIView: View {
             
             ScrollView(.vertical, showsIndicators: false) {
                 LazyVGrid(columns: self.cols) {
-                    ForEach(self.tmis.indices, id: \.self) { index in
-                        self.setupGridItem(self.tmis[index], with: index+1)
+                    ForEach(self.viewModel.initalState.quizs.indices, id: \.self) { index in
+                        self.setupGridItem(self.viewModel.initalState.quizs[index], with: index+1)
                     }
                 }
                 .padding(.horizontal, 24)
@@ -50,7 +49,7 @@ struct InMeetingTMIView: View {
             
             OTXXLButton(
                 buttonTitle: Constants.Text.nextButtonTitle,
-                action: { self.inMeetingPathManager.push(path: .oneThing) },
+                action: { self.inMeetingPathManager.push(path: .onething) },
                 isClickable: true
             )
             .padding(.bottom, 12)
@@ -96,5 +95,18 @@ extension InMeetingTMIView {
 }
 
 #Preview {
-    InMeetingTMIView(inMeetingPathManager: .constant(OTInMeetingPathManager()))
+    InMeetingTMIView(
+        inMeetingPathManager: .constant(OTInMeetingPathManager()),
+        viewModel: .constant(
+            InMeetingViewModel(
+                inMeetingInfo: InMeetingInfo(
+                    matchingId: "",
+                    matchingType: .oneThing,
+                    nicknameList: [],
+                    quizList: [],
+                    oneThingMap: [:]
+                )
+            )
+        )
+    )
 }

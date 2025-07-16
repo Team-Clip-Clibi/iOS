@@ -35,7 +35,7 @@ extension OneThingCategory: SelectableItem {
     }
 }
 
-extension MeetingReviewInfo: SelectableItem {
+extension MeetingReviewMood: SelectableItem {
     var displayText: String {
         return self.toKorean
     }

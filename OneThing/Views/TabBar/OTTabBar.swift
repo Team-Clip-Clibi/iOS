@@ -123,6 +123,12 @@ struct OTTabBarContainer: View {
                                         viewModel: $notificationViewModel
                                     )
                                     
+                                case let .meetingReview(info):
+                                    MeetingReviewView(
+                                        appPathManager: $pathManager,
+                                        viewModel: .constant(MeetingReviewViewModel(initalInfo: info))
+                                    )
+                                    
                                 case .initial(.main):
                                     InitialMatchingMainView(
                                         appPathManager: $pathManager,

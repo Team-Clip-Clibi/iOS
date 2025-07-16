@@ -14,8 +14,11 @@ struct GetMeetingInProgressUseCase {
         self.repository = repository
     }
     
-    // TODO: 임시, 모임 시간만 임시로 반환
-    func execute() async throws -> Date? {
-        return try await self.repository.meetingInProgress().latestMatchingDateTime.ISO8601Date
+    func execute() async throws -> (meetingDate: Date?, inMeetingInfo: InMeetingInfo) {
+        let response = try await self.repository.meetingInProgress()
+        let meetingDate = response.latestMatchingDateTime.ISO8601Date
+        let inMeetingInfo = response.matchingProgressInfo
+        
+        return (meetingDate: meetingDate, inMeetingInfo: inMeetingInfo)
     }
 }

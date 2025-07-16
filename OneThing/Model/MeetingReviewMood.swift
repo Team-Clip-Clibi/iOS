@@ -1,5 +1,5 @@
 //
-//  MeetingReviewInfo.swift
+//  MeetingReviewMood.swift
 //  OneThing
 //
 //  Created by 오현식 on 6/10/25.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-enum MeetingReviewInfo: String, CaseIterable, Identifiable {
+enum MeetingReviewMood: String, CaseIterable, Identifiable {
     case disappointed   = "DISAPPOINTED"
     case unsatisfied    = "UNSATISFIED"
     case neutral        = "NEUTRAL"
@@ -46,3 +46,5 @@ enum MeetingReviewInfo: String, CaseIterable, Identifiable {
         }
     }
 }
+
+extension MeetingReviewMood: Codable { }

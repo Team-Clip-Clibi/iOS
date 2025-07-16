@@ -27,7 +27,7 @@ struct MeetingReviewView: View {
     @Binding var viewModel: MeetingReviewViewModel
     
     @State private var isReviewSelected: Bool = false
-    @State private var selectedReview: [MeetingReviewInfo] = []
+    @State private var selectedReview: [MeetingReviewMood] = []
     @State private var isMeetingWasPositive: Bool = false
     
     @State private var isPositivePointsSelected: Bool = false
@@ -65,7 +65,7 @@ struct MeetingReviewView: View {
             
             Spacer().frame(height: 32)
             
-            MultipleTextWithImageBoxView<MeetingReviewInfo>(
+            MultipleTextWithImageBoxView<MeetingReviewMood>(
                 viewType: .meeting,
                 matrixs: [GridItem()],
                 state: .init(
@@ -77,7 +77,7 @@ struct MeetingReviewView: View {
                 isSelected: $isReviewSelected,
                 selectedItems: $selectedReview
             )
-            .onChange(of: self.selectedReview) { _, new in
+            .onChange(of: self.selectedReview) { old, new in
                 guard let selectedReview = new.last else { return }
                 
                 switch selectedReview {
@@ -85,6 +85,12 @@ struct MeetingReviewView: View {
                     self.isMeetingWasPositive = false
                 case .neutral, .good, .excellent:
                     self.isMeetingWasPositive = true
+                }
+                
+                if old.last != selectedReview {
+                    Task {
+                        await self.viewModel.selectMood(selectedReview)
+                    }
                 }
             }
             .onChange(of: self.isReviewSelected) { old, new in
@@ -145,8 +151,22 @@ struct MeetingReviewView: View {
                     .onChange(of: self.isPositivePointsSelected) { old, new in
                         if old != new { self.updateCompleteButtonEnabled() }
                     }
+                    .onChange(of: self.selectedPositivePoints) { old, new in
+                        if old != new {
+                            Task {
+                                await self.viewModel.selectPositivePoint(new)
+                            }
+                        }
+                    }
                     .onChange(of: self.isNegativePointsSelected) { old, new in
                         if old != new { self.updateCompleteButtonEnabled() }
+                    }
+                    .onChange(of: self.selectedNegativePoints) { old, new in
+                        if old != new {
+                            Task {
+                                await self.viewModel.selectNegativePoint(new)
+                            }
+                        }
                     }
                     
                     
@@ -168,8 +188,24 @@ struct MeetingReviewView: View {
                     .onChange(of: self.isAttendeesSelected) { old, new in
                         if old != new { self.updateCompleteButtonEnabled() }
                     }
+                    .onChange(of: self.selectedAttendees) { old, new in
+                        guard let selectedAttendee = new.last else { return }
+                        
+                        if old.last != selectedAttendee {
+                            Task {
+                                await self.viewModel.selectAttendee(selectedAttendee)
+                            }
+                        }
+                    }
                     .onChange(of: self.isNoShowMembersSelected) { old, new in
                         if old != new { self.updateCompleteButtonEnabled() }
+                    }
+                    .onChange(of: self.selectedNoShowMembers) { old, new in
+                        if old != new {
+                            Task {
+                                await self.viewModel.selectNoShowMembers(new)
+                            }
+                        }
                     }
                 }
             }
@@ -179,10 +215,17 @@ struct MeetingReviewView: View {
             BottomButton(
                 isClickable: $isCompleteButtonEnabled,
                 title: Constants.Text.completeButtonTitle,
-                buttonTapAction: {  }
+                buttonTapAction: {
+                    Task {
+                        await self.viewModel.submit()
+                    }
+                }
             )
         }
         .navigationBarBackButtonHidden()
+        .onChange(of: self.viewModel.currentState.isSuccess) { _, new in
+            if new { self.appPathManager.pop() }
+        }
     }
 }
 
@@ -212,6 +255,10 @@ extension MeetingReviewView {
 #Preview {
     MeetingReviewView(
         appPathManager: .constant(OTAppPathManager()),
-        viewModel: .constant(MeetingReviewViewModel())
+        viewModel: .constant(
+            MeetingReviewViewModel(
+                initalInfo: .init(nicknames: [], matchingId: "", matchingtype: .oneThing)
+            )
+        )
     )
 }

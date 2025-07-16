@@ -118,7 +118,7 @@ struct OneThingMatchingPaymentView: View {
             actions: [
                 AlertAction(
                     title: Constants.Text.alertConfirmButtonTitle,
-                    style: .confirm,
+                    style: .primary,
                     action: {
                         self.isRequestPaymentAlert = false
                         self.isTossPaymentSheetShown.toggle()

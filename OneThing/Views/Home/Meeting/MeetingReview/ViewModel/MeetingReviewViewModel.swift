@@ -10,9 +10,20 @@ import SwiftUI
 @Observable
 class MeetingReviewViewModel {
     
+    struct InitialInfo: Equatable, Hashable {
+        let nicknames: [String]
+        let matchingId: String
+        let matchingtype: MatchingType
+    }
+    
     struct State: Equatable {
-        private(set) var selectedPositivePoints: [String]
-        private(set) var selectedNegativePoints: [String]
+        fileprivate(set) var selectedMood: MeetingReviewMood?
+        fileprivate(set) var selectedPositivePoints: [String]
+        fileprivate(set) var selectedNegativePoints: [String]
+        fileprivate(set) var reviewContent: String
+        fileprivate(set) var attendee: AttendeesInfo?
+        fileprivate(set) var noShowMembers: [String]
+        fileprivate(set) var isSuccess: Bool
     }
     var currentState: State
     
@@ -31,13 +42,95 @@ class MeetingReviewViewModel {
         "시간과 장소가 마음에 안들어요",
         "약속 시간을 지키지 않은 멤버가 많았어요"
     ]
-    // TODO: 임시, 모임 닉네임 조회 필요
-    let members = ["미도리아", "바쿠고", "우라라카", "올마이트"]
     
-    init() {
+    let submitMeetingReviewUseCase: SubmitMeetingReviewUseCase
+    let initalInfo: InitialInfo
+    
+    init(
+        submitMeetingReviewUseCase: SubmitMeetingReviewUseCase = SubmitMeetingReviewUseCase(),
+        initalInfo: InitialInfo
+    ) {
+        
         self.currentState = .init(
+            selectedMood: nil,
             selectedPositivePoints: [],
-            selectedNegativePoints: []
+            selectedNegativePoints: [],
+            reviewContent: "",
+            attendee: nil,
+            noShowMembers: [],
+            isSuccess: false
         )
+        
+        self.submitMeetingReviewUseCase = submitMeetingReviewUseCase
+        self.initalInfo = initalInfo
+    }
+    
+    func selectMood(_ mood: MeetingReviewMood) async {
+        
+        await MainActor.run {
+            self.currentState.selectedMood = mood
+        }
+    }
+    
+    func selectPositivePoint(_ content: [String]) async {
+        
+        await MainActor.run {
+            self.currentState.selectedPositivePoints = content
+        }
+    }
+    
+    func selectNegativePoint(_ content: [String]) async {
+        
+        await MainActor.run {
+            self.currentState.selectedNegativePoints = content
+        }
+    }
+    
+    func reviewContent(_ content: String) async {
+        
+        await MainActor.run {
+            self.currentState.reviewContent = content
+        }
+    }
+    
+    func selectAttendee(_ attendee: AttendeesInfo) async {
+        
+        await MainActor.run {
+            self.currentState.attendee = attendee
+        }
+    }
+    
+    func selectNoShowMembers(_ members: [String]) async {
+        
+        await MainActor.run {
+            self.currentState.noShowMembers = members
+        }
+    }
+    
+    func submit() async {
+        
+        guard let mood = self.currentState.selectedMood else { return }
+        
+        do {
+            let isSuccess = try await self.submitMeetingReviewUseCase.execute(
+                mood: mood,
+                positivePoints: self.currentState.selectedPositivePoints.joined(separator: ", "),
+                negativePoints: self.currentState.selectedNegativePoints.joined(separator: ", "),
+                reviewContent: self.currentState.reviewContent,
+                noShowMembers: self.currentState.noShowMembers.joined(separator: ", "),
+                isMemberAllAttended: self.currentState.attendee == .all,
+                matchingId: self.initalInfo.matchingId,
+                matchingType: self.initalInfo.matchingtype
+            )
+            
+            await MainActor.run {
+                self.currentState.isSuccess = isSuccess
+            }
+        } catch {
+            
+            await MainActor.run {
+                self.currentState.isSuccess = false
+            }
+        }
     }
 }

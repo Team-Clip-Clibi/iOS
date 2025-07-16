@@ -5,7 +5,7 @@
 //  Created by 윤동주 on 4/6/25.
 //
 
-import Foundation
+import SwiftUI
 
 @Observable
 class HomeViewModel {
@@ -19,7 +19,10 @@ class HomeViewModel {
         fileprivate(set) var matchingSummaryInfos: [MatchingSummaryInfo]
         fileprivate(set) var bannerInfos: [HomeBannerInfo]
         fileprivate(set) var meetingDate: Date?
+        fileprivate(set) var inMeetingInfo: InMeetingInfo?
         fileprivate(set) var isInMeeting: Bool
+        // TODO: 임시, 모임 후기 용
+        fileprivate(set) var meetingReviewInfo: MeetingReviewViewModel.InitialInfo?
     }
     
     var currentState: State
@@ -54,7 +57,9 @@ class HomeViewModel {
             matchingSummaryInfos: [],
             bannerInfos: [],
             meetingDate: nil,
-            isInMeeting: false
+            inMeetingInfo: nil,
+            isInMeeting: false,
+            meetingReviewInfo: nil
         )
         
         self.getProfileUseCase = getProfileUseCase
@@ -142,13 +147,23 @@ class HomeViewModel {
             let response = try await self.meetingInProgressUseCase.execute()
             
             await MainActor.run {
-                self.currentState.meetingDate = response
+                self.currentState.meetingDate = response.meetingDate
+                self.currentState.inMeetingInfo = response.inMeetingInfo
             }
         } catch {
             
             await MainActor.run {
                 self.currentState.meetingDate = nil
+                self.currentState.inMeetingInfo = nil
             }
+        }
+    }
+    
+    func banners() async {
+        do {
+            self.currentState.bannerInfos = try await self.bannerUseCase.execute(with: .home)
+        } catch {
+            self.currentState.bannerInfos = []
         }
     }
     
@@ -159,11 +174,36 @@ class HomeViewModel {
         }
     }
     
-    func banners() async {
-        do {
-            self.currentState.bannerInfos = try await self.bannerUseCase.execute(with: .home)
-        } catch {
-            self.currentState.bannerInfos = []
+    func updateMeetingReviewInfo(_ meetingReviewInfo: MeetingReviewViewModel.InitialInfo) async {
+        
+        await MainActor.run {
+            self.currentState.meetingReviewInfo = meetingReviewInfo
+        }
+    }
+}
+
+extension HomeViewModel {
+    
+    func viewModelForInMeeting() -> Binding<InMeetingViewModel> {
+        
+        if let inMeetingInfo = self.currentState.inMeetingInfo {
+            
+            return .constant(
+                InMeetingViewModel(inMeetingInfo: inMeetingInfo)
+            )
+        } else {
+            
+            return .constant(
+                InMeetingViewModel(
+                    inMeetingInfo: InMeetingInfo(
+                        matchingId: "",
+                        matchingType: .oneThing,
+                        nicknameList: [],
+                        quizList: [],
+                        oneThingMap: [:]
+                    )
+                )
+            )
         }
     }
 }

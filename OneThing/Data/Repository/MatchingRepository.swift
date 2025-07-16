@@ -29,7 +29,7 @@ struct MatchingRepository {
     // 진행중인 모임 조회
     func meetingInProgress() async throws -> MatchingProgressStatusDto {
         let endpoint = EndPoint(
-            path: "/matchings/progress-status",
+            path: "/matchings/progress",
             method: .get,
             headers: [
                 "Content-Type": "application/json",
@@ -42,4 +42,17 @@ struct MatchingRepository {
     
     // MARK: - PATCH
     
+    // 진행중인 모임 종료
+    func meetingEnded(type matchingType: MatchingType, with matchingId: String) async throws -> HTTPURLResponse {
+        let endpoint = EndPoint(
+            path: "/matchings/\(matchingType.rawValue)/\(matchingId)/progress-status/end",
+            method: .patch,
+            headers: [
+                "Content-Type": "application/json",
+                "Authorization": "Bearer \(TokenManager.shared.accessToken)"
+            ]
+        )
+        
+        return try await self.networkService.patch(endpoint: endpoint)
+    }
 }

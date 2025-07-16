@@ -10,7 +10,12 @@ import SwiftUI
 struct HomeView: View {
     
     enum ConstText {
-        static let requestMeetingTitle = "모임 신청"
+        static let requestMeetingTitle: String = "모임 신청"
+        
+        static let meetingReviewAlertTitle: String = "후기를 작성하러 갈까요?"
+        static let meetingReviewAlertMessage: String = "4월 15일 원띵모임"
+        static let meetingReviewAlertConfirmButtonTitle: String = "후기 남기기"
+        static let meetingReviewAlertCancelButtonTitle: String = "다음에 작성하기"
     }
     
     @Binding var appPathManager: OTAppPathManager
@@ -18,13 +23,14 @@ struct HomeView: View {
     
     @Binding var inMeetingPathManager: OTInMeetingPathManager
     
-    @StateObject private var dateManager: DateComparisonManager = DateComparisonManager()
-    
     @State private var topBannerCurrPage: Int = 0
     @State private var currentPage: Int = 0
     
     @State private var isPresentedPreparingAlert: Bool = false
     @State private var isInMeetingSheetPresented: Bool = false
+    @State private var isMeetingReviewAlertPresented: Bool = false
+    
+    private let dateManager = DateComparisonManager()
     
     private let rows = [GridItem()]
     
@@ -282,19 +288,60 @@ struct HomeView: View {
                     Task { await self.viewModel.updateIsInMeeting(false) }
                 }
             }
+            .onReceive(NotificationCenter.default.publisher(for: .showMeetingReviewAlert)) { notification in
+                if let notiObject = notification.object as? [String: Any],
+                   let nicknames = notiObject["nicknames"] as? [String],
+                   let matchingId = notiObject["matchingId"] as? String,
+                   let matchingType = notiObject["matchingType"] as? MatchingType {
+                    
+                    let meetingReviewInfo = MeetingReviewViewModel.InitialInfo(
+                        nicknames: nicknames,
+                        matchingId: matchingId,
+                        matchingtype: matchingType
+                    )
+                    
+                    Task { await self.viewModel.updateMeetingReviewInfo(meetingReviewInfo) }
+                    self.isMeetingReviewAlertPresented = true
+                }
+            }
             // 모임 중 Sheet
-            .inMeetingSheet(
+            .showInMeetingSheet(
                 inMeetingPathManager: $inMeetingPathManager,
+                inMeetingVieWModel: self.viewModel.viewModelForInMeeting(),
                 isPresented: $isInMeetingSheetPresented
             )
+            // 번개 모임 준비중 Alert
             .showPreparing(isPresented: $isPresentedPreparingAlert)
+            // 모임 후기 작성 Alert
+            .showAlert(
+                isPresented: $isMeetingReviewAlertPresented,
+                title: ConstText.meetingReviewAlertTitle,
+                message: ConstText.meetingReviewAlertMessage,
+                actions: [
+                    .init(
+                        title: ConstText.meetingReviewAlertConfirmButtonTitle,
+                        style: .primary,
+                        action: {
+                            guard let info = self.viewModel.currentState.meetingReviewInfo else { return }
+                            self.isMeetingReviewAlertPresented = false
+                            self.appPathManager.push(path: .meetingReview(info))
+                        }
+                    ),
+                    .init(
+                        title: ConstText.meetingReviewAlertCancelButtonTitle,
+                        style: .gray,
+                        action: { self.isMeetingReviewAlertPresented = false }
+                    )
+                ],
+                dismissWhenBackgroundTapped: true
+            )
         }
     }
 }
 
-extension HomeView {
+private extension HomeView {
     
-    private func setupBanner(with urlString: String) -> some View {
+    func setupBanner(with urlString: String) -> some View {
         
         AsyncSVGImage(urlString: urlString)
             .frame(maxWidth: .infinity)

@@ -181,7 +181,7 @@ struct RandomMatchingPaymentView: View {
             actions: [
                 AlertAction(
                     title: Constants.Text.alertConfirmButtonTitle,
-                    style: .confirm,
+                    style: .primary,
                     action: { }
                 )
             ],
