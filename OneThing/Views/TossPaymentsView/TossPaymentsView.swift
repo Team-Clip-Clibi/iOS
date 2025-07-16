@@ -116,14 +116,6 @@ final class TossPaymentsViewModel: TossPaymentsDelegate {
     }
     
     func getOneThingOrder(_ state: OneThingMatchingViewModel.State) async throws {
-        // self.oneThingResponse = try await self.createOneThingOrderUseCase.execute(
-        //     topic: "ㅂㅂㅂㅂㅂㅂㅂㅂ",
-        //     district: .gangnam,
-        //     preferredDates: [.init(date: "2025-07-06", timeSlot: .dinner)],
-        //     tmiContent: "ㅂㅂㅂㅂㅂㅂㅂㅂ",
-        //     oneThingBudgetRange: .high,
-        //     oneThingCategory: .health
-        // )
         do {
             let district: District = state.selectedDistrict.last!
             let preferredDates: [PreferredDate] = state.selectedDates.map {
