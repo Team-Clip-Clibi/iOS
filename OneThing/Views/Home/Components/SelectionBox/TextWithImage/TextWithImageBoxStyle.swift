@@ -70,7 +70,7 @@ struct TextWithImageBoxForPreview: View {
     var body: some View {
         
         Toggle("자기계발", isOn: $isOn)
-            .toggleStyle(TextWithImageBoxStyle(viewType: self.viewType, imageResource: .stepup))
+            .toggleStyle(TextWithImageBoxStyle(viewType: self.viewType, imageResource: .selfImprovement))
     }
 }
 

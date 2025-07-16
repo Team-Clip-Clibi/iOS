@@ -16,6 +16,23 @@ extension String {
         dateFormatter.dateFormat = format
         return dateFormatter.date(from: self)
     }
+    
+    // 문자열로 표시된 날짜 구분자 변경
+    func changeDateSeparator(
+        from old: String,
+        to new: String,
+        includeCurrentYear: Bool = true
+    ) -> String {
+        
+        var result = self.replacingOccurrences(of: old, with: new)
+        
+        if includeCurrentYear {
+            let currentYear = Calendar.current.component(.year, from: Date())
+            result = "\(currentYear)\(new)\(result)"
+        }
+        
+        return result
+    }
 
     var ISO8601Date: Date? {
         let dateFormatter = ISO8601DateFormatter()

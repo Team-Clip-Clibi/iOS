@@ -13,8 +13,8 @@ class OneThingMatchingViewModel {
     struct State: Equatable {
         var selectedCategory: [OneThingCategory]
         var topicContent: String
-        var selectedLocations: [String]
-        var selectedPrices: [String]
+        var selectedDistrict: [District]
+        var selectedBudgetRange: [BudgetRange]
         var tmiContent: String
         var selectedDates: [String]
     }
@@ -27,8 +27,8 @@ class OneThingMatchingViewModel {
         self.currentState = .init(
             selectedCategory: [],
             topicContent: "",
-            selectedLocations: [],
-            selectedPrices: [],
+            selectedDistrict: [],
+            selectedBudgetRange: [],
             tmiContent: "",
             selectedDates: []
         )
@@ -41,9 +41,9 @@ class OneThingMatchingViewModel {
         case .topic:
             self.currentState.topicContent = ""
         case .location:
-            self.currentState.selectedLocations = []
+            self.currentState.selectedDistrict = []
         case .price:
-            self.currentState.selectedPrices = []
+            self.currentState.selectedBudgetRange = []
         case .tmi:
             self.currentState.tmiContent = ""
         case .date:

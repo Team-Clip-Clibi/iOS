@@ -46,9 +46,7 @@ struct RandomMatchingPaymentView: View {
             NavigationBar()
                 .title(Constants.Text.naviTitle)
                 .hidesBottomSeparator(true)
-                .onBackButtonTap {
-                    self.appPathManager.pop()
-                }
+                .onBackButtonTap { self.appPathManager.pop() }
             
             ZStack {
                 Color.gray100.ignoresSafeArea()

@@ -10,10 +10,9 @@ import SwiftUI
 struct NegativePointsView: View {
     
     let title: String
-    let messages: [String]
     
     @Binding var isSelected: Bool
-    @Binding var nagativePoints: [String]
+    @Binding var nagativePoints: [NegativePoint]
     
     var body: some View {
         
@@ -25,12 +24,12 @@ struct NegativePointsView: View {
                 .padding(.horizontal, 16)
                 .frame(maxWidth: .infinity, alignment: .leading)
             
-            MultipleCheckBoxView(
+            MultipleCheckBoxView<NegativePoint>(
                 viewType: .meeting,
-                state: .init(items: self.messages.map { .init(title: $0) }),
+                state: .init(items: NegativePoint.allCases.map { .init(item: $0) }),
                 isReachedLimit: .constant(false),
                 isSelected: $isSelected,
-                selectedTitles: $nagativePoints
+                selectedItems: $nagativePoints
             )
         }
     }
@@ -39,14 +38,6 @@ struct NegativePointsView: View {
 #Preview {
     NegativePointsView(
         title: "title",
-        messages: [
-            "대화가 지루했어요",
-            "멤버들이 소극적이었어요",
-            "진행이 이해하기 어려웠어요",
-            "분위기가 어색하거나 불편했어요",
-            "시간과 장소가 마음에 안들어요",
-            "약속 시간을 지키지 않은 멤버가 많았어요"
-        ],
         isSelected: .constant(false),
         nagativePoints: .constant([])
     )

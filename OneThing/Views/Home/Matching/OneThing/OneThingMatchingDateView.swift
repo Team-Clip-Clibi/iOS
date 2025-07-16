@@ -28,7 +28,6 @@ struct OneThingMatchingDateView: View {
     @Binding var appPathManager: OTAppPathManager
     @Binding var viewModel: OneThingMatchingViewModel
     
-    @State private var isReachedLimit: Bool = false
     @State private var isNextButtonEnabled: Bool = false
     
     var body: some View {
@@ -49,7 +48,7 @@ struct OneThingMatchingDateView: View {
             Spacer().frame(height: 32)
             
             GuideMessageView(
-                isChangeSubTitleColor: $isReachedLimit,
+                isChangeSubTitleColor: .constant(false),
                 title: Constants.Text.title,
                 subTitle: Constants.Text.subTitle
             )
@@ -66,9 +65,10 @@ struct OneThingMatchingDateView: View {
                                 matchingTime: Constants.Text.meetingTime
                             )
                         },
-                        selectLimit: 3
+                        selectLimit: 3,
+                        changeWhenIsReachedLimit: true
                     ),
-                    isReachedLimit: $isReachedLimit,
+                    isReachedLimit: .constant(false),
                     isSelected: $isNextButtonEnabled,
                     selectedDates: $viewModel.currentState.selectedDates
                 )

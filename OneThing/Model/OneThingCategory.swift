@@ -7,12 +7,12 @@
 
 import SwiftUI
 
-enum OneThingCategory: String, CaseIterable, Identifiable {
+enum OneThingCategory: String, Codable, CaseIterable, Identifiable {
     case health = "HEALTH"
     case money = "MONEY"
     case life = "LIFE"
-    case love = "LOVE"
-    case stepup = "STEPUP"
+    case relationship = "RELATIONSHIP"
+    case selfImprovement = "SELF_IMPROVEMENT"
     case work = "WORK"
     case hobby = "HOBBY"
     
@@ -23,8 +23,8 @@ enum OneThingCategory: String, CaseIterable, Identifiable {
         case .health: return "건강"
         case .money: return "돈"
         case .life: return "인생"
-        case .love: return "연애"
-        case .stepup: return "자기개발"
+        case .relationship: return "관계"
+        case .selfImprovement: return "자기개발"
         case .work: return "직장"
         case .hobby: return "취미"
         }
@@ -35,8 +35,8 @@ enum OneThingCategory: String, CaseIterable, Identifiable {
         case .health: return .health
         case .money: return .money
         case .life: return .life
-        case .love: return .love
-        case .stepup: return .stepup
+        case .relationship: return .relationship
+        case .selfImprovement: return .selfImprovement
         case .work: return .work
         case .hobby: return .hobby
         }
