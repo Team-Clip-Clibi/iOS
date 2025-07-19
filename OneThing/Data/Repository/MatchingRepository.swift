@@ -26,10 +26,27 @@ struct MatchingRepository {
         return try await self.networkService.get(endpoint: endpoint)
     }
     
-    // 진행중인 모임 조회
-    func meetingInProgress() async throws -> MatchingProgressStatusDto {
+    // 모임 진행상태 조회
+    func meetingProgress() async throws -> MatchingProgressStatusDto {
         let endpoint = EndPoint(
-            path: "/matchings/progress",
+            path: "/matchings",
+            method: .get,
+            headers: [
+                "Content-Type": "application/json",
+                "Authorization": "Bearer \(TokenManager.shared.accessToken)"
+            ]
+        )
+        
+        return try await self.networkService.get(endpoint: endpoint)
+    }
+    
+    // 시작된 모임 정보 조회
+    func matchingProgressInfo(
+        type matchingType: MatchingType,
+        with matchingId: String
+    ) async throws -> InMeetingDTO {
+        let endpoint = EndPoint(
+            path: "/matchings/\(matchingType.rawValue)/\(matchingId)/progress",
             method: .get,
             headers: [
                 "Content-Type": "application/json",
