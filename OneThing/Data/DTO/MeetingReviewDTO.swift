@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct MeetingReviewDTO {
+struct MeetingReviewDTO: Codable {
     let mood: MeetingReviewMood
     let positivePoints: String
     let negativePoints: String
@@ -24,5 +24,3 @@ struct MeetingReviewDTO {
         case isMemberAllAttended = "is_member_all_attended"
     }
 }
-
-extension MeetingReviewDTO: Codable { }

@@ -60,7 +60,10 @@ struct MatchingRepository {
     // MARK: - PATCH
     
     // 진행중인 모임 종료
-    func meetingEnded(type matchingType: MatchingType, with matchingId: String) async throws -> HTTPURLResponse {
+    func meetingEnded(
+        type matchingType: MatchingType,
+        with matchingId: String
+    ) async throws -> HTTPURLResponse {
         let endpoint = EndPoint(
             path: "/matchings/\(matchingType.rawValue)/\(matchingId)/progress-status/end",
             method: .patch,

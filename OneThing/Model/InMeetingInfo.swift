@@ -14,5 +14,4 @@ struct InMeetingInfo: Equatable {
     let quizList: [String]
     let oneThingMap: [String: String]
 }
-
 extension InMeetingInfo: Codable { }
