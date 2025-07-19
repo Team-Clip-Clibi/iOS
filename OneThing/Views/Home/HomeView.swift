@@ -13,7 +13,7 @@ struct HomeView: View {
         static let requestMeetingTitle: String = "모임 신청"
         
         static let meetingReviewAlertTitle: String = "후기를 작성하러 갈까요?"
-        static let meetingReviewAlertMessage: String = "4월 15일 원띵모임"
+        static let meetingReviewAlertMessage: String = "원띵모임"
         static let meetingReviewAlertConfirmButtonTitle: String = "후기 남기기"
         static let meetingReviewAlertCancelButtonTitle: String = "다음에 작성하기"
     }
@@ -235,7 +235,7 @@ struct HomeView: View {
                              group.addTask { await self.viewModel.topBanners() }
                              group.addTask { await self.viewModel.notice() }
                              group.addTask { await self.viewModel.matchingSummary() }
-                             group.addTask { await self.viewModel.meetingInProgress() }
+                             group.addTask { await self.viewModel.meetingProgress() }
                              group.addTask { await self.viewModel.banners() }
                          }
                      }
@@ -244,7 +244,7 @@ struct HomeView: View {
                 
                 // MARK: In Meeting floating view
                 
-                if self.viewModel.currentState.isInMeeting {
+                if self.viewModel.currentState.reachedMeeting != nil {
                     InMeetingFloatingView(onBackgroundTapped: { self.isInMeetingSheetPresented = true })
                         .padding(.bottom, 12)
                         .padding(.horizontal, 16)
@@ -258,7 +258,7 @@ struct HomeView: View {
                     group.addTask { await self.viewModel.topBanners() }
                     group.addTask { await self.viewModel.notice() }
                     group.addTask { await self.viewModel.matchingSummary() }
-                    group.addTask { await self.viewModel.meetingInProgress() }
+                    group.addTask { await self.viewModel.meetingProgress() }
                     if self.viewModel.currentState.bannerInfos.isEmpty {
                         group.addTask { await self.viewModel.banners() }
                     }
@@ -269,23 +269,25 @@ struct HomeView: View {
                     await self.viewModel.topBanners()
                 }
             }
-            .onChange(of: self.viewModel.currentState.meetingDate) { _, new in
+            .onChange(of: self.viewModel.currentState.hasMeeting.last) { _, new in
                 
-                if let meetingDate = new, meetingDate.isToday {
+                if let hasMeeting = new, hasMeeting.meetingTime.isToday {
                     
                     self.dateManager.startMonitoring(
-                        with: meetingDate,
+                        with: hasMeeting.meetingTime,
                         onTimeRangeChanged: { isWithinRange in
-                            Task { await self.viewModel.updateIsInMeeting(isWithinRange) }
+                            if isWithinRange {
+                                Task { await self.viewModel.reachedMeetingTime(hasMeeting) }
+                            }
                         },
                         onTimeExceeded: {
-                            Task { await self.viewModel.updateIsInMeeting(false) }
+                            Task { await self.viewModel.reachedMeetingTime(nil) }
                         }
                     )
                 } else {
                     
                     self.dateManager.stopMonitoring()
-                    Task { await self.viewModel.updateIsInMeeting(false) }
+                    Task { await self.viewModel.reachedMeetingTime(nil) }
                 }
             }
             .onReceive(NotificationCenter.default.publisher(for: .showMeetingReviewAlert)) { notification in
@@ -349,10 +351,10 @@ private extension HomeView {
     }
 }
 
-#Preview {
-     HomeView(
-        appPathManager: .constant(OTAppPathManager()),
-        viewModel: .constant(HomeViewModel()),
-        inMeetingPathManager: .constant(OTInMeetingPathManager())
-    )
-}
+// #Preview {
+//      HomeView(
+//         appPathManager: .constant(OTAppPathManager()),
+//         viewModel: .constant(HomeViewModel()),
+//         inMeetingPathManager: .constant(OTInMeetingPathManager())
+//     )
+// }
