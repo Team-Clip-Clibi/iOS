@@ -142,7 +142,7 @@ extension MultipleTextWithImageBoxView {
         viewType: .meeting,
         matrixs: [GridItem()],
         state: .init(
-            items: MeetingReviewInfo.allCases.map { .init(item: $0) },
+            items: MeetingReviewMood.allCases.map { .init(item: $0) },
             selectionLimit: 1,
             changeWhenIsReachedLimit: true
         ),

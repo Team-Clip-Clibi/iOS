@@ -69,7 +69,7 @@ struct MeetingReviewView: View {
                 viewType: .meeting,
                 matrixs: [GridItem()],
                 state: .init(
-                    items: MeetingReviewInfo.allCases.map { .init(item: $0) },
+                    items: MeetingReviewMood.allCases.map { .init(item: $0) },
                     selectionLimit: 1,
                     changeWhenIsReachedLimit: true
                 ),
@@ -154,7 +154,7 @@ struct MeetingReviewView: View {
                     .onChange(of: self.selectedPositivePoints) { old, new in
                         if old != new {
                             Task {
-                                await self.viewModel.selectPositivePoint(new)
+                                await self.viewModel.selectPositivePoint(new.map { $0.toKorean })
                             }
                         }
                     }
@@ -164,7 +164,7 @@ struct MeetingReviewView: View {
                     .onChange(of: self.selectedNegativePoints) { old, new in
                         if old != new {
                             Task {
-                                await self.viewModel.selectNegativePoint(new)
+                                await self.viewModel.selectNegativePoint(new.map { $0.toKorean })
                             }
                         }
                     }
@@ -179,7 +179,7 @@ struct MeetingReviewView: View {
                     Spacer().frame(height: 32)
                     
                     AttendeesCheckView(
-                        members: self.viewModel.members.map { .init(member: $0) },
+                        members: self.viewModel.initalInfo.nicknames.map { .init(member: $0) },
                         isAttendeesSelected: $isAttendeesSelected,
                         selectedAttendees: $selectedAttendees,
                         isNoShowMembersSelected: $isNoShowMembersSelected,
@@ -203,7 +203,7 @@ struct MeetingReviewView: View {
                     .onChange(of: self.selectedNoShowMembers) { old, new in
                         if old != new {
                             Task {
-                                await self.viewModel.selectNoShowMembers(new)
+                                await self.viewModel.selectNoShowMembers(new.map { $0.member })
                             }
                         }
                     }
@@ -257,7 +257,7 @@ extension MeetingReviewView {
         appPathManager: .constant(OTAppPathManager()),
         viewModel: .constant(
             MeetingReviewViewModel(
-                initalInfo: .init(nicknames: [], matchingId: "", matchingtype: .oneThing)
+                initalInfo: .init(nicknames: [], matchingId: "", matchingtype: .onething)
             )
         )
     )
