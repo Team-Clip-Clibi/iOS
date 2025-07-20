@@ -46,9 +46,7 @@ struct RandomMatchingPaymentView: View {
             NavigationBar()
                 .title(Constants.Text.naviTitle)
                 .hidesBottomSeparator(true)
-                .onBackButtonTap {
-                    self.appPathManager.pop()
-                }
+                .onBackButtonTap { self.appPathManager.pop() }
             
             ZStack {
                 Color.gray100.ignoresSafeArea()
@@ -183,7 +181,7 @@ struct RandomMatchingPaymentView: View {
             actions: [
                 AlertAction(
                     title: Constants.Text.alertConfirmButtonTitle,
-                    style: .confirm,
+                    style: .primary,
                     action: { }
                 )
             ],

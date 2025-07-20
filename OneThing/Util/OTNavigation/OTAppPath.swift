@@ -11,6 +11,7 @@ enum OTHomePath: Hashable, Equatable {
     var id: String { UUID().uuidString }
     
     case notification
+    case meetingReview(MeetingReviewViewModel.InitialInfo)
     
     enum MatchingType {
         case onething
@@ -37,7 +38,8 @@ enum OTHomePath: Hashable, Equatable {
         case tmi
         case date
         case payment
-        case complete
+        case paySuccess
+        case payFail
     }
     
     enum RandomMatching: Equatable {

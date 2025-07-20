@@ -7,8 +7,7 @@
 
 import SwiftUI
 
-@MainActor
-class DateComparisonManager: ObservableObject {
+final class DateComparisonManager {
     
     typealias TimeRangeCallback = (Bool) -> Void
     typealias TimeExceededCallback = () -> Void
@@ -23,15 +22,15 @@ class DateComparisonManager: ObservableObject {
     private var isWithinTimeRange: Bool = false
     private var isActive: Bool = false
     
-    private var timer: Timer?
+    private var targetDate: Date?
+    private var backgroundTimer: Task<Void, Never>?
     
     // 타이머 경과를 외부에서 받을 수 있도록 하는 클로져
     private var onTimeRangeChanged: TimeRangeCallback?
     private var onTimeExceeded: TimeExceededCallback?
     
     deinit {
-        self.timer?.invalidate()
-        self.timer = nil
+        self.stopMonitoring()
     }
     
     // 서버에서 받은 Date를 설정하고 모니터링 시작
@@ -42,6 +41,8 @@ class DateComparisonManager: ObservableObject {
     ) {
         self.isActive = true
         
+        self.targetDate = targetDate
+        
         self.onTimeRangeChanged = onTimeRangeChanged
         self.onTimeExceeded = onTimeExceeded
         
@@ -50,56 +51,63 @@ class DateComparisonManager: ObservableObject {
     
     // 모니터링 중지 및 상태 초기화
     func stopMonitoring() {
-        self.stopTimer()
-        
         self.isWithinTimeRange = false
         self.isActive = false
+        
+        self.targetDate = nil
+        self.backgroundTimer?.cancel()
+        self.backgroundTimer = nil
         
         self.onTimeRangeChanged = nil
         self.onTimeExceeded = nil
     }
 }
 
-extension DateComparisonManager {
+private extension DateComparisonManager {
     
-    private func startTimer(with targetDate: Date) {
-        self.stopTimer()
-        self.checkTimeRange(with: targetDate)
+    func startTimer(with targetDate: Date) {
+        self.backgroundTimer?.cancel()
         
-        self.timer = Timer.scheduledTimer(
-            withTimeInterval: Constants.timerInterval,
-            repeats: true
-        ) { [weak self] _ in
-            // 비동기 메인 스레드에서 동작
-            Task { @MainActor [weak self] in self?.checkTimeRange(with: targetDate) }
+        self.backgroundTimer = Task.detached(priority: .background) { [weak self] in
+            // 최초 비교 즉시 실행
+            await self?.checkTimeRange()
+            // 타이머 루프 (백그라운드에서 실행)
+            while Task.isCancelled == false {
+                try? await Task.sleep(for: .seconds(Constants.timerInterval))
+                if Task.isCancelled { break }
+                await self?.checkTimeRange()
+            }
         }
     }
     
-    private func stopTimer() {
-        self.timer?.invalidate()
-        self.timer = nil
-    }
-    
-    private func checkTimeRange(with targetDate: Date) {
-        guard self.isActive else {
-            self.isWithinTimeRange = false
-            return
-        }
+    func checkTimeRange() async {
+        // 목표 날자가 존재하고
+        guard let targetDate = self.targetDate,
+              self.isActive
+        else { return }
         
         // 현재 날짜와 서버에서 받은 날짜를 비교, 0 <= targetDate - currentDate <= 2시간
         let currentDate = Date()
-        let timeDifference = currentDate.timeIntervalSince(targetDate)
+        let timeDifference = targetDate.timeIntervalSince(currentDate)
         let withinRange = timeDifference >= 0 && timeDifference <= Constants.timeRangeLimit
+        let remainingTime = max(0, timeDifference)
         
-        if self.isWithinTimeRange != withinRange {
-            self.onTimeRangeChanged?(withinRange)
-        }
-        
+        // 상태 변화 검사
+        let shouldUpdateRange = self.isWithinTimeRange != withinRange
+        // 내부 상태 업데이트
         self.isWithinTimeRange = withinRange
+        
+        // 메인 스레드에서 클로저 호출
+        await MainActor.run {
+            // 시간 범위 변경 시 호출
+            if shouldUpdateRange { self.onTimeRangeChanged?(withinRange) }
+        }
         
         // 시간 초과 시 자동 정지
         if withinRange == false {
-            self.onTimeExceeded?()
+            await MainActor.run {
+                self.onTimeExceeded?()
+            }
             self.stopMonitoring()
         }
     }

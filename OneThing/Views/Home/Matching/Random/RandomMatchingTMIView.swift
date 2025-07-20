@@ -37,10 +37,7 @@ struct RandomMatchingTMIView: View {
             NavigationBar()
                 .title(Constants.Text.naviTitle)
                 .hidesBottomSeparator(true)
-                .onBackButtonTap {
-                    self.viewModel.initializeState(.tmi)
-                    self.appPathManager.pop()
-                }
+                .onBackButtonTap { self.appPathManager.pop() }
             
             LinerProgressView(value: Constants.progress, shape: Rectangle())
                 .tint(.purple400)

@@ -17,7 +17,7 @@ extension View {
         
         let action = AlertAction(
             title: confirmButtonTitle,
-            style: .confirm,
+            style: .primary,
             action: { isPresented.wrappedValue = false }
         )
         

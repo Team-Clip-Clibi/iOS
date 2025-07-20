@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-protocol SelectableItem: Identifiable, Equatable, CaseIterable {
+protocol SelectableItem: Identifiable, Equatable {
     var displayText: String { get }
 }
 
@@ -35,7 +35,7 @@ extension OneThingCategory: SelectableItem {
     }
 }
 
-extension MeetingReviewInfo: SelectableItem {
+extension MeetingReviewMood: SelectableItem {
     var displayText: String {
         return self.toKorean
     }
@@ -45,4 +45,34 @@ extension AttendeesInfo: SelectableItem {
     var displayText: String {
         return self.toKorean
     }
+}
+
+extension District: SelectableItem {
+    var displayText: String {
+        return self.toKorean
+    }
+}
+
+extension BudgetRange: SelectableItem {
+    var displayText: String {
+        return self.toKorean
+    }
+}
+
+extension MemberInfo: SelectableItem {
+    var displayText: String {
+        return self.member
+    }
+}
+
+extension NegativePoint: SelectableItem {
+    var displayText: String {
+        return self.toKorean
+    }
+}
+
+extension PositivePoint: SelectableItem {
+    var displayText: String {
+        return self.toKorean
+    }   
 }

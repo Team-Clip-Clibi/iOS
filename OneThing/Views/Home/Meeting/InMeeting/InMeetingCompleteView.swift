@@ -22,6 +22,7 @@ struct InMeetingCompleteView: View {
     }
     
     @Binding var inMeetingPathManager: OTInMeetingPathManager
+    @Binding var viewModel: InMeetingViewModel
     
     var body: some View {
         
@@ -59,16 +60,44 @@ struct InMeetingCompleteView: View {
             
             OTXXLButton(
                 buttonTitle: Constants.Text.endMeetingButtonTitle,
-                action: { self.inMeetingPathManager.popToRoot() },
+                action: {
+                    Task { await self.viewModel.meetingEnded() }
+                },
                 isClickable: true
             )
             .padding(.bottom, 12)
             .padding(.horizontal, 24)
         }
         .navigationBarBackButtonHidden()
+        .onChange(of: self.viewModel.currentState.isMeetingEnded) { _, new in
+            if new {
+                NotificationCenter.default.post(
+                    name: .showMeetingReviewAlert,
+                    object: [
+                        "nicknames": self.viewModel.initalState.nicknames,
+                        "matchingId": self.viewModel.initalState.matchingId,
+                        "matchingType": self.viewModel.initalState.matchingType
+                    ]
+                )
+                self.inMeetingPathManager.popToRoot()
+            }
+        }
     }
 }
 
 #Preview {
-    InMeetingCompleteView(inMeetingPathManager: .constant(OTInMeetingPathManager()))
+    InMeetingCompleteView(
+        inMeetingPathManager: .constant(OTInMeetingPathManager()),
+        viewModel: .constant(
+            InMeetingViewModel(
+                inMeetingInfo: InMeetingInfo(
+                    matchingId: "",
+                    matchingType: .oneThing,
+                    nicknameList: [],
+                    quizList: [],
+                    oneThingMap: [:]
+                )
+            )
+        )
+    )
 }

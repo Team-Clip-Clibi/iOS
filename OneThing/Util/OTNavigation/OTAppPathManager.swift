@@ -62,6 +62,24 @@ class OTAppPathManager {
         }
     }
     
+    func pop(count: Int) {
+        guard count > 0 else { return }
+        
+        switch currentTab {
+        case .home:
+            let popCount = min(count, homePaths.count)
+            homePaths.removeLast(popCount)
+            
+        case .myMeeting:
+            let popCount = min(count, myMeetingPaths.count)
+            myMeetingPaths.removeLast(popCount)
+            
+        case .my:
+            let popCount = min(count, myPagePaths.count)
+            myPagePaths.removeLast(popCount)
+        }
+    }
+    
     func popToRoot() {
         switch currentTab {
         case .home:

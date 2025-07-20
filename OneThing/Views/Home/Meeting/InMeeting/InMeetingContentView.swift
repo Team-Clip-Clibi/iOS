@@ -35,26 +35,29 @@ struct InMeetingContentView: View {
             
             Spacer().frame(height: 32)
             
-            ScrollView(.vertical, showsIndicators: false) {
-                VStack(spacing: 20) {
-                    TabView(selection: $currentPage) {
+            VStack(spacing: 20) {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    LazyHStack {
                         ForEach(
-                            0..<OneThingInfo.mock.count,
+                            0..<InMeetingContentInfo.mock.count,
                             id: \.self
                         ) { page in
                             self.setupGridItem(InMeetingContentInfo.mock[page])
                                 .tag(page)
                         }
                     }
-                    .tabViewStyle(.page(indexDisplayMode: .never))
-                    
-                    Text("\(OneThingInfo.mock[self.currentPage].number)/\(OneThingInfo.mock.count)")
-                        .otFont(.caption1)
-                        .foregroundStyle(.gray500)
+                    .scrollTargetLayout()
                 }
-                /// top padding + card height + bottom page view
-                .frame(height: 458)
+                .scrollTargetBehavior(.viewAligned)
+                .scrollPosition(id: Binding($currentPage))
+                .safeAreaPadding(.horizontal, 24)
+                
+                Text("\(InMeetingContentInfo.mock[self.currentPage].number)/\(InMeetingContentInfo.mock.count)")
+                    .otFont(.caption1)
+                    .foregroundStyle(.gray500)
             }
+            /// top padding + card height + bottom page view
+            .frame(height: 458)
             
             Spacer()
             

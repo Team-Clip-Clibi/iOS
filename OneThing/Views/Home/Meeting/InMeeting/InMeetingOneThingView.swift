@@ -1,5 +1,5 @@
 //
-//  InMeetingOneThingView.swift
+//  InMeetingOnethingView.swift
 //  OneThing
 //
 //  Created by 오현식 on 6/3/25.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct InMeetingOneThingView: View {
+struct InMeetingOnethingView: View {
     
     enum Constants {
         enum Text {
@@ -20,6 +20,7 @@ struct InMeetingOneThingView: View {
     }
     
     @Binding var inMeetingPathManager: OTInMeetingPathManager
+    @Binding var viewModel: InMeetingViewModel
     
     @State private var currentPage: Int = 0
     
@@ -35,32 +36,44 @@ struct InMeetingOneThingView: View {
             
             Spacer().frame(height: 32)
             
-            ScrollView(.vertical, showsIndicators: false) {
+            let onethings = self.viewModel.initalState.onethings
+            if onethings.isEmpty == false {
+                
                 VStack(spacing: 20) {
-                    TabView(selection: $currentPage) {
-                        ForEach(
-                            0..<OneThingInfo.mock.count,
-                            id: \.self
-                        ) { page in
-                            self.setupGridItem(OneThingInfo.mock[page])
-                                .tag(page)
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        LazyHStack {
+                            ForEach(
+                                0..<onethings.count,
+                                id: \.self
+                            ) { page in
+                                self.setupGridItem(
+                                    onethings[page],
+                                    nickname: self.viewModel.initalState.nicknames[page]
+                                )
+                                    .tag(page)
+                            }
                         }
+                        .scrollTargetLayout()
                     }
-                    .tabViewStyle(.page(indexDisplayMode: .never))
+                    .scrollTargetBehavior(.viewAligned)
+                    .scrollPosition(id: Binding($currentPage))
+                    .safeAreaPadding(.horizontal, 24)
                     
-                    Text("\(OneThingInfo.mock[self.currentPage].number)/\(OneThingInfo.mock.count)")
+                    let number = onethings[self.currentPage].number
+                    Text("\(number)/\(onethings.count)")
                         .otFont(.caption1)
                         .foregroundStyle(.gray500)
                 }
                 .frame(height: 438)
             }
             
+            
             Spacer()
             
             OTXXLButton(
                 buttonTitle: Constants.Text.nextButtonTitle,
                 action: { self.inMeetingPathManager.push(path: .content) },
-                isClickable: (self.currentPage+1) == OneThingInfo.mock.count
+                isClickable: (self.currentPage+1) == self.viewModel.initalState.onethingCount
             )
             .padding(.bottom, 12)
             .padding(.horizontal, 24)
@@ -69,9 +82,9 @@ struct InMeetingOneThingView: View {
     }
 }
 
-extension InMeetingOneThingView {
+extension InMeetingOnethingView {
     
-    func setupGridItem(_ oneThingInfo: OneThingInfo) -> some View {
+    func setupGridItem(_ onething: OnethingInfo, nickname: String) -> some View {
         
         return VStack {
             
@@ -80,7 +93,7 @@ extension InMeetingOneThingView {
                     .frame(width: 44, height: 44)
                     .clipShape(.rect(cornerRadius: 10))
                 
-                Text("\(oneThingInfo.number)")
+                Text("\(onething.number)")
                     .otFont(.heading3)
                     .foregroundStyle(.gray800)
             }
@@ -88,14 +101,14 @@ extension InMeetingOneThingView {
             
             Spacer().frame(height: 28)
             
-            Text(oneThingInfo.category)
+            Text(onething.category)
                 .otFont(.title1)
                 .foregroundStyle(.gray800)
                 .frame(maxWidth: .infinity, alignment: .leading)
             
             Spacer().frame(height: 6)
             
-            Text(oneThingInfo.message)
+            Text(onething.message)
                 .otFont(.heading3)
                 .foregroundStyle(.gray800)
                 .multilineTextAlignment(.leading)
@@ -103,18 +116,31 @@ extension InMeetingOneThingView {
             
             Spacer()
             
-            Text("민만민님의 원띵")
+            Text("\(nickname)의 원띵")
                 .otFont(.subtitle2)
                 .foregroundStyle(.gray800)
         }
         .padding([.top, .horizontal], 28)
         .padding(.bottom, 20)
         .frame(width: 280, height: 400)
-        .background(oneThingInfo.backgroundColor)
+        .background(onething.backgroundColor)
         .clipShape(.rect(cornerRadius: 20))
     }
 }
 
 #Preview {
-    InMeetingOneThingView(inMeetingPathManager: .constant(OTInMeetingPathManager()))
+    InMeetingOnethingView(
+        inMeetingPathManager: .constant(OTInMeetingPathManager()),
+        viewModel: .constant(
+            InMeetingViewModel(
+                inMeetingInfo: InMeetingInfo(
+                    matchingId: "",
+                    matchingType: .oneThing,
+                    nicknameList: [],
+                    quizList: [],
+                    oneThingMap: [:]
+                )
+            )
+        )
+    )
 }

@@ -25,7 +25,6 @@ struct OneThingMatchingPriceView: View {
     @Binding var appPathManager: OTAppPathManager
     @Binding var viewModel: OneThingMatchingViewModel
     
-    @State private var isReachedLimit: Bool = false
     @State private var isNextButtonEnabled: Bool = false
     
     var body: some View {
@@ -46,22 +45,23 @@ struct OneThingMatchingPriceView: View {
             Spacer().frame(height: 32)
             
             GuideMessageView(
-                isChangeSubTitleColor: $isReachedLimit,
+                isChangeSubTitleColor: .constant(false),
                 title: Constants.Text.title,
                 subTitle: Constants.Text.subTitle
             )
             
             Spacer().frame(height: 24)
             
-            MultipleCheckBoxView(
+            MultipleCheckBoxView<BudgetRange>(
                 viewType: .matching,
                 state: .init(
-                    items: self.viewModel.prices.map { .init(title: $0) },
-                    selectLimit: 1
+                    items: BudgetRange.allCases.map { .init(item: $0) },
+                    selectionLimit: 1,
+                    changeWhenIsReachedLimit: true
                 ),
-                isReachedLimit: $isReachedLimit,
+                isReachedLimit: .constant(false),
                 isSelected: $isNextButtonEnabled,
-                selectedTitles: $viewModel.currentState.selectedPrices
+                selectedItems: $viewModel.currentState.selectedBudgetRange
             )
             
             Spacer()

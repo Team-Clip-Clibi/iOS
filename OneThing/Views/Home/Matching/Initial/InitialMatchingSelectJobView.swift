@@ -25,7 +25,6 @@ struct InitialMatchingSelectJobView: View {
     @Binding var appPathManager: OTAppPathManager
     @Binding var viewModel: InitialMatchingViewModel
     
-    @State private var isReachedLimit: Bool = false
     @State private var isNextButtonEnabled: Bool = false
     
     var body: some View {
@@ -46,7 +45,7 @@ struct InitialMatchingSelectJobView: View {
             Spacer().frame(height: 32)
             
             GuideMessageView(
-                isChangeSubTitleColor: $isReachedLimit,
+                isChangeSubTitleColor: .constant(false),
                 title: Constants.Text.title,
                 subTitle: Constants.Text.subTitle
             )
@@ -56,9 +55,10 @@ struct InitialMatchingSelectJobView: View {
             MultipleOnlyTextBoxView<JobType>(
                 state: .init(
                     items: JobType.allCases.map { .init(item: $0) },
-                    selectLimit: 1
+                    selectionLimit: 1,
+                    changeWhenIsReachedLimit: true
                 ),
-                isReachedLimit: $isReachedLimit,
+                isReachedLimit: .constant(false),
                 isSelected: $isNextButtonEnabled,
                 selectedItems: $viewModel.currentState.selectedJobs,
                 cols: [GridItem(), GridItem()],

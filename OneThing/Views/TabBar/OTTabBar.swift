@@ -123,6 +123,12 @@ struct OTTabBarContainer: View {
                                         viewModel: $notificationViewModel
                                     )
                                     
+                                case let .meetingReview(info):
+                                    MeetingReviewView(
+                                        appPathManager: $pathManager,
+                                        viewModel: .constant(MeetingReviewViewModel(initalInfo: info))
+                                    )
+                                    
                                 case .initial(.main):
                                     InitialMatchingMainView(
                                         appPathManager: $pathManager,
@@ -181,12 +187,16 @@ struct OTTabBarContainer: View {
                                         appPathManager: $pathManager,
                                         viewModel: $oneThingMatchingViewModel
                                     )
-                                case .onething(.complete):
+                                case .onething(.paySuccess):
                                     OneThingMatchingCompleteView(
                                         appPathManager: $pathManager,
                                         viewModel: $oneThingMatchingViewModel
                                     )
-                                    
+                                case .onething(.payFail):
+                                    OneThingMatchingFailView(
+                                        appPathManager: $pathManager,
+                                        viewModel: $oneThingMatchingViewModel
+                                    )
                                 case .random(.main):
                                     RandomMatchingMainView(
                                         appPathManager: $pathManager,
