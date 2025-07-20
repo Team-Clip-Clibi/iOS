@@ -135,7 +135,7 @@ extension InMeetingOnethingView {
             InMeetingViewModel(
                 inMeetingInfo: InMeetingInfo(
                     matchingId: "",
-                    matchingType: .oneThing,
+                    matchingType: .onething,
                     nicknameList: [],
                     quizList: [],
                     oneThingMap: [:]

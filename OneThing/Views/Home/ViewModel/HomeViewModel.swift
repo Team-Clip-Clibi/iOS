@@ -18,11 +18,14 @@ class HomeViewModel {
         fileprivate(set) var noticeInfos: [NoticeInfo]
         fileprivate(set) var matchingSummaryInfos: [MatchingSummaryInfo]
         fileprivate(set) var bannerInfos: [HomeBannerInfo]
-        fileprivate(set) var meetingDate: Date?
-        fileprivate(set) var inMeetingInfo: InMeetingInfo?
-        fileprivate(set) var isInMeeting: Bool
+        fileprivate(set) var matchingProgressInfo: [MatchingProgressInfo]
+        fileprivate(set) var hasMeeting: [MatchingProgressInfo]
+        fileprivate(set) var shouldWriteReview: [MatchingProgressInfo]
+        fileprivate(set) var reachedMeeting: MatchingProgressInfo?
         // TODO: 임시, 모임 후기 용
         fileprivate(set) var meetingReviewInfo: MeetingReviewViewModel.InitialInfo?
+        
+        fileprivate(set) var isLoading: Bool
     }
     
     var currentState: State
@@ -34,7 +37,8 @@ class HomeViewModel {
     private let updateNotificationBannerUseCase: UpdateNotificationBannerUseCase
     private let noticeUseCase: GetNoticeUseCase
     private let matchingSummaryUseCase: GetMatchingSummaryUseCase
-    private let meetingInProgressUseCase: GetMeetingInProgressUseCase
+    private let meetingProgressUseCase: GetMeetingProgressUseCase
+    private let inMeetingUseCase: GetInMeetingUseCase
     private let bannerUseCase: GetBannerUseCase
     
     init(
@@ -44,7 +48,8 @@ class HomeViewModel {
         updateNotificationBannerUseCase: UpdateNotificationBannerUseCase = UpdateNotificationBannerUseCase(),
         noticeUseCase: GetNoticeUseCase = GetNoticeUseCase(),
         matchingSummaryUseCase: GetMatchingSummaryUseCase = GetMatchingSummaryUseCase(),
-        meetingInProgressUseCase: GetMeetingInProgressUseCase = GetMeetingInProgressUseCase(),
+        meetingProgressUseCase: GetMeetingProgressUseCase = GetMeetingProgressUseCase(),
+        inMeetingUseCase: GetInMeetingUseCase = GetInMeetingUseCase(),
         bannerUseCase: GetBannerUseCase = GetBannerUseCase()
     ) {
         
@@ -56,10 +61,12 @@ class HomeViewModel {
             noticeInfos: [],
             matchingSummaryInfos: [],
             bannerInfos: [],
-            meetingDate: nil,
-            inMeetingInfo: nil,
-            isInMeeting: false,
-            meetingReviewInfo: nil
+            matchingProgressInfo: [],
+            hasMeeting: [],
+            shouldWriteReview: [],
+            reachedMeeting: nil,
+            meetingReviewInfo: nil,
+            isLoading: false
         )
         
         self.getProfileUseCase = getProfileUseCase
@@ -68,7 +75,8 @@ class HomeViewModel {
         self.updateNotificationBannerUseCase = updateNotificationBannerUseCase
         self.noticeUseCase = noticeUseCase
         self.matchingSummaryUseCase = matchingSummaryUseCase
-        self.meetingInProgressUseCase = meetingInProgressUseCase
+        self.meetingProgressUseCase = meetingProgressUseCase
+        self.inMeetingUseCase = inMeetingUseCase
         self.bannerUseCase = bannerUseCase
     }
     
@@ -142,19 +150,19 @@ class HomeViewModel {
         }
     }
     
-    func meetingInProgress() async {
+    func meetingProgress() async {
         do {
-            let response = try await self.meetingInProgressUseCase.execute()
+            let response = try await self.meetingProgressUseCase.execute()
             
             await MainActor.run {
-                self.currentState.meetingDate = response.meetingDate
-                self.currentState.inMeetingInfo = response.inMeetingInfo
+                self.currentState.matchingProgressInfo = response
+                self.currentState.hasMeeting = self.hasMeeting(response)
+                self.currentState.shouldWriteReview = self.shouldWriteReview(response)
             }
         } catch {
             
             await MainActor.run {
-                self.currentState.meetingDate = nil
-                self.currentState.inMeetingInfo = nil
+                self.currentState.matchingProgressInfo = []
             }
         }
     }
@@ -168,9 +176,9 @@ class HomeViewModel {
     }
     
     // TODO: 임시, 모임 중 바텀 싯 표시할 플로팅 뷰 표시 플래그
-    func updateIsInMeeting(_ isInMeeting: Bool) async {
+    func reachedMeetingTime(_ reachedMeeting: MatchingProgressInfo?) async {
         await MainActor.run {
-            self.currentState.isInMeeting = isInMeeting
+            self.currentState.reachedMeeting = reachedMeeting
         }
     }
     
@@ -184,26 +192,39 @@ class HomeViewModel {
 
 extension HomeViewModel {
     
+    func hasMeeting(_ infos: [MatchingProgressInfo]) -> [MatchingProgressInfo] {
+        return infos.filter { $0.matchingStatus == .confirmed }
+    }
+    
+    func shouldWriteReview(_ infos: [MatchingProgressInfo]) -> [MatchingProgressInfo] {
+        return infos
+            .filter { $0.matchingStatus == .completed }
+            .filter { $0.isReviewWritten }
+    }
+}
+
+extension HomeViewModel {
+    
     func viewModelForInMeeting() -> Binding<InMeetingViewModel> {
         
-        if let inMeetingInfo = self.currentState.inMeetingInfo {
-            
-            return .constant(
-                InMeetingViewModel(inMeetingInfo: inMeetingInfo)
-            )
-        } else {
+        // if let inMeetingInfo = self.currentState.inMeetingInfo {
+        //
+        //     return .constant(
+        //         InMeetingViewModel(inMeetingInfo: inMeetingInfo)
+        //     )
+        // } else {
             
             return .constant(
                 InMeetingViewModel(
                     inMeetingInfo: InMeetingInfo(
                         matchingId: "",
-                        matchingType: .oneThing,
+                        matchingType: .onething,
                         nicknameList: [],
                         quizList: [],
                         oneThingMap: [:]
                     )
                 )
             )
-        }
+        // }
     }
 }

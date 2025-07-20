@@ -23,6 +23,6 @@ struct MatchingReviewRepository {
             ]
         )
         
-        return try await self.networkService.post(endpoint: endpoint, body: dto).0
+        return try await self.networkService.post(endpoint: endpoint, body: dto).statusCode
     }
 }
