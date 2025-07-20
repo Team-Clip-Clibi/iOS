@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct TossPaymentsRepository {
+struct PaymentsRepository {
     private let networkService = OTNetworkService()
     
     // MARK: - POST

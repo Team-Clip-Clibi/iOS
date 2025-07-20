@@ -8,9 +8,9 @@
 import Foundation
 
 struct CreateOneThingOrderUseCase {
-    private let repository: TossPaymentsRepository
+    private let repository: PaymentsRepository
 
-    init(repository: TossPaymentsRepository = TossPaymentsRepository()) {
+    init(repository: PaymentsRepository = PaymentsRepository()) {
         self.repository = repository
     }
     
