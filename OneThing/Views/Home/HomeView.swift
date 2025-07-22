@@ -22,6 +22,8 @@ struct HomeView: View {
     @Binding var viewModel: HomeViewModel
     
     @Binding var inMeetingPathManager: OTInMeetingPathManager
+    // TODO: 임시, 추후 MVI 도입 시 변경 예정
+    @State var inMeetingViewModel: InMeetingViewModel = InMeetingViewModel(matchingId: "", matchingType: .onething)
     
     @State private var topBannerCurrPage: Int = 0
     @State private var currentPage: Int = 0
@@ -84,8 +86,8 @@ struct HomeView: View {
                                         id: \.offset
                                     ) { page, bannerInfo in
                                         TopBannerView(
-                                            description: bannerInfo.type.description,
-                                            title: bannerInfo.type.title,
+                                            description: bannerInfo.bannerType.description,
+                                            title: bannerInfo.bannerType.title,
                                             currentPage: page,
                                             totalPage: self.viewModel.currentState.topBannerInfos.count,
                                             closeTapAction: {
@@ -139,7 +141,8 @@ struct HomeView: View {
                                             matchingSummaryInfos,
                                             id: \.matchingId
                                         ) { matchingSummaryInfo in
-                                            HomeGridItem(matchingSummary: matchingSummaryInfo)
+                                            // HomeGridItem(matchingSummary: matchingSummaryInfo)
+                                            HomeGridItem(matchingType: .onething, matchingSummary: matchingSummaryInfo)
                                         }
                                         
                                         HomeGridEmptyAndFooter(category: .footer)
@@ -161,7 +164,7 @@ struct HomeView: View {
                                 .foregroundStyle(.gray700)
                             
                             RequestMeetingButton(
-                                category: .onething,
+                                matchingType: .onething,
                                 backgroundTapAction: {
                                     
                                     self.appPathManager.withTabBarHiddenThenNavigate {
@@ -174,7 +177,7 @@ struct HomeView: View {
                             
                             HStack(spacing: 12) {
                                 RequestMeetingButton(
-                                    category: .random,
+                                    matchingType: .random,
                                     backgroundTapAction: {
                                         
                                         self.appPathManager.withTabBarHiddenThenNavigate {
@@ -185,7 +188,7 @@ struct HomeView: View {
                                     }
                                 )
                                 RequestMeetingButton(
-                                    category: .instant,
+                                    matchingType: .instant,
                                     backgroundTapAction: { self.isPresentedPreparingAlert = true }
                                 )
                             }
@@ -234,8 +237,8 @@ struct HomeView: View {
                              group.addTask { await self.viewModel.isUnReadNotificationEmpty() }
                              group.addTask { await self.viewModel.topBanners() }
                              group.addTask { await self.viewModel.notice() }
-                             group.addTask { await self.viewModel.matchingSummary() }
-                             group.addTask { await self.viewModel.meetingProgress() }
+                             group.addTask { await self.viewModel.matchingSummaries() }
+                             group.addTask { await self.viewModel.matchings() }
                              group.addTask { await self.viewModel.banners() }
                          }
                      }
@@ -257,8 +260,8 @@ struct HomeView: View {
                     group.addTask { await self.viewModel.isUnReadNotificationEmpty() }
                     group.addTask { await self.viewModel.topBanners() }
                     group.addTask { await self.viewModel.notice() }
-                    group.addTask { await self.viewModel.matchingSummary() }
-                    group.addTask { await self.viewModel.meetingProgress() }
+                    group.addTask { await self.viewModel.matchingSummaries() }
+                    group.addTask { await self.viewModel.matchings() }
                     if self.viewModel.currentState.bannerInfos.isEmpty {
                         group.addTask { await self.viewModel.banners() }
                     }
@@ -277,6 +280,10 @@ struct HomeView: View {
                         with: hasMeeting.meetingTime,
                         onTimeRangeChanged: { isWithinRange in
                             if isWithinRange {
+                                self.inMeetingViewModel = InMeetingViewModel(
+                                    matchingId: hasMeeting.matchingId,
+                                    matchingType: hasMeeting.matchingType
+                                )
                                 Task { await self.viewModel.reachedMeetingTime(hasMeeting) }
                             }
                         },
@@ -309,7 +316,7 @@ struct HomeView: View {
             // 모임 중 Sheet
             .showInMeetingSheet(
                 inMeetingPathManager: $inMeetingPathManager,
-                inMeetingVieWModel: self.viewModel.viewModelForInMeeting(),
+                inMeetingVieWModel: $inMeetingViewModel,
                 isPresented: $isInMeetingSheetPresented
             )
             // 번개 모임 준비중 Alert
