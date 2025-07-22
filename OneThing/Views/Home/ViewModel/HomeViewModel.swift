@@ -16,7 +16,7 @@ class HomeViewModel {
         fileprivate(set) var topBannerInfos: [NotificationBannerInfo]
         fileprivate(set) var isChangeSuccessForTopBannerStatus: Bool
         fileprivate(set) var noticeInfos: [NoticeInfo]
-        fileprivate(set) var matchingSummaryInfos: [MatchingSummaryInfo]
+        fileprivate(set) var matchingSummariesWithType: [MatchingSummariesWithType]
         fileprivate(set) var bannerInfos: [HomeBannerInfo]
         fileprivate(set) var matchingProgressInfo: [MatchingInfo]
         fileprivate(set) var hasMeeting: [MatchingInfo]
@@ -57,7 +57,7 @@ class HomeViewModel {
             topBannerInfos: [],
             isChangeSuccessForTopBannerStatus: false,
             noticeInfos: [],
-            matchingSummaryInfos: [],
+            matchingSummariesWithType: [],
             bannerInfos: [],
             matchingProgressInfo: [],
             hasMeeting: [],
@@ -144,11 +144,21 @@ class HomeViewModel {
             let matchingSummariesInfo = try await self.getMatchingStatusUseCase.matchingsSummaries()
             
             await MainActor.run {
-                self.currentState.matchingSummaryInfos = matchingSummariesInfo.onethings + matchingSummariesInfo.randoms
+                var matchingSummariesWithType: [MatchingSummariesWithType] {
+                    let fromOnethings = matchingSummariesInfo.onethings.map {
+                        MatchingSummariesWithType(type: .onething, info: $0)
+                    }
+                    let fromRandoms = matchingSummariesInfo.randoms.map {
+                        MatchingSummariesWithType(type: .random, info: $0)
+                    }
+                    
+                    return fromOnethings + fromRandoms
+                }
+                self.currentState.matchingSummariesWithType = matchingSummariesWithType
             }
         } catch {
             await MainActor.run {
-                self.currentState.matchingSummaryInfos = []
+                self.currentState.matchingSummariesWithType = []
             }
         }
     }
@@ -203,5 +213,14 @@ extension HomeViewModel {
         return infos
             .filter { $0.matchingStatus == .completed }
             .filter { $0.isReviewWritten }
+    }
+}
+
+// TODO: 매칭된 모임 정보 요약 조회 시, type이 빠져서 임의로 구조체를 만들어 사용.
+extension HomeViewModel {
+    
+    struct MatchingSummariesWithType: Equatable {
+        let type: MatchingType
+        let info: MatchingSummaryInfo
     }
 }

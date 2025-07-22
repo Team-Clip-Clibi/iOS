@@ -114,7 +114,7 @@ struct HomeView: View {
                         //MARK: Matched Meeting
                         
                         VStack(alignment: .leading, spacing: 12) {
-                            let matchingSummaryInfos = self.viewModel.currentState.matchingSummaryInfos
+                            let matchingSummariesWithType = self.viewModel.currentState.matchingSummariesWithType
                             
                             HStack(spacing: 10) {
                                 // TODO: 임시, 유저 정보는 전역으로 관리 필요
@@ -122,27 +122,29 @@ struct HomeView: View {
                                     .otFont(.title1)
                                     .foregroundStyle(.gray700)
                                 
-                                 if matchingSummaryInfos.isEmpty {
+                                 if matchingSummariesWithType.isEmpty {
                                      EmptyView()
                                  } else {
-                                     Text("\(matchingSummaryInfos.count)")
+                                     Text("\(matchingSummariesWithType.count)")
                                         // TODO: weight 조절 추가해야 함
                                          .otFont(.title1)
                                          .foregroundStyle(.purple400)
                                  }
                             }
                             
-                            if matchingSummaryInfos.isEmpty {
+                            if matchingSummariesWithType.isEmpty {
                                 HomeGridEmptyAndFooter(category: .placeholder)
                             } else {
                                 ScrollView(.horizontal, showsIndicators: false) {
                                     LazyHGrid(rows: self.rows) {
                                         ForEach(
-                                            matchingSummaryInfos,
-                                            id: \.matchingId
+                                            matchingSummariesWithType,
+                                            id: \.info.matchingId
                                         ) { matchingSummaryInfo in
-                                            // HomeGridItem(matchingSummary: matchingSummaryInfo)
-                                            HomeGridItem(matchingType: .onething, matchingSummary: matchingSummaryInfo)
+                                            HomeGridItem(
+                                                matchingType: matchingSummaryInfo.type,
+                                                matchingSummary: matchingSummaryInfo.info
+                                            )
                                         }
                                         
                                         HomeGridEmptyAndFooter(category: .footer)
