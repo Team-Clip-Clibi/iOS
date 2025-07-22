@@ -19,7 +19,6 @@ struct NotificationGridItem: View {
         case .notice: return .red100
         }
     }
-    
     private var imageResource: ImageResource {
         switch self.notification.notificationType {
         case .meeting: return .teamFill
@@ -27,7 +26,6 @@ struct NotificationGridItem: View {
         case .notice: return .notiFill
         }
     }
-    
     private var dateString: String {
         let createdAt = self.notification.createdAt
         return self.isNew ? createdAt.infoReadableTimeTakenFromThis(to: Date()): createdAt.readNotiFormatted
