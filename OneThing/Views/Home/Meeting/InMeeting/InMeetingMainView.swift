@@ -20,6 +20,7 @@ struct InMeetingMainView: View {
     }
     
     @Binding var inMeetingPathManager: OTInMeetingPathManager
+    @Binding var viewModel: InMeetingViewModel
     
     var body: some View {
         
@@ -64,9 +65,15 @@ struct InMeetingMainView: View {
             .padding(.horizontal, 24)
         }
         .navigationBarBackButtonHidden()
+        .task {
+            await self.viewModel.matchingProgress()
+        }
     }
 }
 
 #Preview {
-    InMeetingMainView(inMeetingPathManager: .constant(OTInMeetingPathManager()))
+    InMeetingMainView(
+        inMeetingPathManager: .constant(OTInMeetingPathManager()),
+        viewModel: .constant(InMeetingViewModel(matchingId: "", matchingType: .onething))
+    )
 }

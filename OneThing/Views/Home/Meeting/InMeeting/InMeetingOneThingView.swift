@@ -36,7 +36,7 @@ struct InMeetingOnethingView: View {
             
             Spacer().frame(height: 32)
             
-            let onethings = self.viewModel.initalState.onethings
+            let onethings = self.viewModel.currentState.onethings
             if onethings.isEmpty == false {
                 
                 VStack(spacing: 20) {
@@ -48,7 +48,7 @@ struct InMeetingOnethingView: View {
                             ) { page in
                                 self.setupGridItem(
                                     onethings[page],
-                                    nickname: self.viewModel.initalState.nicknames[page]
+                                    nickname: self.viewModel.currentState.nicknames[page]
                                 )
                                     .tag(page)
                             }
@@ -73,7 +73,7 @@ struct InMeetingOnethingView: View {
             OTXXLButton(
                 buttonTitle: Constants.Text.nextButtonTitle,
                 action: { self.inMeetingPathManager.push(path: .content) },
-                isClickable: (self.currentPage+1) == self.viewModel.initalState.onethingCount
+                isClickable: (self.currentPage+1) == self.viewModel.currentState.onethingCount
             )
             .padding(.bottom, 12)
             .padding(.horizontal, 24)
@@ -131,16 +131,6 @@ extension InMeetingOnethingView {
 #Preview {
     InMeetingOnethingView(
         inMeetingPathManager: .constant(OTInMeetingPathManager()),
-        viewModel: .constant(
-            InMeetingViewModel(
-                inMeetingInfo: InMeetingInfo(
-                    matchingId: "",
-                    matchingType: .onething,
-                    nicknameList: [],
-                    quizList: [],
-                    oneThingMap: [:]
-                )
-            )
-        )
+        viewModel: .constant(InMeetingViewModel(matchingId: "", matchingType: .onething))
     )
 }
