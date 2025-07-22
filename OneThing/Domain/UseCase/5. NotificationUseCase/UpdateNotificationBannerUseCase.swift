@@ -14,7 +14,8 @@ struct UpdateNotificationBannerUseCase {
         self.repository = repository
     }
     
-    func execute(with id: Int) async throws -> HTTPURLResponse {
-        return try await self.repository.updateBannerStatus(with: id)
+    func execute(with bannerId: String) async throws -> Bool {
+        let statusCode = try await self.repository.updateBannerStatus(with: bannerId).statusCode
+        return statusCode == 200
     }
 }

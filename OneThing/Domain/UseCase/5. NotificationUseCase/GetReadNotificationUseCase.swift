@@ -14,11 +14,11 @@ struct GetReadNotificationUseCase {
         self.repository = repository
     }
     
-    func execute(with id: String = "") async throws -> [NotificationInfo] {
-        if id.isEmpty {
-            return try await self.repository.readNotification().notificationInfos
-        } else {
-            return try await self.repository.readNotificationWithPaging(id: id).notificationInfos
-        }
+    func execute() async throws -> [NotificationInfo] {
+        return try await self.repository.readNotifications().notificationInfos
+    }
+    
+    func execute(with notificationId: String) async throws -> [NotificationInfo] {
+        return try await self.repository.readNotifications(with: notificationId).notificationInfos
     }
 }

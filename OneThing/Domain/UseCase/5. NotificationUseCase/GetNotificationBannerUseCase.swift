@@ -15,6 +15,6 @@ struct GetNotificationBannerUseCase {
     }
     
     func execute() async throws -> [NotificationBannerInfo] {
-        return try await self.repository.banners().notificationBannerInfo
+        return try await self.repository.banners().notificationBannerInfos
     }
 }

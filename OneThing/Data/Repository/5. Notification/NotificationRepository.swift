@@ -11,9 +11,10 @@ struct NotificationRepository {
     
     private let networkService = OTNetworkService()
     
+    
     // MARK: - GET
     
-    func unReadNotification() async throws -> NotificationDTO {
+    func unReadNotifications() async throws -> NotificationDTO {
         let endpoint = EndPoint(
             path: "/notifications/unread",
             method: .get,
@@ -26,9 +27,9 @@ struct NotificationRepository {
         return try await self.networkService.get(endpoint: endpoint)
     }
     
-    func unReadNotificationWithPaging(id: String) async throws -> NotificationDTO {
+    func unReadNotifications(with notificationId: String) async throws -> NotificationDTO {
         let endpoint = EndPoint(
-            path: "/notifications/unread/\(id)",
+            path: "/notifications/unread/\(notificationId)",
             method: .get,
             headers: [
                 "Content-Type": "application/json",
@@ -39,7 +40,7 @@ struct NotificationRepository {
         return try await self.networkService.get(endpoint: endpoint)
     }
     
-    func readNotification() async throws -> NotificationDTO {
+    func readNotifications() async throws -> NotificationDTO {
         let endpoint = EndPoint(
             path: "/notifications/read",
             method: .get,
@@ -52,9 +53,9 @@ struct NotificationRepository {
         return try await self.networkService.get(endpoint: endpoint)
     }
     
-    func readNotificationWithPaging(id: String) async throws -> NotificationDTO {
+    func readNotifications(with notificationId: String) async throws -> NotificationDTO {
         let endpoint = EndPoint(
-            path: "/notifications/read/\(id)",
+            path: "/notifications/read/\(notificationId)",
             method: .get,
             headers: [
                 "Content-Type": "application/json",
@@ -78,11 +79,25 @@ struct NotificationRepository {
         return try await self.networkService.get(endpoint: endpoint)
     }
     
+    
     // MARK: - PATCH
     
-    func updateBannerStatus(with id: Int) async throws -> HTTPURLResponse {
+    func updateNotificationStatus(with notificationId: String) async throws -> HTTPURLResponse {
         let endpoint = EndPoint(
-            path: "/notifications/banner/status/\(id)",
+            path: "/notifications/status/\(notificationId)",
+            method: .patch,
+            headers: [
+                "Content-Type": "application/json",
+                "Authorization": "Bearer \(TokenManager.shared.accessToken)"
+            ]
+        )
+        
+        return try await self.networkService.patch(endpoint: endpoint)
+    }
+    
+    func updateBannerStatus(with bannerId: String) async throws -> HTTPURLResponse {
+        let endpoint = EndPoint(
+            path: "/notifications/banner/status/\(bannerId)",
             method: .patch,
             headers: [
                 "Content-Type": "application/json",
