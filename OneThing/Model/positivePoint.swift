@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum PositivePoint: Codable, CaseIterable, Identifiable {
+enum PositivePoint: CaseIterable, Identifiable {
     
     case conversationWasInteresting
     case membersParticipatedActively
@@ -15,7 +15,7 @@ enum PositivePoint: Codable, CaseIterable, Identifiable {
     case atmosphereWasComfortableAndEnjoyable
     case timeAndPlaceWereRight
     
-    var id: String { UUID().uuidString }
+    var id: Self { self }
     
     var toKorean: String {
         switch self {
@@ -32,3 +32,5 @@ enum PositivePoint: Codable, CaseIterable, Identifiable {
         }
     }
 }
+
+extension PositivePoint: Codable { }
