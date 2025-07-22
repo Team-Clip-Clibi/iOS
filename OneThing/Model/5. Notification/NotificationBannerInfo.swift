@@ -8,8 +8,7 @@
 import Foundation
 
 struct NotificationBannerInfo: Equatable {
-    
-    enum bannerType: String {
+    enum Category: String {
         case matching = "MATCHING"
         case matchingInfo = "MATCHING_INFO"
         case review = "REVIEW"
@@ -37,21 +36,21 @@ struct NotificationBannerInfo: Equatable {
         }
     }
     
-    let id: Int
-    let type: bannerType
+    let id: String
+    let bannerType: Category
 }
 
 extension NotificationBannerInfo: Codable {
     
     enum CodingKeys: String, CodingKey {
-        case id = "id"
-        case type = "notificationBannerType"
+        case id
+        case bannerType = "notificationBannerType"
     }
     
     init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        self.id = try container.decode(Int.self, forKey: .id)
-        self.type = try container.decode(NotificationBannerInfo.bannerType.self, forKey: .type)
+        self.id = "\(try container.decode(Int.self, forKey: .id))"
+        self.bannerType = try container.decode(Category.self, forKey: .bannerType)
     }
 }
-extension NotificationBannerInfo.bannerType: Codable { }
+extension NotificationBannerInfo.Category: Codable { }

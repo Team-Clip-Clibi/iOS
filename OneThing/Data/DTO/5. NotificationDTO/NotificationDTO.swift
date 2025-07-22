@@ -7,8 +7,11 @@
 
 import Foundation
 
-struct NotificationDTO: Codable {
+struct NotificationDTO {
     let notificationInfos: [NotificationInfo]
+}
+
+extension NotificationDTO: Codable {
     
     init(from decoder: any Decoder) throws {
         let singleContainer = try decoder.singleValueContainer()

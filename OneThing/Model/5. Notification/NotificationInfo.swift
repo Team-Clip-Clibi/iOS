@@ -8,7 +8,6 @@
 import Foundation
 
 struct NotificationInfo: Equatable {
-    
     enum Category: String {
         case meeting = "MEETING"
         case event = "EVENT"
@@ -29,12 +28,11 @@ struct NotificationInfo: Equatable {
     let createdAt: Date
 }
 
-// TODO: DTO 모델이 불필요
 extension NotificationInfo: Codable {
     
     init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        self.id = try container.decode(String.self, forKey: .id)
+        self.id = "\(try container.decode(Int.self, forKey: .id))"
         self.notificationType = try container.decode(Category.self, forKey: .notificationType)
         self.content = try container.decode(String.self, forKey: .content)
         self.createdAt = try container.decode(Date.self, forKey: .createdAt)
