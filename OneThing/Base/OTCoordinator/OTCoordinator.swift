@@ -5,7 +5,7 @@
 //  Created by 오현식 on 7/15/25.
 //
 
-import SwiftUI
+import Foundation
 
 /// 코디네이터가 준수해야 하는 프로토콜입니다.
 /// 화면 네비게이션 로직(push, pop, sheet 등)과 자식 코디네이터 관리를 위한 인터페이스를 정의합니다.
@@ -65,7 +65,6 @@ class OTBaseCoordinator<RootBuilder: OTViewBuildable>: OTCoordinatorable {
     /// 코디네이터를 초기화합니다.
     /// - Parameter rootViewBuilder: 이 코디네이터가 관리할 루트 뷰를 생성하는 빌더 객체입니다.
     init(rootViewBuilder: RootBuilder) {
-        
         self.path = []
         self.rootViewBuilder = rootViewBuilder
         self.childCoordinator = []
@@ -77,18 +76,18 @@ class OTBaseCoordinator<RootBuilder: OTViewBuildable>: OTCoordinatorable {
     }
     /// `path` 배열에서 마지막 요소를 제거하여 뷰를 팝합니다.
     func pop() {
+        guard self.path.isEmpty == false else { return }
         self.path.removeLast()
     }
     /// `path` 배열에서 특정 경로를 찾아, 그 이후의 모든 경로를 제거합니다.
     func pop(to path: OTPath) {
         // `path` 배열에서 전달받은 `path`와 일치하는 첫 번째 인덱스를 찾습니다.
-        if let targetIndex = self.path.firstIndex(of: path) {
-            // 예: path가 [A, B, C, D]이고 target이 B(index 1)이면, C, D를 지워야 함.
-            // 지워야 할 개수 = 전체 개수 - (타겟 인덱스 + 1) = 4 - (1 + 1) = 2개.
-            // 하지만 removeLast(_ k: Int)는 마지막 k개의 요소를 제거하므로,
-            // (전체 개수 - 1) - 타겟 인덱스 = 3 - 1 = 2개를 제거하면 됩니다.
-            self.path.removeLast(self.path.count - 1 - targetIndex)
-        }
+        guard let targetIndex = self.path.firstIndex(of: path) else { return }
+        // 예: path가 [A, B, C, D]이고 target이 B(index 1)이면, C, D를 지워야 함.
+        // 지워야 할 개수 = 전체 개수 - (타겟 인덱스 + 1) = 4 - (1 + 1) = 2개.
+        // 하지만 removeLast(_ k: Int)는 마지막 k개의 요소를 제거하므로,
+        // (전체 개수 - 1) - 타겟 인덱스 = 3 - 1 = 2개를 제거하면 됩니다.
+        self.path.removeLast(self.path.count - 1 - targetIndex)
     }
     /// `path` 배열의 모든 요소를 제거하여 루트 뷰로 돌아갑니다.
     func popToRoot() {
