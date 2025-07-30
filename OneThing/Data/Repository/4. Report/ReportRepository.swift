@@ -15,7 +15,7 @@ struct ReportRepository {
 
     // MARK: - POST
     
-    /// Data는 빈 값
+    /// 신고 등록 API
     func report(with dto: ReportDTO) async throws -> HTTPURLResponse {
         let endpoint = EndPoint(
             path: "/report",

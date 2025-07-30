@@ -24,8 +24,8 @@ struct SubmitMeetingReviewUseCase {
         matchingId: String,
         matchingType: MatchingType
     ) async throws -> Bool {
-        let statusCode = try await self.repository.meetingReview(
-            MeetingReviewDTO(
+        let statusCode = try await self.repository.matchingReview(
+            MatchingReviewDTO(
                 mood: mood,
                 positivePoints: positivePoints,
                 negativePoints: negativePoints,

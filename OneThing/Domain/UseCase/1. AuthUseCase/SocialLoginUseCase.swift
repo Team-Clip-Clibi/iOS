@@ -112,20 +112,6 @@ class SocialLoginUseCase {
         }
     }
     
-    func updatePhoneNumber(phoneNumber: String) async throws -> Bool {
-        let statusCode = try await userInfoRepository.usersPhone(with: UpdatePhoneNumberDTO(phoneNumber: phoneNumber)).statusCode
-        return statusCode == 204
-    }
-    
-    func updateUserName(userName: String) async throws -> Bool {
-        let statusCode = try await userInfoRepository.usersName(with: UpdateNameDTO(userName: userName)).statusCode
-        return statusCode == 204
-    }
-    
-    func getNickNameAvailableStatus(nickname: String) async throws -> Bool {
-        return try await userInfoRepository.usersNicknameAvailable(with: UpdateNicknameDTO(nickname: nickname))
-    }
-    
     func updateDetail(gender: String, birth: String, city: String, county: String) async throws -> Bool {
         let statusCode = try await userInfoRepository.usersDetail(
             with: UpdateUserDetailInfoDTO(

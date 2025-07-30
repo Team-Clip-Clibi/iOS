@@ -7,6 +7,6 @@
 
 import Foundation
 
-struct UpdateNameDTO: Codable {
+struct UserNameDTO: Codable {
     var userName: String
 }

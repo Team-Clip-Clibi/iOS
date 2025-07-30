@@ -15,7 +15,7 @@ struct UpdateNicknameUseCase {
     }
     
     func execute(nickname: String) async throws -> Bool {
-        let statusCode = try await repository.usersNickname(with: UpdateNicknameDTO(nickname: nickname)).statusCode
+        let statusCode = try await repository.usersNickname(with: NicknameDTO(nickname: nickname)).statusCode
         return statusCode == 204
     }
 }

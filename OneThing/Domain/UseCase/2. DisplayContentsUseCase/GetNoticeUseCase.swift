@@ -15,6 +15,6 @@ struct GetNoticeUseCase {
     }
     
     func execute() async throws -> [NoticeInfo] {
-        return try await self.repository.notice().noticeInfos
+        return try await self.repository.displaysNotices().noticeInfos
     }
 }

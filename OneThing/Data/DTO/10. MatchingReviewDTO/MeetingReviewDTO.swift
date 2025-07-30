@@ -1,5 +1,5 @@
 //
-//  MeetingReviewDTO.swift
+//  MatchingReviewDTO.swift
 //  OneThing
 //
 //  Created by 오현식 on 6/20/25.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct MeetingReviewDTO: Codable {
+struct MatchingReviewDTO: Codable {
     let mood: MeetingReviewMood
     let positivePoints: String
     let negativePoints: String

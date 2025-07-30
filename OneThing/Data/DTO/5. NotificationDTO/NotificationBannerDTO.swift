@@ -7,11 +7,11 @@
 
 import Foundation
 
-struct NotificationBannerDto {
+struct NotificationBannerDTO {
     let notificationBannerInfos: [NotificationBannerInfo]
 }
 
-extension NotificationBannerDto: Codable {
+extension NotificationBannerDTO: Codable {
     
     init(from decoder: any Decoder) throws {
         let singleContainer = try decoder.singleValueContainer()
