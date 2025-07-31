@@ -28,6 +28,9 @@ protocol OTCoordinatorable: AnyObject, Identifiable {
     /// 자식 코디네이터들을 관리하는 배열입니다.
     var childCoordinator: [any OTCoordinatorable] { get set }
     
+    /// 루트 뷰 빌더를 교체합니다.
+    func updateRootViewBuilder(_ builder: RootViewBuilder)
+    
     /// 새로운 뷰를 네비게이션 스택에 푸시합니다.
     func push(to path: OTPath)
     /// 네비게이션 스택에서 현재 뷰를 팝합니다.
@@ -48,7 +51,7 @@ protocol OTCoordinatorable: AnyObject, Identifiable {
 }
 
 /// `OTCoordinatorable` 프로토콜을 구현하는 기본 코디네이터 클래스입니다.
-class OTBaseCoordinator<RootBuilder: OTViewBuildable>: OTCoordinatorable {
+class OTBaseCoordinator<RootViewBuilder: OTViewBuildable>: OTCoordinatorable {
     
     /// 코디네이터 인스턴스를 문자열로 변환하여 고유 ID로 사용합니다.
     var id: String { String(describing: self) }
@@ -58,16 +61,21 @@ class OTBaseCoordinator<RootBuilder: OTViewBuildable>: OTCoordinatorable {
     var sheet: OTPath?
     
     /// 루트 뷰를 생성하기 위한 빌더입니다.
-    let rootViewBuilder: RootBuilder
+    var rootViewBuilder: RootViewBuilder
     /// 자식 코디네이터들을 저장하는 배열입니다.
     var childCoordinator: [any OTCoordinatorable]
     
     /// 코디네이터를 초기화합니다.
     /// - Parameter rootViewBuilder: 이 코디네이터가 관리할 루트 뷰를 생성하는 빌더 객체입니다.
-    init(rootViewBuilder: RootBuilder) {
+    init(rootViewBuilder: RootViewBuilder) {
         self.path = []
         self.rootViewBuilder = rootViewBuilder
         self.childCoordinator = []
+    }
+    
+    /// `rootViewBuilder` 를 교체합니다.
+    func updateRootViewBuilder(_ builder: RootViewBuilder) {
+        self.rootViewBuilder = builder
     }
     
     /// `path` 배열에 새로운 경로를 추가하여 뷰를 푸시합니다.
