@@ -53,7 +53,10 @@ struct InMeetingSheetView: View {
                             Group {
                                 switch path {
                                 case .main:
-                                    InMeetingMainView(inMeetingPathManager: $inMeetingPathManager)
+                                    InMeetingMainView(
+                                        inMeetingPathManager: $inMeetingPathManager,
+                                        viewModel: $inMeetingViewModel
+                                    )
                                 case .selectHost:
                                     InMeetingSelectHostView(inMeetingPathManager: $inMeetingPathManager)
                                 case .introduce:

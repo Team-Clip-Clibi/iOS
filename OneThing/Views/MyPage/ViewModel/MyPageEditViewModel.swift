@@ -27,6 +27,7 @@ class MyPageEditViewModel {
     private var getRelationshipUseCase: GetRelationshipUseCase
     private var getDietaryUseCase: GetDietaryUseCase
     private var getLanguageUseCase: GetLanguageUseCase
+    private var getNicknameAvailableUseCase: GetNicknameAvailableUseCase
     private var updateNicknameUseCase: UpdateNicknameUseCase
     private var updateJobUseCase: UpdateJobUseCase
     private var updateRelationshipUseCase: UpdateRelationshipUseCase
@@ -43,6 +44,7 @@ class MyPageEditViewModel {
         getRelationshipUseCase: GetRelationshipUseCase = GetRelationshipUseCase(),
         getDietaryUseCase: GetDietaryUseCase = GetDietaryUseCase(),
         getLanguageUseCase: GetLanguageUseCase = GetLanguageUseCase(),
+        getNicknameAvailableUseCase: GetNicknameAvailableUseCase = GetNicknameAvailableUseCase(),
         
         updateNicknameUseCase: UpdateNicknameUseCase = UpdateNicknameUseCase(),
         updateJobUseCase: UpdateJobUseCase = UpdateJobUseCase(),
@@ -57,6 +59,7 @@ class MyPageEditViewModel {
         self.getRelationshipUseCase = getRelationshipUseCase
         self.getDietaryUseCase = getDietaryUseCase
         self.getLanguageUseCase = getLanguageUseCase
+        self.getNicknameAvailableUseCase = getNicknameAvailableUseCase
         
         self.updateNicknameUseCase = updateNicknameUseCase
         self.updateJobUseCase = updateJobUseCase
@@ -106,7 +109,7 @@ class MyPageEditViewModel {
     }
     
     func isNicknameAvailable(nickname: String) async throws -> Bool {
-        return try await socialLoginUseCase.getNickNameAvailableStatus(nickname: nickname)
+        return try await getNicknameAvailableUseCase.execute(with: nickname)
     }
     
     func updateNickname(nickname: String) async throws -> Bool {

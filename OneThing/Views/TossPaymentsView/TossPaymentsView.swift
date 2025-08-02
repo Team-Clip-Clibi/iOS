@@ -13,7 +13,7 @@ struct TossPaymentsView: View {
     @State private var viewModel = TossPaymentsViewModel()
     @Binding var isShowingFullScreen: Bool
     @Binding var paymentResult: PaymentResult?
-    @Binding var onethingMatchingViewModel: OneThingMatchingViewModel
+    @Binding var oneThingMatchingViewModel: OneThingMatchingViewModel
     
     var body: some View {
         NavigationStack {
@@ -44,7 +44,7 @@ struct TossPaymentsView: View {
         }
         .onAppear {
             Task {
-                try await self.viewModel.getOnethingOrder(self.onethingMatchingViewModel.currentState)
+                try await self.viewModel.getOnethingOrder(self.oneThingMatchingViewModel.currentState)
             }
         }
     }

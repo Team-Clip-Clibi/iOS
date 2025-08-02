@@ -33,7 +33,7 @@ extension Date {
                 
                 if let matchingDate = MatchingDate.allCases.first(where: { $0.weekday == weekday }) {
                     let dateString = date.toString("MM.dd")
-                    result.append((dateString, matchingDate.rawValue))
+                    result.append((dateString, matchingDate.toKorean))
                 }
             }
         }
