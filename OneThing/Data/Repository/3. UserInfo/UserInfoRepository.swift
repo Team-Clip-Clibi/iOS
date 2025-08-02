@@ -12,6 +12,7 @@ struct UserInfoRepository {
     
     // MARK: - GET
     
+    /// 연애 상태 변경 조회 API
     func usersRelationship() async throws -> RelationshipDTO {
         let endpoint = EndPoint(
             path: "/users/relationship",
@@ -25,6 +26,7 @@ struct UserInfoRepository {
         return try await networkService.get(endpoint: endpoint)
     }
     
+    /// 사용 언어 조회 API
     func usersLanguage() async throws -> LanguageDTO {
         let endpoint = EndPoint(
             path: "/users/language",
@@ -38,6 +40,7 @@ struct UserInfoRepository {
         return try await networkService.get(endpoint: endpoint)
     }
     
+    /// 하는 일 조회 API
     func usersJob() async throws -> JobDTO {
         let endpoint = EndPoint(
             path: "/users/job",
@@ -51,6 +54,7 @@ struct UserInfoRepository {
         return try await networkService.get(endpoint: endpoint)
     }
     
+    /// 식단 제한 조회 API
     func usersDietary() async throws -> DietaryDTO {
         let endpoint = EndPoint(
             path: "/users/dietary",
@@ -64,6 +68,7 @@ struct UserInfoRepository {
         return try await networkService.get(endpoint: endpoint)
     }
     
+    /// 프로필 기본 정보 조회 API
     func usersProfile() async throws -> UserProfileInfo {
         let endpoint = EndPoint(
             path: "/users/profile",
@@ -79,10 +84,24 @@ struct UserInfoRepository {
         return dto.toDomain()
     }
     
+    /// 신청 모임 존재 여부 확인 API
+    func usersMatchingsExists() async throws -> Bool {
+        let endpoint = EndPoint(
+            path: "/users/matchings/exists",
+            method: .get,
+            headers: [
+                "Content-Type": "application/json",
+                "Authorization": "Bearer \(TokenManager.shared.accessToken)"
+            ]
+        )
+        
+        return try await networkService.get(endpoint: endpoint)
+    }
+    
     // MARK: - POST
     
-    /// Data는 빈 값
-    func usersNicknameAvailable(with dto: UpdateNicknameDTO) async throws -> Bool {
+    /// 사용 가능한 닉네임 확인 API
+    func usersNicknameAvailable(with dto: NicknameDTO) async throws -> Bool {
         let endpoint = EndPoint(
             path: "/users/nickname/available",
             method: .post,
@@ -105,6 +124,7 @@ struct UserInfoRepository {
     
     // MARK: - PATCH
     
+    /// 연애 상태 변경 API
     func usersRelationship(with dto: RelationshipDTO) async throws -> HTTPURLResponse {
         let endpoint = EndPoint(
             path: "/users/relationship",
@@ -118,6 +138,7 @@ struct UserInfoRepository {
         return try await networkService.patch(endpoint: endpoint, body: dto)
     }
     
+    /// 번호 업데이트 API
     func usersPhone(with dto: UpdatePhoneNumberDTO) async throws -> HTTPURLResponse {
         let endpoint = EndPoint(
             path: "/users/phone",
@@ -131,7 +152,8 @@ struct UserInfoRepository {
         return try await networkService.patch(endpoint: endpoint, body: dto)
     }
     
-    func usersNotify(with dto: UpdateNotifyAllowDTO) async throws -> HTTPURLResponse {
+    /// 알림 On/Off API
+    func usersNotify(with dto: NotifyAllowDTO) async throws -> HTTPURLResponse {
         let endpoint = EndPoint(
             path: "/users/notify",
             method: .patch,
@@ -144,7 +166,8 @@ struct UserInfoRepository {
         return try await networkService.patch(endpoint: endpoint, body: dto)
     }
     
-    func usersNickname(with dto: UpdateNicknameDTO) async throws -> HTTPURLResponse {
+    /// 닉네임 업데이트 API
+    func usersNickname(with dto: NicknameDTO) async throws -> HTTPURLResponse {
         let endpoint = EndPoint(
             path: "/users/nickname",
             method: .patch,
@@ -157,7 +180,8 @@ struct UserInfoRepository {
         return try await networkService.patch(endpoint: endpoint, body: dto)
     }
     
-    func usersName(with dto: UpdateNameDTO) async throws -> HTTPURLResponse {
+    /// 이름 업데이트 API
+    func usersName(with dto: UserNameDTO) async throws -> HTTPURLResponse {
         let endpoint = EndPoint(
             path: "/users/name",
             method: .patch,
@@ -170,6 +194,7 @@ struct UserInfoRepository {
         return try await networkService.patch(endpoint: endpoint, body: dto)
     }
     
+    /// 사용 언어 변경 API
     func usersLanguage(with dto: LanguageDTO) async throws -> HTTPURLResponse {
         let endpoint = EndPoint(
             path: "/users/language",
@@ -183,6 +208,7 @@ struct UserInfoRepository {
         return try await networkService.patch(endpoint: endpoint, body: dto)
     }
     
+    /// 하는 일 변경 API
     func usersJob(with dto: JobDTO) async throws -> HTTPURLResponse {
         let endpoint = EndPoint(
             path: "/users/job",
@@ -196,7 +222,8 @@ struct UserInfoRepository {
         return try await networkService.patch(endpoint: endpoint, body: dto)
     }
     
-    func usersFCM(with dto: UpdateFCMDTO) async throws -> HTTPURLResponse {
+    /// FCM 업데이트 API
+    func usersFCM(with dto: FCMTokenDTO) async throws -> HTTPURLResponse {
         let endpoint = EndPoint(
             path: "/users/fcm",
             method: .patch,
@@ -209,6 +236,7 @@ struct UserInfoRepository {
         return try await networkService.patch(endpoint: endpoint, body: dto)
     }
     
+    /// 식단 제한 변경 API
     func usersDietary(with dto: DietaryDTO) async throws -> HTTPURLResponse {
         let endpoint = EndPoint(
             path: "/users/dietary",
@@ -222,21 +250,10 @@ struct UserInfoRepository {
         return try await networkService.patch(endpoint: endpoint, body: dto)
     }
     
+    /// 유저 상세 정보 업데이트 API
     func usersDetail(with dto: UpdateUserDetailInfoDTO) async throws -> HTTPURLResponse {
         let endpoint = EndPoint(
             path: "/users/detail",
-            method: .patch,
-            headers: [
-                "Content-Type": "application/json",
-                "Authorization": "Bearer \(TokenManager.shared.accessToken)"
-            ]
-        )
-        return try await networkService.patch(endpoint: endpoint, body: dto)
-    }
-    
-    func usersDetail(with dto: RetrieveUserProfileInfoDTO) async throws -> HTTPURLResponse {
-        let endpoint = EndPoint(
-            path: "/users/profile",
             method: .patch,
             headers: [
                 "Content-Type": "application/json",

@@ -65,6 +65,59 @@ class APIClient {
         }
     }
     
+    func getRequest<T: Decodable, U: Encodable>(endpoint: EndPoint, body: U) async throws -> T {
+        guard let url = endpoint.url else {
+            throw NetworkError.invalidURL
+        }
+        
+        var urlRequest = URLRequest(url: url)
+        urlRequest.httpMethod = endpoint.method.rawValue
+        urlRequest.allHTTPHeaderFields = endpoint.headers
+        urlRequest.httpBody = try JSONEncoder().encode(body)
+        
+        // URLRequest 콘솔 로그
+        LoggingManager.request(
+            """
+                URL: \(urlRequest.url?.absoluteString ?? "nil")
+                Method: \(urlRequest.httpMethod ?? "nil")
+                Headers: \(urlRequest.allHTTPHeaderFields ?? [:])
+            """
+        )
+        
+        do {
+            let (data, response) = try await URLSession.shared.data(for: urlRequest)
+            
+            // Data 콘솔 로그, Data == nil일 때, None
+            if let jsonObject = try? JSONSerialization.jsonObject(with: data, options: []),
+               let prettyData = try? JSONSerialization.data(withJSONObject: jsonObject, options: .prettyPrinted),
+               let prettyString = String(data: prettyData, encoding: .utf8) {
+                LoggingManager.response(prettyString)
+            } else {
+                LoggingManager.response("None")
+            }
+            
+            guard let httpResponse = response as? HTTPURLResponse, (200...299).contains(httpResponse.statusCode) else {
+                throw NetworkError.invalidHttpStatusCode(code: (response as? HTTPURLResponse)?.statusCode ?? 0)
+            }
+            do {
+                let decodedData = try JSONDecoder().decode(T.self, from: data)
+                
+                if let jsonString = String(data: data, encoding: .utf8) {
+                    print("서버에서 받은 raw data: \(jsonString)")
+                } else {
+                    print("문자열 Decoding 실패")
+                }
+                
+                return decodedData
+            } catch let decodingError{
+                print("Decoding 오류 발생: \(decodingError.localizedDescription)")
+                throw NetworkError.decodeError
+            }
+        } catch {
+            throw NetworkError.urlRequestFailed(description: error.localizedDescription)
+        }
+    }
+    
     func postRequest<T: Decodable, U: Encodable>(endpoint: EndPoint, body: U) async throws -> (T, HTTPURLResponse) {
         guard let url = endpoint.url else {
             throw NetworkError.invalidURL

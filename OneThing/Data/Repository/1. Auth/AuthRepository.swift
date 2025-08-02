@@ -15,7 +15,8 @@ struct AuthRepository {
     
     // MARK: - POST
     
-    func usersTokens(with dto: RefreshTokenDTO) async throws -> RefreshTokenResponse {
+    /// Access Token 재발급 API
+    func usersTokens(with dto: RefreshTokenDTO) async throws -> AccessTokenDTO {
         let endpoint = EndPoint(
             path: "/users/tokens",
             method: .post,
@@ -27,7 +28,7 @@ struct AuthRepository {
         return try await networkService.post(endpoint: endpoint, body: dto).0
     }
     
-
+    /// 회원가입 API
     func usersSignup(with dto: SignUpDTO) async throws -> SignUpResponse {
         let endpoint = EndPoint(
             path: "/users/signup",
@@ -40,6 +41,7 @@ struct AuthRepository {
         return try await networkService.post(endpoint: endpoint, body: dto).0
     }
     
+    /// 로그인 API
     func usersSignIn(with dto: SignInDTO) async throws -> SignInResponse {
         let endpoint = EndPoint(
             path: "/users/signin",
@@ -54,6 +56,7 @@ struct AuthRepository {
     
     // MARK: - GET
     
+    /// 번호로 가입된 계정 조회 API
     func usersPhoneNumberInfo(phoneNumber: String) async throws -> UserInfoDTO {
         let endpoint = EndPoint(
             path: "/users/\(phoneNumber)/info",
@@ -69,6 +72,7 @@ struct AuthRepository {
     
     // MARK: - DELETE
     
+    /// 회원 탈퇴 API
     func usersMe() async throws -> Bool {
         let endpoint = EndPoint(
             path: "/users/me",

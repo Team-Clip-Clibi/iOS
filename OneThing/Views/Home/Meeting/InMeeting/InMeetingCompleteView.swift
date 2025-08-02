@@ -74,9 +74,9 @@ struct InMeetingCompleteView: View {
                 NotificationCenter.default.post(
                     name: .showMeetingReviewAlert,
                     object: [
-                        "nicknames": self.viewModel.initalState.nicknames,
-                        "matchingId": self.viewModel.initalState.matchingId,
-                        "matchingType": self.viewModel.initalState.matchingType
+                        "nicknames": self.viewModel.currentState.nicknames,
+                        "matchingId": self.viewModel.matchingId,
+                        "matchingType": self.viewModel.matchingType
                     ]
                 )
                 self.inMeetingPathManager.popToRoot()
@@ -88,16 +88,6 @@ struct InMeetingCompleteView: View {
 #Preview {
     InMeetingCompleteView(
         inMeetingPathManager: .constant(OTInMeetingPathManager()),
-        viewModel: .constant(
-            InMeetingViewModel(
-                inMeetingInfo: InMeetingInfo(
-                    matchingId: "",
-                    matchingType: .onething,
-                    nicknameList: [],
-                    quizList: [],
-                    oneThingMap: [:]
-                )
-            )
-        )
+        viewModel: .constant(InMeetingViewModel(matchingId: "", matchingType: .onething))
     )
 }

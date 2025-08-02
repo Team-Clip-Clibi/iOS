@@ -13,7 +13,8 @@ struct DisplayContentsRepository {
     
     // MARK: - GET
     
-    func notice() async throws -> NoticeInfoDTO {
+    /// 공지/새소식 조회 API
+    func displaysNotices() async throws -> NoticeInfoDTO {
         let endpoint = EndPoint(
             path: "/displays/notices",
             method: .get,
@@ -26,7 +27,8 @@ struct DisplayContentsRepository {
         return try await self.networkService.get(endpoint: endpoint)
     }
     
-    func banners(with bannerInfoType: BannerInfoType) async throws -> [BannerInfoDTO] {
+    /// 배너 조회 API
+    func displaysBanners(with bannerInfoType: BannerInfoType) async throws -> [BannerInfoDTO] {
         var endpoint = EndPoint(
             path: "/displays/banners/\(bannerInfoType.rawValue)",
             method: .get,

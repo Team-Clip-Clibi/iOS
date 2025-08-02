@@ -12,28 +12,39 @@ struct HomeGridItem: View {
     enum ConstText {
         static let onTheDay = "모임 당일"
         static let untilDay = "일 전"
+        
+        static let onethingDescription = "원띵 모임"
+        static let randomDescription = "랜덤 모임"
+        static let instantDescription = "번개 모임"
     }
     
+    private(set) var matchingType: MatchingType
     private(set) var matchingSummary: MatchingSummaryInfo
     
     private var tintColor: Color {
-        switch self.matchingSummary.category {
+        switch self.self.matchingType {
         case .onething: return .purple400
-        case .random: return .green100
-        case .instant: return .yellow100
+        case .random:   return .green100
+        case .instant:  return .yellow100
         }
     }
     private var daysUntilMeetingText: String {
-        if self.matchingSummary.daysUntilMeeting == 0 {
-            return ConstText.onTheDay
-        } else {
-            return "\(self.matchingSummary.daysUntilMeeting)\(ConstText.untilDay)"
+        switch self.matchingSummary.daysUntilMeeting {
+        case 0:     return ConstText.onTheDay
+        default:    return "\(self.matchingSummary.daysUntilMeeting)\(ConstText.untilDay)"
+        }
+    }
+    private var matchingTypeDescription: String {
+        switch self.matchingType {
+        case .onething: return ConstText.onethingDescription
+        case .random:   return ConstText.randomDescription
+        case .instant:  return ConstText.instantDescription
         }
     }
     
     var body: some View {
         VStack(spacing: 10) {
-            Text(self.matchingSummary.category.description)
+            Text(self.matchingTypeDescription)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .otFont(.subtitle1)
                 .foregroundStyle(.white100)
@@ -80,26 +91,29 @@ struct HomeGridItem: View {
 
 #Preview {
     HomeGridItem(
+        matchingType: .onething,
         matchingSummary: MatchingSummaryInfo(
-            category: .onething,
-            matchingId: 123456789,
+            matchingId: 1,
             daysUntilMeeting: 0,
+            meetingTime: Date(),
             meetingPlace: "Gangnam"
         )
     )
     HomeGridItem(
+        matchingType: .random,
         matchingSummary: MatchingSummaryInfo(
-            category: .random,
-            matchingId: 123456789,
+            matchingId: 2,
+            daysUntilMeeting: 10,
+            meetingTime: Date(),
+            meetingPlace: "Gangnam"
+        )
+    )
+    HomeGridItem(
+        matchingType: .instant,
+        matchingSummary: MatchingSummaryInfo(
+            matchingId: 3,
             daysUntilMeeting: 5,
-            meetingPlace: "Gangnam"
-        )
-    )
-    HomeGridItem(
-        matchingSummary: MatchingSummaryInfo(
-            category: .instant,
-            matchingId: 123456789,
-            daysUntilMeeting: 13,
+            meetingTime: Date(),
             meetingPlace: "Gangnam"
         )
     )

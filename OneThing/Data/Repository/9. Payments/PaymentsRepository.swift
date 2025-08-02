@@ -12,9 +12,9 @@ struct PaymentsRepository {
     
     // MARK: - POST
     
-    func onethingsOrder(with dto: OneThingOrderRequest) async throws -> OneThingOrderResponse {
+    func submitPaymentsConfirm(_ dto: PaymentRequestDTO) async throws -> HTTPURLResponse {
         let endpoint = EndPoint(
-            path: "/onethings/order",
+            path: "/payments/confirm",
             method: .post,
             headers: [
                 "Content-Type": "application/json",
@@ -22,27 +22,6 @@ struct PaymentsRepository {
             ]
         )
         
-        return try await networkService.post(endpoint: endpoint, body: dto).0
-    }
-    
-    func paymentsConfirm(with dto: PaymentDTO) async throws -> Bool {
-        let endpoint = EndPoint(
-            path: "/users/nickname/available",
-            method: .post,
-            headers: [
-                "Content-Type": "application/json",
-                "Authorization": "Bearer \(TokenManager.shared.accessToken)"
-            ]
-        )
-        
-        do {
-            return try await networkService.post(endpoint: endpoint, body: dto).statusCode == 200
-        } catch let error as NetworkError {
-            if case .invalidHttpStatusCode(let code) = error, code == 400 {
-                return false
-            } else {
-                throw error
-            }
-        }
+        return try await self.networkService.post(endpoint: endpoint, body: dto)
     }
 }

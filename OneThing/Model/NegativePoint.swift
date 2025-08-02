@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum NegativePoint: Codable, CaseIterable, Identifiable {
+enum NegativePoint: CaseIterable, Identifiable {
     
     case conversationWasBoring
     case membersWerePassive
@@ -16,7 +16,7 @@ enum NegativePoint: Codable, CaseIterable, Identifiable {
     case doNotLikeTimeAndPlace
     case notkeepingAppointment
     
-    var id: String { UUID().uuidString }
+    var id: Self { self }
     
     var toKorean: String {
         switch self {
@@ -35,3 +35,5 @@ enum NegativePoint: Codable, CaseIterable, Identifiable {
         }
     }
 }
+
+extension NegativePoint: Codable { }

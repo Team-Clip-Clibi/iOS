@@ -12,6 +12,10 @@ class OTNetworkService: APIService {
         try await APIClient.shared.getRequest(endpoint: endpoint)
     }
     
+    func get<T, U>(endpoint: EndPoint, body: U) async throws -> T where T: Decodable, U: Encodable {
+        try await APIClient.shared.getRequest(endpoint: endpoint, body: body)
+    }
+    
     func post<T, U>(endpoint: EndPoint, body: U) async throws -> (T, HTTPURLResponse) where T : Decodable, U : Encodable {
         try await APIClient.shared.postRequest(endpoint: endpoint, body: body)
     }
