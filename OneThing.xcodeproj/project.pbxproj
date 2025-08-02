@@ -46,7 +46,7 @@
 		088852672D8F20200029A1F0 /* Exceptions for "OneThing" folder in "OneThing" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				App/Info.plist,
+				Resources/Info.plist,
 			);
 			target = 086442602D85BB550055FB81 /* OneThing */;
 		};
