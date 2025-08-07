@@ -38,9 +38,9 @@ struct InMeetingIntroduceView: View {
             
             ScrollView(.vertical, showsIndicators: false) {
                 LazyVGrid(columns: self.cols) {
-                    ForEach(self.viewModel.initalState.nicknames.indices, id: \.self) { index in
+                    ForEach(self.viewModel.currentState.nicknames.indices, id: \.self) { index in
                         self.setupGridItem(
-                            self.viewModel.initalState.nicknames[index],
+                            self.viewModel.currentState.nicknames[index],
                             with: index+1
                         )
                     }
@@ -98,16 +98,6 @@ extension InMeetingIntroduceView {
 #Preview {
     InMeetingIntroduceView(
         inMeetingPathManager: .constant(OTInMeetingPathManager()),
-        viewModel: .constant(
-            InMeetingViewModel(
-                inMeetingInfo: InMeetingInfo(
-                    matchingId: "",
-                    matchingType: .oneThing,
-                    nicknameList: [],
-                    quizList: [],
-                    oneThingMap: [:]
-                )
-            )
-        )
+        viewModel: .constant(InMeetingViewModel(matchingId: "", matchingType: .onething))
     )
 }

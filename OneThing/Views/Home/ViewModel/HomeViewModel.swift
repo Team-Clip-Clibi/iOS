@@ -16,35 +16,38 @@ class HomeViewModel {
         fileprivate(set) var topBannerInfos: [NotificationBannerInfo]
         fileprivate(set) var isChangeSuccessForTopBannerStatus: Bool
         fileprivate(set) var noticeInfos: [NoticeInfo]
-        fileprivate(set) var matchingSummaryInfos: [MatchingSummaryInfo]
+        fileprivate(set) var matchingSummariesWithType: [MatchingSummariesWithType]
         fileprivate(set) var bannerInfos: [HomeBannerInfo]
-        fileprivate(set) var meetingDate: Date?
-        fileprivate(set) var inMeetingInfo: InMeetingInfo?
-        fileprivate(set) var isInMeeting: Bool
+        fileprivate(set) var matchingProgressInfo: [MatchingInfo]
+        fileprivate(set) var hasMeeting: [MatchingInfo]
+        fileprivate(set) var shouldWriteReview: [MatchingInfo]
+        fileprivate(set) var reachedMeeting: MatchingInfo?
         // TODO: 임시, 모임 후기 용
         fileprivate(set) var meetingReviewInfo: MeetingReviewViewModel.InitialInfo?
+        
+        fileprivate(set) var isLoading: Bool
     }
     
     var currentState: State
     
     // TODO: 임시, 유저 정보는 전역으로 관리 필요
     private let getProfileUseCase: GetProfileInfoUseCase
-    private let unReadNotificationUseCase: GetUnReadNotificationUseCase
+    private let getUnReadNotificationUseCase: GetUnReadNotificationUseCase
     private let getNotificationBannerUseCase: GetNotificationBannerUseCase
     private let updateNotificationBannerUseCase: UpdateNotificationBannerUseCase
     private let noticeUseCase: GetNoticeUseCase
-    private let matchingSummaryUseCase: GetMatchingSummaryUseCase
-    private let meetingInProgressUseCase: GetMeetingInProgressUseCase
+    private let getMatchingStatusUseCase: GetMatchingStatusUseCase
+    private let getMatchingsUseCase: GetMatchingsUseCase
     private let bannerUseCase: GetBannerUseCase
     
     init(
         getProfileUseCase: GetProfileInfoUseCase = GetProfileInfoUseCase(),
-        unReadNotificationUseCase: GetUnReadNotificationUseCase = GetUnReadNotificationUseCase(),
+        getUnReadNotificationUseCase: GetUnReadNotificationUseCase = GetUnReadNotificationUseCase(),
         getNotificationBannerUseCase: GetNotificationBannerUseCase = GetNotificationBannerUseCase(),
         updateNotificationBannerUseCase: UpdateNotificationBannerUseCase = UpdateNotificationBannerUseCase(),
         noticeUseCase: GetNoticeUseCase = GetNoticeUseCase(),
-        matchingSummaryUseCase: GetMatchingSummaryUseCase = GetMatchingSummaryUseCase(),
-        meetingInProgressUseCase: GetMeetingInProgressUseCase = GetMeetingInProgressUseCase(),
+        getMatchingStatusUseCase: GetMatchingStatusUseCase = GetMatchingStatusUseCase(),
+        getMatchingsUseCase: GetMatchingsUseCase = GetMatchingsUseCase(),
         bannerUseCase: GetBannerUseCase = GetBannerUseCase()
     ) {
         
@@ -54,21 +57,23 @@ class HomeViewModel {
             topBannerInfos: [],
             isChangeSuccessForTopBannerStatus: false,
             noticeInfos: [],
-            matchingSummaryInfos: [],
+            matchingSummariesWithType: [],
             bannerInfos: [],
-            meetingDate: nil,
-            inMeetingInfo: nil,
-            isInMeeting: false,
-            meetingReviewInfo: nil
+            matchingProgressInfo: [],
+            hasMeeting: [],
+            shouldWriteReview: [],
+            reachedMeeting: nil,
+            meetingReviewInfo: nil,
+            isLoading: false
         )
         
         self.getProfileUseCase = getProfileUseCase
-        self.unReadNotificationUseCase = unReadNotificationUseCase
+        self.getUnReadNotificationUseCase = getUnReadNotificationUseCase
         self.getNotificationBannerUseCase = getNotificationBannerUseCase
         self.updateNotificationBannerUseCase = updateNotificationBannerUseCase
         self.noticeUseCase = noticeUseCase
-        self.matchingSummaryUseCase = matchingSummaryUseCase
-        self.meetingInProgressUseCase = meetingInProgressUseCase
+        self.getMatchingStatusUseCase = getMatchingStatusUseCase
+        self.getMatchingsUseCase = getMatchingsUseCase
         self.bannerUseCase = bannerUseCase
     }
     
@@ -88,7 +93,7 @@ class HomeViewModel {
     
     func isUnReadNotificationEmpty() async {
         do {
-            self.currentState.isUnReadNotificationEmpty = try await self.unReadNotificationUseCase.isUnReadNotificationEmpty()
+            self.currentState.isUnReadNotificationEmpty = try await self.getUnReadNotificationUseCase.execute().isEmpty
         } catch {
             self.currentState.isUnReadNotificationEmpty = true
         }
@@ -111,12 +116,12 @@ class HomeViewModel {
         }
     }
     
-    func updateTopBannerStatus(with id: Int) async {
+    func updateTopBannerStatus(with id: String) async {
         do {
-            let response = try await self.updateNotificationBannerUseCase.execute(with: id)
+            let isSuccess = try await self.updateNotificationBannerUseCase.execute(with: id)
             
             await MainActor.run {
-                self.currentState.isChangeSuccessForTopBannerStatus = response.statusCode == 200
+                self.currentState.isChangeSuccessForTopBannerStatus = isSuccess
             }
         } catch {
             
@@ -134,27 +139,43 @@ class HomeViewModel {
         }
     }
     
-    func matchingSummary() async {
+    func matchingSummaries() async {
         do {
-            self.currentState.matchingSummaryInfos = try await self.matchingSummaryUseCase.execute()
+            let matchingSummariesInfo = try await self.getMatchingStatusUseCase.matchingsSummaries()
+            
+            await MainActor.run {
+                var matchingSummariesWithType: [MatchingSummariesWithType] {
+                    let fromOnethings = matchingSummariesInfo.onethings.map {
+                        MatchingSummariesWithType(type: .onething, info: $0)
+                    }
+                    let fromRandoms = matchingSummariesInfo.randoms.map {
+                        MatchingSummariesWithType(type: .random, info: $0)
+                    }
+                    
+                    return fromOnethings + fromRandoms
+                }
+                self.currentState.matchingSummariesWithType = matchingSummariesWithType
+            }
         } catch {
-            self.currentState.matchingSummaryInfos = []
+            await MainActor.run {
+                self.currentState.matchingSummariesWithType = []
+            }
         }
     }
     
-    func meetingInProgress() async {
+    func matchings() async {
         do {
-            let response = try await self.meetingInProgressUseCase.execute()
+            let response = try await self.getMatchingsUseCase.matchings()
             
             await MainActor.run {
-                self.currentState.meetingDate = response.meetingDate
-                self.currentState.inMeetingInfo = response.inMeetingInfo
+                self.currentState.matchingProgressInfo = response
+                self.currentState.hasMeeting = self.hasMeeting(response)
+                self.currentState.shouldWriteReview = self.shouldWriteReview(response)
             }
         } catch {
             
             await MainActor.run {
-                self.currentState.meetingDate = nil
-                self.currentState.inMeetingInfo = nil
+                self.currentState.matchingProgressInfo = []
             }
         }
     }
@@ -168,9 +189,9 @@ class HomeViewModel {
     }
     
     // TODO: 임시, 모임 중 바텀 싯 표시할 플로팅 뷰 표시 플래그
-    func updateIsInMeeting(_ isInMeeting: Bool) async {
+    func reachedMeetingTime(_ reachedMeeting: MatchingInfo?) async {
         await MainActor.run {
-            self.currentState.isInMeeting = isInMeeting
+            self.currentState.reachedMeeting = reachedMeeting
         }
     }
     
@@ -184,26 +205,22 @@ class HomeViewModel {
 
 extension HomeViewModel {
     
-    func viewModelForInMeeting() -> Binding<InMeetingViewModel> {
-        
-        if let inMeetingInfo = self.currentState.inMeetingInfo {
-            
-            return .constant(
-                InMeetingViewModel(inMeetingInfo: inMeetingInfo)
-            )
-        } else {
-            
-            return .constant(
-                InMeetingViewModel(
-                    inMeetingInfo: InMeetingInfo(
-                        matchingId: "",
-                        matchingType: .oneThing,
-                        nicknameList: [],
-                        quizList: [],
-                        oneThingMap: [:]
-                    )
-                )
-            )
-        }
+    func hasMeeting(_ infos: [MatchingInfo]) -> [MatchingInfo] {
+        return infos.filter { $0.matchingStatus == .confirmed }
+    }
+    
+    func shouldWriteReview(_ infos: [MatchingInfo]) -> [MatchingInfo] {
+        return infos
+            .filter { $0.matchingStatus == .completed }
+            .filter { $0.isReviewWritten }
+    }
+}
+
+// TODO: 매칭된 모임 정보 요약 조회 시, type이 빠져서 임의로 구조체를 만들어 사용.
+extension HomeViewModel {
+    
+    struct MatchingSummariesWithType: Equatable {
+        let type: MatchingType
+        let info: MatchingSummaryInfo
     }
 }

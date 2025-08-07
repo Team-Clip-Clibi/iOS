@@ -16,14 +16,14 @@ class MyPageNotificationViewModel {
         NotificationManager.shared.isNotificationEnabled()
     }
 
-    private var updateNotificationUseCase: UpdateNotificationUseCase
+    private var updateUserNotifyUseCase: UpdateUserNotifyUseCase
     
     // MARK: - Initializer
     
     init(
-        updateNotificationUseCase: UpdateNotificationUseCase = UpdateNotificationUseCase()
+        updateUserNotifyUseCase: UpdateUserNotifyUseCase = UpdateUserNotifyUseCase()
     ) {
-        self.updateNotificationUseCase = updateNotificationUseCase
+        self.updateUserNotifyUseCase = updateUserNotifyUseCase
     }
     
     // MARK: - Functions
@@ -32,6 +32,6 @@ class MyPageNotificationViewModel {
         
         NotificationManager.shared.setNotificationEnabled(isEnabled: !isNotificationEnabled)
         
-        return try await updateNotificationUseCase.execute(isAllowNotify: isNotificationEnabled)
+        return try await updateUserNotifyUseCase.execute(isAllowNotify: isNotificationEnabled)
     }
 }

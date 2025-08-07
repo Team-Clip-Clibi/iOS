@@ -11,48 +11,69 @@ import Foundation
 class InMeetingViewModel {
     
     struct State {
-        fileprivate(set) var matchingId: String
-        fileprivate(set) var matchingType: MatchingType
         fileprivate(set) var nicknames: [String]
-        fileprivate(set) var quizs: [String]
+        fileprivate(set) var tmis: [String]
         fileprivate(set) var onethings: [OnethingInfo]
         fileprivate(set) var isMeetingEnded: Bool
         
         var onethingCount: Int { return self.onethings.count }
     }
-    
-    let initalState: State
     var currentState: State
     
-    let editMeetingEndUseCase: EditMeetingEndUseCase
+    let getMatchingsUseCase: GetMatchingsUseCase
+    let updateMatchingsStatusUseCase: UpdateMatchingsStatusUseCase
+    
+    let matchingId: String
+    let matchingType: MatchingType
     
     init(
-        editMeetingEndUseCase: EditMeetingEndUseCase = EditMeetingEndUseCase(),
-        inMeetingInfo: InMeetingInfo
+        getMatchingsUseCase: GetMatchingsUseCase = GetMatchingsUseCase(),
+        updateMatchingsStatusUseCase: UpdateMatchingsStatusUseCase = UpdateMatchingsStatusUseCase(),
+        matchingId: String,
+        matchingType: MatchingType
     ) {
-        self.editMeetingEndUseCase = editMeetingEndUseCase
+        self.getMatchingsUseCase = getMatchingsUseCase
+        self.updateMatchingsStatusUseCase = updateMatchingsStatusUseCase
         
-        let onethingInfos = inMeetingInfo.oneThingMap.enumerated().map { index, element in
-            OnethingInfo(number: index+1, category: element.key, message: element.value)
+        self.matchingId = matchingId
+        self.matchingType = matchingType
+        
+        self.currentState = State(nicknames: [], tmis: [], onethings: [], isMeetingEnded: false)
+    }
+    
+    func matchingProgress() async {
+        
+        do {
+            let matchingProgressInfo = try await self.getMatchingsUseCase.matchingsProgress(
+                type: self.matchingType,
+                with: self.matchingId
+            )
+            
+            await MainActor.run {
+                self.currentState.nicknames = matchingProgressInfo.nicknameList
+                self.currentState.tmis = matchingProgressInfo.tmiList
+                self.currentState.onethings = matchingProgressInfo.nicknameOnethingMap
+                    .enumerated()
+                    .map { index, element in
+                        OnethingInfo(number: index+1, category: element.key, message: element.value)
+                    }
+            }
+        } catch {
+            
+            await MainActor.run {
+                self.currentState.nicknames = []
+                self.currentState.tmis = []
+                self.currentState.onethings = []
+            }
         }
-        
-        self.initalState = State(
-            matchingId: inMeetingInfo.matchingId,
-            matchingType: inMeetingInfo.matchingType,
-            nicknames: inMeetingInfo.nicknameList,
-            quizs: inMeetingInfo.quizList,
-            onethings: onethingInfos,
-            isMeetingEnded: false
-        )
-        self.currentState = self.initalState
     }
     
     func meetingEnded() async {
         
         do {
-            let isMeetingEnded = try await self.editMeetingEndUseCase.execute(
-                type: self.initalState.matchingType,
-                with: self.initalState.matchingId
+            let isMeetingEnded = try await self.updateMatchingsStatusUseCase.matchingsEnded(
+                type: self.matchingType,
+                with: self.matchingId
             )
             
             await MainActor.run {

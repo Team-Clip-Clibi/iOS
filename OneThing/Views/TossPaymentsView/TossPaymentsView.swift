@@ -17,7 +17,7 @@ struct TossPaymentsView: View {
     
     var body: some View {
         NavigationStack {
-            if let _ = viewModel.oneThingResponse {
+            if let _ = viewModel.onethingResponse {
                 contentBody
             } else {
                 ProgressView("결제 정보를 불러오는 중입니다...")
@@ -44,7 +44,7 @@ struct TossPaymentsView: View {
         }
         .onAppear {
             Task {
-                try await self.viewModel.getOneThingOrder(self.oneThingMatchingViewModel.currentState)
+                try await self.viewModel.getOnethingOrder(self.oneThingMatchingViewModel.currentState)
             }
         }
     }
@@ -55,7 +55,7 @@ struct TossPaymentsView: View {
             ScrollView {
                 PaymentMethodWidgetView(
                     widget: viewModel.widget,
-                    amount: .init(value: Double(viewModel.oneThingResponse?.amount ?? 0))
+                    amount: .init(value: Double(viewModel.onethingResponse?.amount ?? 0))
                 )
                 AgreementWidgetView(widget: viewModel.widget)
             }
@@ -70,7 +70,7 @@ struct TossPaymentsView: View {
     private var payButton: some View {
         Button {
             Task {
-                if let orderId = viewModel.oneThingResponse?.orderId {
+                if let orderId = viewModel.onethingResponse?.orderId {
                     viewModel.requestPayment(info: DefaultWidgetPaymentInfo(orderId: orderId,
                                                                             orderName: "원띵 결제하기"))
                 }
@@ -100,22 +100,26 @@ final class TossPaymentsViewModel: TossPaymentsDelegate {
     var processSuccess: TossPaymentsResult.Success? = nil
     var processFail: TossPaymentsResult.Fail? = nil
     
-    var oneThingResponse: OneThingOrderResponse?
+    var onethingResponse: OnethingOrderResponse?
     
-    private let createOneThingOrderUseCase: CreateOneThingOrderUseCase
-    private let confirmPaymentUseCase: ConfirmPaymentUseCase
+    private let submitOnethingsOrderUseCase: SubmitOnethingsOrderUseCase
+    private let submitPaymentsConfirmUseCase: SubmitPaymentsConfirmUseCase
     
-    let widget: PaymentWidget = PaymentWidget(clientKey: "test_gck_docs_Ovk5rk1EwkEbP0W43n07xlzm",
-                                              customerKey: UUID().uuidString)
+    let widget: PaymentWidget = PaymentWidget(
+        clientKey: "test_gck_docs_Ovk5rk1EwkEbP0W43n07xlzm",
+        customerKey: UUID().uuidString
+    )
     
-    init(createOneThingOrderUseCase: CreateOneThingOrderUseCase = CreateOneThingOrderUseCase(),
-         confirmPaymentUseCase: ConfirmPaymentUseCase = ConfirmPaymentUseCase()) {
-        self.createOneThingOrderUseCase = createOneThingOrderUseCase
-        self.confirmPaymentUseCase = confirmPaymentUseCase
+    init(
+        submitOnethingsOrderUseCase: SubmitOnethingsOrderUseCase = SubmitOnethingsOrderUseCase(),
+        submitPaymentsConfirmUseCase: SubmitPaymentsConfirmUseCase = SubmitPaymentsConfirmUseCase()
+    ) {
+        self.submitOnethingsOrderUseCase = submitOnethingsOrderUseCase
+        self.submitPaymentsConfirmUseCase = submitPaymentsConfirmUseCase
         widget.delegate = self
     }
     
-    func getOneThingOrder(_ state: OneThingMatchingViewModel.State) async throws {
+    func getOnethingOrder(_ state: OneThingMatchingViewModel.State) async throws {
         do {
             let district: District = state.selectedDistrict.last!
             let preferredDates: [PreferredDate] = state.selectedDates.map {
@@ -123,8 +127,7 @@ final class TossPaymentsViewModel: TossPaymentsDelegate {
             }
             let oneThingBudgetRange: BudgetRange = state.selectedBudgetRange.last!
             let oneThingCategory: OneThingCategory = state.selectedCategory.last!
-            
-            self.oneThingResponse = try await self.createOneThingOrderUseCase.execute(
+            let onethingOrderRequest = OnethingOrderRequest(
                 topic: state.topicContent,
                 district: district,
                 preferredDates: preferredDates,
@@ -132,6 +135,8 @@ final class TossPaymentsViewModel: TossPaymentsDelegate {
                 oneThingBudgetRange: oneThingBudgetRange,
                 oneThingCategory: oneThingCategory
             )
+            
+            self.onethingResponse = try await self.submitOnethingsOrderUseCase.execute(onethingOrderRequest)
         } catch {
             LoggingManager.error("OneThingOrderViewModel: getOneThingOrder Error: \(error)")
         }
@@ -140,18 +145,17 @@ final class TossPaymentsViewModel: TossPaymentsDelegate {
     
     func confirmPayments() async throws -> Bool {
         guard let result = processSuccess,
-              let _ = oneThingResponse else {
+              let _ = onethingResponse else {
             return false
         }
         
-        let isPaymentCompleted = try await confirmPaymentUseCase.execute(
+        let paymentRequest = PaymentRequest(
             paymentKey: result.paymentKey,
             orderId: result.orderId,
-            orderType: .oneThing
+            orderType: .onething
         )
-        
+        let isPaymentCompleted = try await submitPaymentsConfirmUseCase.execute(paymentRequest)
         return isPaymentCompleted
-        
     }
     
     func requestPayment(info: WidgetPaymentInfo) {

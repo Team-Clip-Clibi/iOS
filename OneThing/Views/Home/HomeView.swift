@@ -13,7 +13,7 @@ struct HomeView: View {
         static let requestMeetingTitle: String = "모임 신청"
         
         static let meetingReviewAlertTitle: String = "후기를 작성하러 갈까요?"
-        static let meetingReviewAlertMessage: String = "4월 15일 원띵모임"
+        static let meetingReviewAlertMessage: String = "원띵모임"
         static let meetingReviewAlertConfirmButtonTitle: String = "후기 남기기"
         static let meetingReviewAlertCancelButtonTitle: String = "다음에 작성하기"
     }
@@ -22,6 +22,8 @@ struct HomeView: View {
     @Binding var viewModel: HomeViewModel
     
     @Binding var inMeetingPathManager: OTInMeetingPathManager
+    // TODO: 임시, 추후 MVI 도입 시 변경 예정
+    @State var inMeetingViewModel: InMeetingViewModel = InMeetingViewModel(matchingId: "", matchingType: .onething)
     
     @State private var topBannerCurrPage: Int = 0
     @State private var currentPage: Int = 0
@@ -84,8 +86,8 @@ struct HomeView: View {
                                         id: \.offset
                                     ) { page, bannerInfo in
                                         TopBannerView(
-                                            description: bannerInfo.type.description,
-                                            title: bannerInfo.type.title,
+                                            description: bannerInfo.bannerType.description,
+                                            title: bannerInfo.bannerType.title,
                                             currentPage: page,
                                             totalPage: self.viewModel.currentState.topBannerInfos.count,
                                             closeTapAction: {
@@ -112,7 +114,7 @@ struct HomeView: View {
                         //MARK: Matched Meeting
                         
                         VStack(alignment: .leading, spacing: 12) {
-                            let matchingSummaryInfos = self.viewModel.currentState.matchingSummaryInfos
+                            let matchingSummariesWithType = self.viewModel.currentState.matchingSummariesWithType
                             
                             HStack(spacing: 10) {
                                 // TODO: 임시, 유저 정보는 전역으로 관리 필요
@@ -120,26 +122,29 @@ struct HomeView: View {
                                     .otFont(.title1)
                                     .foregroundStyle(.gray700)
                                 
-                                 if matchingSummaryInfos.isEmpty {
+                                 if matchingSummariesWithType.isEmpty {
                                      EmptyView()
                                  } else {
-                                     Text("\(matchingSummaryInfos.count)")
+                                     Text("\(matchingSummariesWithType.count)")
                                         // TODO: weight 조절 추가해야 함
                                          .otFont(.title1)
                                          .foregroundStyle(.purple400)
                                  }
                             }
                             
-                            if matchingSummaryInfos.isEmpty {
+                            if matchingSummariesWithType.isEmpty {
                                 HomeGridEmptyAndFooter(category: .placeholder)
                             } else {
                                 ScrollView(.horizontal, showsIndicators: false) {
                                     LazyHGrid(rows: self.rows) {
                                         ForEach(
-                                            matchingSummaryInfos,
-                                            id: \.matchingId
+                                            matchingSummariesWithType,
+                                            id: \.info.matchingId
                                         ) { matchingSummaryInfo in
-                                            HomeGridItem(matchingSummary: matchingSummaryInfo)
+                                            HomeGridItem(
+                                                matchingType: matchingSummaryInfo.type,
+                                                matchingSummary: matchingSummaryInfo.info
+                                            )
                                         }
                                         
                                         HomeGridEmptyAndFooter(category: .footer)
@@ -161,7 +166,7 @@ struct HomeView: View {
                                 .foregroundStyle(.gray700)
                             
                             RequestMeetingButton(
-                                category: .onething,
+                                matchingType: .onething,
                                 backgroundTapAction: {
                                     
                                     self.appPathManager.withTabBarHiddenThenNavigate {
@@ -174,7 +179,7 @@ struct HomeView: View {
                             
                             HStack(spacing: 12) {
                                 RequestMeetingButton(
-                                    category: .random,
+                                    matchingType: .random,
                                     backgroundTapAction: {
                                         
                                         self.appPathManager.withTabBarHiddenThenNavigate {
@@ -185,7 +190,7 @@ struct HomeView: View {
                                     }
                                 )
                                 RequestMeetingButton(
-                                    category: .instant,
+                                    matchingType: .instant,
                                     backgroundTapAction: { self.isPresentedPreparingAlert = true }
                                 )
                             }
@@ -234,8 +239,8 @@ struct HomeView: View {
                              group.addTask { await self.viewModel.isUnReadNotificationEmpty() }
                              group.addTask { await self.viewModel.topBanners() }
                              group.addTask { await self.viewModel.notice() }
-                             group.addTask { await self.viewModel.matchingSummary() }
-                             group.addTask { await self.viewModel.meetingInProgress() }
+                             group.addTask { await self.viewModel.matchingSummaries() }
+                             group.addTask { await self.viewModel.matchings() }
                              group.addTask { await self.viewModel.banners() }
                          }
                      }
@@ -244,7 +249,7 @@ struct HomeView: View {
                 
                 // MARK: In Meeting floating view
                 
-                if self.viewModel.currentState.isInMeeting {
+                if self.viewModel.currentState.reachedMeeting != nil {
                     InMeetingFloatingView(onBackgroundTapped: { self.isInMeetingSheetPresented = true })
                         .padding(.bottom, 12)
                         .padding(.horizontal, 16)
@@ -257,8 +262,8 @@ struct HomeView: View {
                     group.addTask { await self.viewModel.isUnReadNotificationEmpty() }
                     group.addTask { await self.viewModel.topBanners() }
                     group.addTask { await self.viewModel.notice() }
-                    group.addTask { await self.viewModel.matchingSummary() }
-                    group.addTask { await self.viewModel.meetingInProgress() }
+                    group.addTask { await self.viewModel.matchingSummaries() }
+                    group.addTask { await self.viewModel.matchings() }
                     if self.viewModel.currentState.bannerInfos.isEmpty {
                         group.addTask { await self.viewModel.banners() }
                     }
@@ -269,23 +274,29 @@ struct HomeView: View {
                     await self.viewModel.topBanners()
                 }
             }
-            .onChange(of: self.viewModel.currentState.meetingDate) { _, new in
+            .onChange(of: self.viewModel.currentState.hasMeeting.last) { _, new in
                 
-                if let meetingDate = new, meetingDate.isToday {
+                if let hasMeeting = new, hasMeeting.meetingTime.isToday {
                     
                     self.dateManager.startMonitoring(
-                        with: meetingDate,
+                        with: hasMeeting.meetingTime,
                         onTimeRangeChanged: { isWithinRange in
-                            Task { await self.viewModel.updateIsInMeeting(isWithinRange) }
+                            if isWithinRange {
+                                self.inMeetingViewModel = InMeetingViewModel(
+                                    matchingId: hasMeeting.matchingId,
+                                    matchingType: hasMeeting.matchingType
+                                )
+                                Task { await self.viewModel.reachedMeetingTime(hasMeeting) }
+                            }
                         },
                         onTimeExceeded: {
-                            Task { await self.viewModel.updateIsInMeeting(false) }
+                            Task { await self.viewModel.reachedMeetingTime(nil) }
                         }
                     )
                 } else {
                     
                     self.dateManager.stopMonitoring()
-                    Task { await self.viewModel.updateIsInMeeting(false) }
+                    Task { await self.viewModel.reachedMeetingTime(nil) }
                 }
             }
             .onReceive(NotificationCenter.default.publisher(for: .showMeetingReviewAlert)) { notification in
@@ -307,7 +318,7 @@ struct HomeView: View {
             // 모임 중 Sheet
             .showInMeetingSheet(
                 inMeetingPathManager: $inMeetingPathManager,
-                inMeetingVieWModel: self.viewModel.viewModelForInMeeting(),
+                inMeetingVieWModel: $inMeetingViewModel,
                 isPresented: $isInMeetingSheetPresented
             )
             // 번개 모임 준비중 Alert
@@ -349,10 +360,10 @@ private extension HomeView {
     }
 }
 
-#Preview {
-     HomeView(
-        appPathManager: .constant(OTAppPathManager()),
-        viewModel: .constant(HomeViewModel()),
-        inMeetingPathManager: .constant(OTInMeetingPathManager())
-    )
-}
+// #Preview {
+//      HomeView(
+//         appPathManager: .constant(OTAppPathManager()),
+//         viewModel: .constant(HomeViewModel()),
+//         inMeetingPathManager: .constant(OTInMeetingPathManager())
+//     )
+// }

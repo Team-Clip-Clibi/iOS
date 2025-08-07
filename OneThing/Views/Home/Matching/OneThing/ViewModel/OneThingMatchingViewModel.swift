@@ -20,9 +20,6 @@ class OneThingMatchingViewModel {
     }
     var currentState: State
     
-    let locations = ["홍대/합정", "강남"]
-    let prices = ["10,000~30,000원", "30,000~50,000원", "50,000~70,000원"]
-    
     init() {
         self.currentState = .init(
             selectedCategory: [],

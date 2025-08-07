@@ -52,18 +52,27 @@ class SignUpViewModel {
     }
     
     private var socialLoginUseCase: SocialLoginUseCase
+    private var updateUserNameUseCase: UpdateUserNameUseCase
     private var updateNicknameUseCase: UpdateNicknameUseCase
+    private var updatePhoneNumberUseCase: UpdatePhoneNumberUseCase
+    private var getNicknameAvailableUseCase: GetNicknameAvailableUseCase
     private let getBannerUseCase: GetBannerUseCase
     
     // MARK: - Initializer
 
     init(
         socialLoginUseCase: SocialLoginUseCase = SocialLoginUseCase(),
+        updateUserNameUseCase: UpdateUserNameUseCase = UpdateUserNameUseCase(),
         updateNicknameUseCase: UpdateNicknameUseCase = UpdateNicknameUseCase(),
+        updatePhoneNumberUseCase: UpdatePhoneNumberUseCase = UpdatePhoneNumberUseCase(),
+        getNicknameAvailableUseCase: GetNicknameAvailableUseCase = GetNicknameAvailableUseCase(),
         getBannerUseCase: GetBannerUseCase = GetBannerUseCase()
     ) {
         self.socialLoginUseCase = socialLoginUseCase
+        self.updateUserNameUseCase = updateUserNameUseCase
         self.updateNicknameUseCase = updateNicknameUseCase
+        self.updatePhoneNumberUseCase = updatePhoneNumberUseCase
+        self.getNicknameAvailableUseCase = getNicknameAvailableUseCase
         self.getBannerUseCase = getBannerUseCase
     }
     
@@ -94,15 +103,15 @@ class SignUpViewModel {
     }
     
     func updatePhoneNumber(phoneNumber: String) async throws -> Bool {
-        return try await socialLoginUseCase.updatePhoneNumber(phoneNumber: phoneNumber)
+        return try await updatePhoneNumberUseCase.execute(phoneNumber: phoneNumber)
     }
     
     func updateName(userName: String) async throws -> Bool {
-        return try await socialLoginUseCase.updateUserName(userName: userName)
+        return try await updateUserNameUseCase.execute(with: userName)
     }
     
     func isNicknameAvailable(nickname: String) async throws -> Bool {
-        return try await socialLoginUseCase.getNickNameAvailableStatus(nickname: nickname)
+        return try await  getNicknameAvailableUseCase.execute(with: nickname)
     }
     
     func updateNickname(nickname: String) async throws -> Bool {
