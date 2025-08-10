@@ -36,6 +36,7 @@ struct MainTabBarView: View {
             where: { $0 is HomeCoordinator }
         ) as! HomeCoordinator
         @Bindable var homeCoordinatorForBinding = homeCoordinator
+        @State var hasInMeetingSheet = homeCoordinator.sheet == .home(.inMeeting(.main))
         
         let myPageCoordinator = coordinator.childCoordinator.first(
             where: { $0 is MyPageCoordinator }
@@ -51,6 +52,12 @@ struct MainTabBarView: View {
                             // HomeView에서 화면 전환 했을 때, tabBar 숨김
                             .toolbar(.hidden, for: .tabBar)
                     }
+                    // 모임 후기 cover
+                    .fullScreenCover(item: $homeCoordinatorForBinding.cover) { _ in
+                        homeCoordinator.presentMeetingReview()
+                    }
+                    // 모임 중 Sheet
+                    .showInMeetingSheet(isPresented: $hasInMeetingSheet)
             }
             .environment(\.homeCoordinator, homeCoordinatorForBinding)
             .tabItem {
