@@ -31,6 +31,8 @@ struct NavigationBar: View {
     /// 우측에 배치된 버튼 배열
     var rightButtons: [AnyView]?
     
+    var backgroundColor: Color = .white100
+    
     /// 뒤로가기 버튼 액션
     var onBackButtonTap: (() -> Void)?
     
@@ -86,9 +88,9 @@ struct NavigationBar: View {
                 .frame(minWidth: 0)
             }
             .frame(maxWidth: .infinity)
-            .frame(height: 48)
+            .frame(height: 60)
             .padding(self.inset)
-            .background(.clear)
+            .background(self.backgroundColor)
             .overlay(
                 Rectangle()
                     .frame(width: nil, height: self.hidesBottomSeparator ? 0: 1, alignment: .bottom)

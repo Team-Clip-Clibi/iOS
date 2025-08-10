@@ -18,12 +18,12 @@ struct NavigationBarModifier: ViewModifier {
     let spacing: CGFloat
     let leftButtons: [AnyView]?
     let rightButtons: [AnyView]?
+    let backgroundColor: Color
     let onBackButtonTap: (() -> Void)?
-    
     
     func body(content: Content) -> some View {
         
-        VStack {
+        VStack(spacing: 0) {
             NavigationBar(
                 title: self.title,
                 titleAlignment: self.titleAlignment,
@@ -34,6 +34,7 @@ struct NavigationBarModifier: ViewModifier {
                 spacing: self.spacing,
                 leftButtons: self.leftButtons,
                 rightButtons: self.rightButtons,
+                backgroundColor: self.backgroundColor,
                 onBackButtonTap: self.onBackButtonTap
             )
             
@@ -45,16 +46,17 @@ struct NavigationBarModifier: ViewModifier {
 extension View {
     
     func navigationBar(
-        title: String?,
+        title: String? = nil,
         titleAlignment: NavigationBar.TitleAlignment = .center,
-        titleView: AnyView?,
+        titleView: AnyView? = nil,
         hidesBackButton: Bool = false,
         hidesBottomSeparator: Bool = true,
         inset: EdgeInsets = EdgeInsets(top: 0, leading: 16, bottom: 0, trailing: 16),
         spacing: CGFloat = 0,
-        leftButtons: [AnyView]?,
-        rightButtons: [AnyView]?,
-        onBackButtonTap: (() -> Void)?
+        leftButtons: [AnyView]? = nil,
+        rightButtons: [AnyView]? = nil,
+        backgroundColor: Color = .white100,
+        onBackButtonTap: (() -> Void)? = nil
     ) -> some View {
         self.modifier(
             NavigationBarModifier(
@@ -67,6 +69,7 @@ extension View {
                 spacing: spacing,
                 leftButtons: leftButtons,
                 rightButtons: rightButtons,
+                backgroundColor: backgroundColor,
                 onBackButtonTap: onBackButtonTap
             )
         )
