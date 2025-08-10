@@ -11,6 +11,4 @@ extension Notification.Name {
     
     /// Show meeting review alert
     static let showMeetingReviewAlert = Notification.Name("showMeetingReviewAlert")
-    /// Hide bottom bar(tabbar or any bottom components) when navigation push
-    static let hidesBottomBarWhenPushed = Notification.Name("hidesBottomBarWhenPushed")
 }
