@@ -19,12 +19,9 @@ struct InMeetingOnethingView: View {
         }
     }
     
-    @Environment(\.appCoordinator) var appCoordinator
+    @Environment(\.homeCoordinator) var homeCoordinator
     
     @Binding var store: InMeetingStore
-    
-    // @Binding var inMeetingPathManager: OTInMeetingPathManager
-    // @Binding var viewModel: InMeetingViewModel
     
     @State private var currentPage: Int = 0
     
@@ -40,7 +37,6 @@ struct InMeetingOnethingView: View {
                     message: Constants.Text.message
                 )
                 
-                // let onethings = self.viewModel.currentState.onethings
                 let onethings = self.store.state.onethings
                 if onethings.isEmpty == false {
                     Spacer().frame(height: 32)
@@ -54,7 +50,6 @@ struct InMeetingOnethingView: View {
                                 ) { page in
                                     self.setupGridItem(
                                         onethings[page],
-                                        // nickname: self.viewModel.currentState.nicknames[page]
                                         nickname: self.store.state.nicknames[page]
                                     )
                                         .tag(page)
@@ -79,12 +74,8 @@ struct InMeetingOnethingView: View {
                 
                 OTXXLButton(
                     buttonTitle: Constants.Text.nextButtonTitle,
-                    // action: { self.inMeetingPathManager.push(path: .content) },
-                    // isClickable: (self.currentPage+1) == self.viewModel.currentState.onethingCount
                     action: {
-                        if let coordinator = (self.appCoordinator.childCoordinator.last as? InMeetingCoordinator) {
-                            coordinator.push(to: .home(.inMeeting(.content)))
-                        }
+                        self.homeCoordinator.push(to: .home(.inMeeting(.content)))
                     },
                     isClickable: (self.currentPage+1) == self.store.state.onethingCount
                 )
@@ -92,7 +83,6 @@ struct InMeetingOnethingView: View {
                 .padding(.horizontal, 24)
             }
         }
-        // .navigationBarBackButtonHidden()
     }
 }
 
@@ -150,8 +140,4 @@ extension InMeetingOnethingView {
         matchingType: .onething
     )
     InMeetingOnethingView(store: .constant(inMeetingStoreForPreview))
-    // InMeetingOnethingView(
-    //     inMeetingPathManager: .constant(OTInMeetingPathManager()),
-    //     viewModel: .constant(InMeetingViewModel(matchingId: "", matchingType: .onething))
-    // )
 }

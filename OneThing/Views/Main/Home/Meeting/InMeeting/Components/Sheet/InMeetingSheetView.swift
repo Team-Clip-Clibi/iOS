@@ -9,10 +9,8 @@ import SwiftUI
 
 struct InMeetingSheetView: View {
     
-    @Environment(\.appCoordinator) var appCoordinator
+    @Environment(\.homeCoordinator) var homeCoordinator
     
-    // @Binding var inMeetingPathManager: OTInMeetingPathManager
-    // @Binding var inMeetingViewModel: InMeetingViewModel
     @Binding var isPresented: Bool
     
     let heightRatio: CGFloat
@@ -24,13 +22,11 @@ struct InMeetingSheetView: View {
     @State private var dragOffset: CGFloat = 0
     @State private var isDragging: Bool = false
     
-    var coordinator: InMeetingCoordinator? {
-        return self.appCoordinator.childCoordinator.last as? InMeetingCoordinator
-    }
-    
     private let dismissThreshold: CGFloat = 0.8
     
     var body: some View {
+        
+        @Bindable var homeCoordinatorForBinding = self.homeCoordinator
         
         GeometryReader { geometry in
             
@@ -55,46 +51,12 @@ struct InMeetingSheetView: View {
                         Spacer().frame(height: 22)
                         
                         // 모임 중 뷰
-                        if let coordinator = self.coordinator, let path = coordinator.path.last {
-                            
-                            // coordinator.destinationView(to: path)
+                        NavigationStack(path: $homeCoordinatorForBinding.path) {
+                            self.homeCoordinator.presentInMeeting()
+                                .navigationDestination(for: OTPath.self) { path in
+                                    self.homeCoordinator.destinationView(to: path)
+                                }
                         }
-                        
-                        // if let path = self.inMeetingPathManager.paths.last {
-                        //     Group {
-                        //         switch path {
-                        //         case .main:
-                        //             InMeetingMainView(
-                        //                 inMeetingPathManager: $inMeetingPathManager,
-                        //                 viewModel: $inMeetingViewModel
-                        //             )
-                        //         case .selectHost:
-                        //             InMeetingSelectHostView(inMeetingPathManager: $inMeetingPathManager)
-                        //         case .introduce:
-                        //             InMeetingIntroduceView(
-                        //                 inMeetingPathManager: $inMeetingPathManager,
-                        //                 viewModel: $inMeetingViewModel
-                        //             )
-                        //         case .tmi:
-                        //             InMeetingTMIView(
-                        //                 inMeetingPathManager: $inMeetingPathManager,
-                        //                 viewModel: $inMeetingViewModel
-                        //             )
-                        //         case .onething:
-                        //             InMeetingOnethingView(
-                        //                 inMeetingPathManager: $inMeetingPathManager,
-                        //                 viewModel: $inMeetingViewModel
-                        //             )
-                        //         case .content:
-                        //             InMeetingContentView(inMeetingPathManager: $inMeetingPathManager)
-                        //         case .complete:
-                        //             InMeetingCompleteView(
-                        //                 inMeetingPathManager: $inMeetingPathManager,
-                        //                 viewModel: $inMeetingViewModel
-                        //             )
-                        //         }
-                        //     }
-                        // }
                     }
                     .frame(maxWidth: .infinity)
                     .frame(height: self.height)
@@ -121,17 +83,9 @@ struct InMeetingSheetView: View {
                                 }
                             }
                     )
-                    .task {
-                        // 바텀 싯이 표시 될 때, main 화면을 표시하기 위해 사용
-                        // if self.inMeetingPathManager.paths.isEmpty {
-                        if let coordinator = self.coordinator, coordinator.path.isEmpty {
-                            // self.inMeetingPathManager.paths.append(.main)
-                            coordinator.push(to: .home(.inMeeting(.main)))
-                        }
-                    }
                     // path가 비었으면 모임이 완료되었다고 판단
                     // .onChange(of: self.inMeetingPathManager.paths.isEmpty) { old, new in
-                    .onChange(of: coordinator?.path.isEmpty == true) { old, new in
+                    .onChange(of: self.homeCoordinator.path.isEmpty == true) { old, new in
                         if old == false, new {
                             self.dismiss()
                         }
