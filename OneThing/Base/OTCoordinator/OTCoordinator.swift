@@ -11,10 +11,6 @@ import Foundation
 /// 화면 네비게이션 로직(push, pop, sheet 등)과 자식 코디네이터 관리를 위한 인터페이스를 정의합니다.
 protocol OTCoordinatorable: AnyObject, Identifiable {
     
-    /// 코디네이터가 생성할 뷰를 정의하는 빌더 타입입니다.
-    /// OTViewBuildable 프로토콜을 준수해야 합니다.
-    associatedtype RootViewBuilder: OTViewBuildable
-    
     /// 코디네이터의 고유 식별자입니다.
     var id: String { get }
     /// 네비게이션 스택을 관리하는 경로 배열입니다.
@@ -22,14 +18,16 @@ protocol OTCoordinatorable: AnyObject, Identifiable {
     var path: [OTPath] { get set }
     /// 현재 표시된 시트(sheet)를 관리하는 경로입니다. nil이 아니면 시트가 표시됩니다.
     var sheet: OTPath? { get set }
+    /// 현재 표시된 풀스크린커버(fullScreenCover)를 관리하는 경로입니다. nil이 아니면 풀스크린커버가 표시됩니다.
+    var cover: OTPath? { get set }
     
     /// 코디네이터의 루트 뷰를 생성하는 빌더입니다.
-    var rootViewBuilder: RootViewBuilder { get }
+    var rootViewBuilder: any OTViewBuildable { get }
     /// 자식 코디네이터들을 관리하는 배열입니다.
     var childCoordinator: [any OTCoordinatorable] { get set }
     
     /// 루트 뷰 빌더를 교체합니다.
-    func updateRootViewBuilder(_ builder: RootViewBuilder)
+    func updateRootViewBuilder(_ builder: any OTViewBuildable)
     
     /// 새로운 뷰를 네비게이션 스택에 푸시합니다.
     func push(to path: OTPath)
@@ -43,6 +41,10 @@ protocol OTCoordinatorable: AnyObject, Identifiable {
     func showSheet(to path: OTPath)
     /// 현재 표시된 시트를 닫습니다.
     func dismissSheet()
+    /// 지정된 경로의 뷰를 풀스크린커버로 표시합니다.
+    func showCover(to path: OTPath)
+    /// 현재 표시된 풀스크린커버를 닫습니다.
+    func dismissCover()
     
     /// 자식 코디네이터를 추가합니다.
     func addChild(_ coordinator: any OTCoordinatorable)
@@ -51,7 +53,8 @@ protocol OTCoordinatorable: AnyObject, Identifiable {
 }
 
 /// `OTCoordinatorable` 프로토콜을 구현하는 기본 코디네이터 클래스입니다.
-class OTBaseCoordinator<RootViewBuilder: OTViewBuildable>: OTCoordinatorable {
+@Observable
+class OTBaseCoordinator: OTCoordinatorable {
     
     /// 코디네이터 인스턴스를 문자열로 변환하여 고유 ID로 사용합니다.
     var id: String { String(describing: self) }
@@ -59,27 +62,33 @@ class OTBaseCoordinator<RootViewBuilder: OTViewBuildable>: OTCoordinatorable {
     var path: [OTPath]
     /// 표시할 시트 경로를 저장하는 옵셔널 변수입니다.
     var sheet: OTPath?
+    /// 표시할 풀스크린커버 경로를 저장하는 옵셔널 변수입니다.
+    var cover: OTPath?
     
     /// 루트 뷰를 생성하기 위한 빌더입니다.
-    var rootViewBuilder: RootViewBuilder
+    var rootViewBuilder: any OTViewBuildable
     /// 자식 코디네이터들을 저장하는 배열입니다.
     var childCoordinator: [any OTCoordinatorable]
     
     /// 코디네이터를 초기화합니다.
     /// - Parameter rootViewBuilder: 이 코디네이터가 관리할 루트 뷰를 생성하는 빌더 객체입니다.
-    init(rootViewBuilder: RootViewBuilder) {
+    init(rootViewBuilder: any OTViewBuildable) {
         self.path = []
         self.rootViewBuilder = rootViewBuilder
         self.childCoordinator = []
     }
     
     /// `rootViewBuilder` 를 교체합니다.
-    func updateRootViewBuilder(_ builder: RootViewBuilder) {
+    func updateRootViewBuilder(_ builder: any OTViewBuildable) {
         self.rootViewBuilder = builder
     }
     
     /// `path` 배열에 새로운 경로를 추가하여 뷰를 푸시합니다.
     func push(to path: OTPath) {
+        guard self.path.contains(path) == false else {
+            LoggingManager.error("Already exist path with \(path)")
+            return
+        }
         self.path.append(path)
     }
     /// `path` 배열에서 마지막 요소를 제거하여 뷰를 팝합니다.
@@ -109,9 +118,21 @@ class OTBaseCoordinator<RootViewBuilder: OTViewBuildable>: OTCoordinatorable {
     func dismissSheet() {
         self.sheet = nil
     }
+    /// `cover` 프로퍼티에 경로를 할당하여 시트를 표시합니다.
+    func showCover(to path: OTPath) {
+        self.cover = path
+    }
+    /// `cover` 프로퍼티를 `nil`로 설정하여 시트를 닫습니다.
+    func dismissCover() {
+        self.cover = nil
+    }
     
     /// `childCoordinator` 배열에 자식 코디네이터를 추가합니다.
     func addChild(_ coordinator: any OTCoordinatorable) {
+        guard self.childCoordinator.contains(where: { $0.id == coordinator.id }) == false else {
+            LoggingManager.error("Already exist coordinator with \(type(of: coordinator))")
+            return
+        }
         self.childCoordinator.append(coordinator)
     }
     /// `childCoordinator` 배열에서 ID가 일치하는 자식 코디네이터를 제거합니다.

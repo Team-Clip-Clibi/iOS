@@ -60,6 +60,6 @@ final class OTDIContainer: OTDIContainerable {
         }
         
         // 해당 의존성이 등록되지 않은 경우, 개발자가 실수를 바로 인지할 수 있도록 fatalError를 발생시킵니다.
-        fatalError("Dependency for \(key) not registered by self.")
+        fatalError("Dependency for \(key) not registered.")
     }
 }

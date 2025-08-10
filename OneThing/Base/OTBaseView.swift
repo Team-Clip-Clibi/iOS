@@ -9,31 +9,36 @@ import SwiftUI
 
 struct OTBaseView<Content: View>: View {
     
+    private(set) var name: String
+    private(set) var backgroundColor: Color
     private(set) var isEndEditingWhenOnDisappear: Bool
     
     var updateKeyboard: ((CGFloat) -> Void)?
     
     let content: Content
     init(
+        _ name: String,
+        background: Color = .white100,
         isEndEditingWhenOnDisappear: Bool = true,
         updateKeyboard: ((CGFloat) -> Void)? = nil,
         @ViewBuilder _ content: (() -> Content)
     ) {
-        self.content = content()
+        self.name = name
+        self.backgroundColor = background
         self.isEndEditingWhenOnDisappear = isEndEditingWhenOnDisappear
+        self.content = content()
     }
     
     var body: some View {
         
         self.content
-            .ignoresSafeArea()
-            .frame(width: .infinity, height: .infinity)
-            .background(.white100)
+            .navigationBarBackButtonHidden()
+            .background(self.backgroundColor)
             .onAppear {
-                LoggingManager.info("OnAppear View: \(type(of: self))")
+                LoggingManager.info("OnAppear View: \(self.name)")
             }
             .onDisappear {
-                LoggingManager.info("OnDisappear View: \(type(of: self))")
+                LoggingManager.info("OnDisappear View: \(self.name)")
                 if self.isEndEditingWhenOnDisappear {
                     UIApplication.shared.endEditing()
                 }
@@ -53,29 +58,5 @@ struct OTBaseView<Content: View>: View {
             ) { _ in
                 self.updateKeyboard?(.zero)
             }
-            .onPreferenceChange(HidesBottomBarWhenPushedKey.self) { value in
-                NotificationCenter.default.post(
-                    name: .hidesBottomBarWhenPushed,
-                    object: ["hidesBottomBarWhenPushed": value]
-                )
-            }
-    }
-}
-
-extension OTBaseView {
-    
-    func backgroundColor(_ color: Color) -> some View {
-        self.background(color)
-    }
-    
-    func hidesBottomBarWhenPushed(_ hidesBottomBarWhenPushed: Bool = true) -> some View {
-        self.preference(key: HidesBottomBarWhenPushedKey.self, value: hidesBottomBarWhenPushed)
-    }
-}
-
-struct HidesBottomBarWhenPushedKey: PreferenceKey {
-    static let defaultValue: Bool = false
-    static func reduce(value: inout Bool, nextValue: () -> Bool) {
-        value = nextValue()
     }
 }

@@ -10,13 +10,19 @@ import Foundation
 /// 모든 상태(State) 타입이 준수해야 하는 프로토콜입니다.
 /// 상태는 값 타입(struct)으로 정의되며, 변화를 감지하기 위해 Equatable을 준수해야 합니다.
 protocol OTState: Equatable { }
+/// 상태를 사용하지 않을 때, 사용하는 빈 상태(State) 타입입니다.
+struct NoState: OTState { }
 /// 모든 액션(Action) 타입이 준수해야 하는 프로토콜입니다.
 /// 액션은 뷰(View) 또는 외부에서 스토어(Store)로 전달되어 특정 이벤트를 나타냅니다.
 protocol OTAction: Equatable { }
+/// 액션을 사용하지 않을 때, 사용하는 빈 액션(Action) 타입입니다.
+enum NoAction: OTAction { }
 /// 모든 프로세스(Process) 타입이 준수해야 하는 프로토콜입니다.
 /// 프로세스는 액션의 결과로 발생하며, 상태를 변경하기 위한 구체적인 정보를 담습니다.
 /// ReactorKit의 Mutation과 유사한 역할을 합니다.
 protocol OTProcess: Equatable { }
+/// 프로세스를 사용하지 않을 때, 사용하는 빈 프로세스(Process) 타입입니다.
+enum NoProcess: OTProcess { }
 
 /// 'process' 함수가 반환할 수 있는 결과의 종류를 정의하는 열거형입니다.
 /// 이 열거형을 통해 하나의 액션이 여러 프로세스를 유발할 수 있도록 유연성을 제공합니다.
@@ -32,12 +38,12 @@ enum OTProcessResult<ProcessType: OTProcess> {
 
 /// 스토어(Store)는 상태를 관리하고, 액션을 처리하며, 프로세스를 통해 상태 변화를 조율합니다.
 protocol OTStore: AnyObject {
-    /// 스토어가 처리할 액션의 타입을 정의합니다.
-    associatedtype ActionType: OTAction
-    /// 스토어가 생성하고 리듀서(Reducer)에 전달할 프로세스의 타입을 정의합니다.
-    associatedtype ProcessType: OTProcess
-    /// 스토어가 관리할 상태의 타입을 정의합니다.
-    associatedtype StateType: OTState
+    /// 스토어가 처리할 액션의 타입을 정의합니다. 기본값은 NoAction 입니다.
+    associatedtype ActionType: OTAction = NoAction
+    /// 스토어가 생성하고 리듀서(Reducer)에 전달할 프로세스의 타입을 정의합니다. 기본값은 NoProcess 입니다.
+    associatedtype ProcessType: OTProcess = NoProcess
+    /// 스토어가 관리할 상태의 타입을 정의합니다. 기본값은 NoState 입니다.
+    associatedtype StateType: OTState = NoState
     
     /// 스토어의 현재 상태를 나타내는 속성입니다.
     var state: StateType { get set }
@@ -52,6 +58,18 @@ protocol OTStore: AnyObject {
     /// 이 함수는 오직 상태 업데이트만 담당하며, 사이드 이펙트를 발생시키지 않습니다.
     /// 각 스토어 구현체에서 구체적인 로직을 정의해야 합니다.
     func reduce(state: StateType, process: ProcessType) -> StateType
+}
+
+/// 'No-Op' 타입을 사용하는 OTStore를 위한 기본 구현을 제공합니다.
+extension OTStore where ActionType == NoAction, ProcessType == NoProcess, StateType == NoState {
+    
+    /// `NoAction`을 처리하는 기본 `process` 구현입니다.
+    /// 아무 작업도 하지 않고 `.none`을 반환합니다.
+    func process(_ action: NoAction) async -> OTProcessResult<NoProcess> { }
+    
+    /// `NoProcess`를 처리하는 기본 `reduce` 구현입니다.
+    /// 상태를 변경하지 않고 그대로 반환합니다.
+    func reduce(state: NoState, process: NoProcess) -> NoState { }
 }
 
 /// OTStore 프로토콜의 기본 구현을 제공합니다.

@@ -11,6 +11,9 @@ enum OTPath: Identifiable, Hashable {
     
     var id: String { String(describing: self) }
     
+    case launch
+    case tabbar
+    
     case auth(OTAuthPath)
     case home(OTHomePath)
     case myMeeting(OTMyMeetingPath)
@@ -23,6 +26,7 @@ extension OTPath {
         
         var id: String { String(describing: self) }
         
+        case main
         case signUpNickname
         case signUpName
         case signUpPhoneNumber
@@ -37,9 +41,11 @@ extension OTPath {
         
         var id: String { String(describing: self) }
         
+        case main
         case notification
         
         case inMeeting(InMeeting)
+        case meetingReview
         
         case initial(InitialMatching)
         case onething(OnethingMatching)
@@ -61,7 +67,8 @@ extension OTPath {
             case tmi
             case date
             case payment
-            case complete
+            case paySuccess
+            case payFail
         }
         
         enum RandomMatching: Equatable {
@@ -79,7 +86,7 @@ extension OTPath {
             case selectHost
             case introduce
             case tmi
-            case oneThing
+            case onething
             case content
             case complete
         }
@@ -94,6 +101,8 @@ extension OTPath {
     enum OTMyPagePath: Identifiable, Hashable {
         
         var id: String { String(describing: self) }
+        
+        case main
         
         case editProfile
         
