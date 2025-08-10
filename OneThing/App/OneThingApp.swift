@@ -20,13 +20,19 @@ struct OneThingApp: App {
     var body: some Scene {
         WindowGroup {
             Group {
-                
-                self.appCoordinator.start()
-                    .onOpenURL { url in
-                        if AuthApi.isKakaoTalkLoginUrl(url) { _ = AuthController.handleOpenUrl(url: url)}
-                    }
+                switch self.appCoordinator.currentState {
+                case .launch:
+                    self.appCoordinator.presentLaunch()
+                case .signUp:
+                    self.appCoordinator.presentSignUp()
+                case .mainTabBar:
+                    self.appCoordinator.presentMainTabbar()
+                }
             }
             .environment(\.appCoordinator, self.appCoordinator)
+            .onOpenURL { url in
+                 if AuthApi.isKakaoTalkLoginUrl(url) { _ = AuthController.handleOpenUrl(url: url)}
+             }
         }
     }
 }

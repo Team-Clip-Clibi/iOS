@@ -9,6 +9,12 @@ import SwiftUI
 
 @Observable
 final class AppCoordinator: OTBaseCoordinator {
+    
+    enum AppState {
+        case launch
+        case signUp
+        case mainTabBar
+    }
 
     private var launchScreenStore: LaunchScreenStore
     private var launchScreenStoreForBinding: Binding<LaunchScreenStore> {
@@ -20,7 +26,7 @@ final class AppCoordinator: OTBaseCoordinator {
     
     var dependencies: AppDIContainer
     
-    var hasLaunchScreenOver: Bool = false
+    var currentState: AppState = .launch
     
     init(dependencies: AppDIContainer) {
         self.dependencies = dependencies
@@ -32,25 +38,9 @@ final class AppCoordinator: OTBaseCoordinator {
         
         super.init(rootViewBuilder: LaunchScreenViewBuilder())
     }
-    
-    func start() -> some View {
-        
-        if self.hasLaunchScreenOver {
-            // TODO: 임시, isSignIn 값에 따라 분기
-            let isSignIn = self.dependencies.rootContainer.resolve(AppStateManager.self).isSignedIn
-            if isSignIn {
-            // if true {
-                return AnyView(self.presentMainTabbar())
-            } else {
-                return AnyView(self.presentSignUp())
-            }
-        } else {
-            return AnyView(self.presentLaunch())
-        }
-    }
 }
 
-private extension AppCoordinator {
+extension AppCoordinator {
     
     func presentLaunch() -> LaunchScreenView {
         (self.rootViewBuilder as! LaunchScreenViewBuilder).build(store: self.launchScreenStoreForBinding)
@@ -65,6 +55,8 @@ private extension AppCoordinator {
     }
     
     func presentMainTabbar() -> MainTabBarView {
+        self.childCoordinator.removeAll()
+        
         let mainTabBarCoordinator = MainTabBarCoordinator(
             dependencies: self.dependencies,
             initialTab: 0,
