@@ -21,9 +21,12 @@ struct InMeetingCompleteView: View {
         }
     }
     
-    @Environment(\.homeCoordinator) var homeCoordinator
+    @Environment(\.appCoordinator) var appCoordinator
     
     @Binding var store: InMeetingStore
+    
+    // @Binding var inMeetingPathManager: OTInMeetingPathManager
+    // @Binding var viewModel: InMeetingViewModel
     
     var body: some View {
         
@@ -64,6 +67,7 @@ struct InMeetingCompleteView: View {
                 OTXXLButton(
                     buttonTitle: Constants.Text.endMeetingButtonTitle,
                     action: {
+                        // Task { await self.viewModel.meetingEnded() }
                         Task { await self.store.send(.ended) }
                     },
                     isClickable: true
@@ -72,19 +76,29 @@ struct InMeetingCompleteView: View {
                 .padding(.horizontal, 24)
             }
         }
+        // .navigationBarBackButtonHidden()
+        // .onChange(of: self.viewModel.currentState.isMeetingEnded) { _, new in
         .onChange(of: self.store.state.isMeetingEnded) { _, new in
             if new {
                 NotificationCenter.default.post(
                     name: .showMeetingReviewAlert,
+                    // object: [
+                    //     "nicknames": self.viewModel.currentState.nicknames,
+                    //     "matchingId": self.viewModel.matchingId,
+                    //     "matchingType": self.viewModel.matchingType
+                    // ]
                     object: [
                         "nicknames": self.store.state.nicknames,
                         "matchingId": self.store.matchingId,
                         "matchingType": self.store.matchingType
                     ]
                 )
-                
-                self.homeCoordinator.popToRoot()
-                self.homeCoordinator.dismissSheet()
+                // self.inMeetingPathManager.popToRoot()
+                if let coordinator = (self.appCoordinator.childCoordinator.last as? InMeetingCoordinator) {
+                    coordinator.popToRoot()
+                    self.appCoordinator.removeChild(coordinator)
+                    self.appCoordinator.dismissSheet()
+                }
             }
         }
     }
@@ -98,4 +112,8 @@ struct InMeetingCompleteView: View {
         matchingType: .onething
     )
     InMeetingCompleteView(store: .constant(inMeetingStoreForPreview))
+    // InMeetingCompleteView(
+    //     inMeetingPathManager: .constant(OTInMeetingPathManager()),
+    //     viewModel: .constant(InMeetingViewModel(matchingId: "", matchingType: .onething))
+    // )
 }

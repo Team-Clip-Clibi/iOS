@@ -23,9 +23,8 @@ struct MeetingReviewView: View {
         }
     }
     
-    @Environment(\.homeCoordinator) var homeCoordinator
-    
-    @Binding var store: MeetingReviewStore
+    @Binding var appPathManager: OTAppPathManager
+    @Binding var viewModel: MeetingReviewViewModel
     
     @State private var isReviewSelected: Bool = false
     @State private var selectedReview: [MeetingReviewMood] = []
@@ -47,162 +46,186 @@ struct MeetingReviewView: View {
     
     var body: some View {
         
-        OTBaseView(String(describing: Self.self)) {
+        VStack {
             
-            VStack {
+            NavigationBar()
+                .title(Constants.Text.naviTitle)
+                .hidesBottomSeparator(false)
+                .onBackButtonTap { self.appPathManager.pop() }
+            
+            
+            // MARK: Top Title Text
+            
+            Spacer().frame(height: 16)
+            
+            MeetingReviewGuideMeesageView(isReviewSelected: $isReviewSelected)
+            
+            
+            // MARK: Meeting Review Point
+            
+            Spacer().frame(height: 32)
+            
+            MultipleTextWithImageBoxView<MeetingReviewMood>(
+                viewType: .meeting,
+                matrixs: [GridItem()],
+                state: .init(
+                    items: MeetingReviewMood.allCases.map { .init(item: $0) },
+                    selectionLimit: 1,
+                    changeWhenIsReachedLimit: true
+                ),
+                isReachedLimit: .constant(false),
+                isSelected: $isReviewSelected,
+                selectedItems: $selectedReview
+            )
+            .onChange(of: self.selectedReview) { old, new in
+                guard let selectedReview = new.last else { return }
                 
+                switch selectedReview {
+                case .disappointed, .unsatisfied:
+                    self.isMeetingWasPositive = false
+                case .neutral, .good, .excellent:
+                    self.isMeetingWasPositive = true
+                }
                 
-                // MARK: Top Title Text
-                
-                Spacer().frame(height: 16)
-                
-                MeetingReviewGuideMeesageView(isReviewSelected: $isReviewSelected)
-                
-                
-                // MARK: Meeting Review Point
-                
-                Spacer().frame(height: 32)
-                
-                MultipleTextWithImageBoxView<MeetingReviewMood>(
-                    viewType: .meeting,
-                    matrixs: [GridItem()],
-                    state: .init(
-                        items: MeetingReviewMood.allCases.map { .init(item: $0) },
-                        selectionLimit: 1,
-                        changeWhenIsReachedLimit: true
-                    ),
-                    isReachedLimit: .constant(false),
-                    isSelected: $isReviewSelected,
-                    selectedItems: $selectedReview
-                )
-                .onChange(of: self.selectedReview) { old, new in
-                    guard let selectedReview = new.last else { return }
-                    
-                    switch selectedReview {
-                    case .disappointed, .unsatisfied:
-                        self.isMeetingWasPositive = false
-                    case .neutral, .good, .excellent:
-                        self.isMeetingWasPositive = true
+                if old.last != selectedReview {
+                    Task {
+                        await self.viewModel.selectMood(selectedReview)
                     }
                 }
-                .onChange(of: self.isReviewSelected) { old, new in
-                    if old != new { self.updateCompleteButtonEnabled() }
-                }
+            }
+            .onChange(of: self.isReviewSelected) { old, new in
+                if old != new { self.updateCompleteButtonEnabled() }
+            }
+            
+            
+            // MARK: Selected Meeting Reivew Reason
+            
+            if self.isReviewSelected {
                 
-                
-                // MARK: Selected Meeting Reivew Reason
-                
-                if self.isReviewSelected {
+                ScrollView(.vertical, showsIndicators: false) {
                     
-                    ScrollView(.vertical, showsIndicators: false) {
+                    Spacer().frame(height: 24)
+                    
+                    Rectangle()
+                        .fill(.gray200)
+                        .padding(.horizontal, 16)
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 1)
+                    
+                    Spacer().frame(height: 40)
+                    
+                    VStack(spacing: 32) {
                         
-                        Spacer().frame(height: 24)
-                        
-                        Rectangle()
-                            .fill(.gray200)
-                            .padding(.horizontal, 16)
-                            .frame(maxWidth: .infinity)
-                            .frame(height: 1)
-                        
-                        Spacer().frame(height: 40)
-                        
-                        VStack(spacing: 32) {
+                        if self.isMeetingWasPositive {
                             
-                            if self.isMeetingWasPositive {
-                                
-                                PositivePointsView(
-                                    title: Constants.Text.positivePointsTopTitle,
-                                    isSelected: $isPositivePointsSelected,
-                                    positivePoints: $selectedPositivePoints
-                                )
-                            } else {
-                                
-                                NegativePointsView(
-                                    title: Constants.Text.negativePointsTopTitle,
-                                    isSelected: $isNegativePointsSelected,
-                                    nagativePoints: $selectedNegativePoints
-                                )
-                            }
+                            PositivePointsView(
+                                title: Constants.Text.positivePointsTopTitle,
+                                isSelected: $isPositivePointsSelected,
+                                positivePoints: $selectedPositivePoints
+                            )
+                        } else {
                             
-                            if self.isMeetingWasPositive {
-                                
-                                NegativePointsView(
-                                    title: Constants.Text.negativePointsBottomTitle,
-                                    isSelected: $isNegativePointsSelected,
-                                    nagativePoints: $selectedNegativePoints
-                                )
-                            } else {
-                                
-                                PositivePointsView(
-                                    title: Constants.Text.positivePointsBottomTitle,
-                                    isSelected: $isPositivePointsSelected,
-                                    positivePoints: $selectedPositivePoints
-                                )
-                            }
-                        }
-                        .onChange(of: self.isPositivePointsSelected) { old, new in
-                            if old != new { self.updateCompleteButtonEnabled() }
-                        }
-                        .onChange(of: self.isNegativePointsSelected) { old, new in
-                            if old != new { self.updateCompleteButtonEnabled() }
+                            NegativePointsView(
+                                title: Constants.Text.negativePointsTopTitle,
+                                isSelected: $isNegativePointsSelected,
+                                nagativePoints: $selectedNegativePoints
+                            )
                         }
                         
-                        
-                        // MARK: Review Content
-                        
-                        Spacer().frame(height: 32)
-                        
-                        ReviewContentView(reviewContent: $reviewContent)
-                        
-                        Spacer().frame(height: 32)
-                        
-                        AttendeesCheckView(
-                            members: self.store.initalInfo.nicknames.map { .init(member: $0) },
-                            isAttendeesSelected: $isAttendeesSelected,
-                            selectedAttendees: $selectedAttendees,
-                            isNoShowMembersSelected: $isNoShowMembersSelected,
-                            selectedNoShowMembers: $selectedNoShowMembers
-                        )
-                        .onChange(of: self.isAttendeesSelected) { old, new in
-                            if old != new { self.updateCompleteButtonEnabled() }
-                        }
-                        .onChange(of: self.isNoShowMembersSelected) { old, new in
-                            if old != new { self.updateCompleteButtonEnabled() }
-                        }
-                    }
-                }
-                
-                Spacer()
-                
-                BottomButton(
-                    isClickable: $isCompleteButtonEnabled,
-                    title: Constants.Text.completeButtonTitle,
-                    buttonTapAction: {
-                        Task {
-                            guard let mood = self.selectedReview.last else { return }
+                        if self.isMeetingWasPositive {
                             
-                            await self.store.send(
-                                .submit(
-                                    mood: mood,
-                                    positivePoints: self.selectedPositivePoints.map { $0.toKorean },
-                                    negativePoints: self.selectedNegativePoints.map { $0.toKorean },
-                                    reviewContent: self.reviewContent,
-                                    noShowMembers: self.selectedNoShowMembers.map { $0.member },
-                                    isMemberAllAttended: self.selectedAttendees.last == .all
-                                )
+                            NegativePointsView(
+                                title: Constants.Text.negativePointsBottomTitle,
+                                isSelected: $isNegativePointsSelected,
+                                nagativePoints: $selectedNegativePoints
+                            )
+                        } else {
+                            
+                            PositivePointsView(
+                                title: Constants.Text.positivePointsBottomTitle,
+                                isSelected: $isPositivePointsSelected,
+                                positivePoints: $selectedPositivePoints
                             )
                         }
                     }
-                )
+                    .onChange(of: self.isPositivePointsSelected) { old, new in
+                        if old != new { self.updateCompleteButtonEnabled() }
+                    }
+                    .onChange(of: self.selectedPositivePoints) { old, new in
+                        if old != new {
+                            Task {
+                                await self.viewModel.selectPositivePoint(new.map { $0.toKorean })
+                            }
+                        }
+                    }
+                    .onChange(of: self.isNegativePointsSelected) { old, new in
+                        if old != new { self.updateCompleteButtonEnabled() }
+                    }
+                    .onChange(of: self.selectedNegativePoints) { old, new in
+                        if old != new {
+                            Task {
+                                await self.viewModel.selectNegativePoint(new.map { $0.toKorean })
+                            }
+                        }
+                    }
+                    
+                    
+                    // MARK: Review Content
+                    
+                    Spacer().frame(height: 32)
+                    
+                    ReviewContentView(reviewContent: $reviewContent)
+                    
+                    Spacer().frame(height: 32)
+                    
+                    AttendeesCheckView(
+                        members: self.viewModel.initalInfo.nicknames.map { .init(member: $0) },
+                        isAttendeesSelected: $isAttendeesSelected,
+                        selectedAttendees: $selectedAttendees,
+                        isNoShowMembersSelected: $isNoShowMembersSelected,
+                        selectedNoShowMembers: $selectedNoShowMembers
+                    )
+                    .onChange(of: self.isAttendeesSelected) { old, new in
+                        if old != new { self.updateCompleteButtonEnabled() }
+                    }
+                    .onChange(of: self.selectedAttendees) { old, new in
+                        guard let selectedAttendee = new.last else { return }
+                        
+                        if old.last != selectedAttendee {
+                            Task {
+                                await self.viewModel.selectAttendee(selectedAttendee)
+                            }
+                        }
+                    }
+                    .onChange(of: self.isNoShowMembersSelected) { old, new in
+                        if old != new { self.updateCompleteButtonEnabled() }
+                    }
+                    .onChange(of: self.selectedNoShowMembers) { old, new in
+                        if old != new {
+                            Task {
+                                await self.viewModel.selectNoShowMembers(new.map { $0.member })
+                            }
+                        }
+                    }
+                }
             }
-            .onChange(of: self.store.state.isSubmit) { _, new in
-                if new { self.homeCoordinator.pop() }
-            }
+            
+            Spacer()
+            
+            BottomButton(
+                isClickable: $isCompleteButtonEnabled,
+                title: Constants.Text.completeButtonTitle,
+                buttonTapAction: {
+                    Task {
+                        await self.viewModel.submit()
+                    }
+                }
+            )
         }
-        .navigationBar(
-            title: Constants.Text.naviTitle,
-            onBackButtonTap: { self.homeCoordinator.pop() }
-        )
+        .navigationBarBackButtonHidden()
+        .onChange(of: self.viewModel.currentState.isSuccess) { _, new in
+            if new { self.appPathManager.pop() }
+        }
     }
 }
 
@@ -230,17 +253,12 @@ extension MeetingReviewView {
 }
 
 #Preview {
-    let meetingReviewStoreForPreview = MeetingReviewStore(
-        submitMeetingReviewUseCase: SubmitMeetingReviewUseCase(),
-        initalInfo: .init(nicknames: [], matchingId: "", matchingtype: .onething)
+    MeetingReviewView(
+        appPathManager: .constant(OTAppPathManager()),
+        viewModel: .constant(
+            MeetingReviewViewModel(
+                initalInfo: .init(nicknames: [], matchingId: "", matchingtype: .onething)
+            )
+        )
     )
-    MeetingReviewView(store: .constant(meetingReviewStoreForPreview))
-    // MeetingReviewView(
-    //     appPathManager: .constant(OTAppPathManager()),
-    //     viewModel: .constant(
-    //         MeetingReviewViewModel(
-    //             initalInfo: .init(nicknames: [], matchingId: "", matchingtype: .onething)
-    //         )
-    //     )
-    // )
 }

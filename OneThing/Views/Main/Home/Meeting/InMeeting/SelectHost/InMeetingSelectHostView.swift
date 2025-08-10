@@ -21,9 +21,11 @@ struct InMeetingSelectHostView: View {
         }
     }
     
-    @Environment(\.homeCoordinator) var homeCoordinator
+    @Environment(\.appCoordinator) var appCoordinator
     
     @Binding var store: InMeetingStore
+    
+    // @Binding var inMeetingPathManager: OTInMeetingPathManager
     
     var body: some View {
         
@@ -63,8 +65,11 @@ struct InMeetingSelectHostView: View {
                 
                 OTXXLButton(
                     buttonTitle: Constants.Text.nextButtonTitle,
+                    // action: { self.inMeetingPathManager.push(path: .introduce) },
                     action: {
-                        self.homeCoordinator.push(to: .home(.inMeeting(.introduce)))
+                        if let coordinator = (self.appCoordinator.childCoordinator.last as? InMeetingCoordinator) {
+                            coordinator.push(to: .home(.inMeeting(.introduce)))
+                        }
                     },
                     isClickable: true
                 )
@@ -72,6 +77,7 @@ struct InMeetingSelectHostView: View {
                 .padding(.horizontal, 24)
             }
         }
+        // .navigationBarBackButtonHidden()
     }
 }
 
@@ -83,4 +89,5 @@ struct InMeetingSelectHostView: View {
         matchingType: .onething
     )
     InMeetingSelectHostView(store: .constant(inMeetingStoreForPreview))
+    // InMeetingSelectHostView(inMeetingPathManager: .constant(OTInMeetingPathManager()))
 }

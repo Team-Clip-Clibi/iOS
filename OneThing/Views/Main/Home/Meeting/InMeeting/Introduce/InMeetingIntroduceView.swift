@@ -19,9 +19,12 @@ struct InMeetingIntroduceView: View {
         }
     }
     
-    @Environment(\.homeCoordinator) var homeCoordinator
+    @Environment(\.appCoordinator) var appCoordinator
     
     @Binding var store: InMeetingStore
+    
+    // @Binding var inMeetingPathManager: OTInMeetingPathManager
+    // @Binding var viewModel: InMeetingViewModel
     
     let cols = [GridItem()]
     
@@ -42,10 +45,12 @@ struct InMeetingIntroduceView: View {
                     
                     LazyVGrid(columns: self.cols) {
                         ForEach(
+                            // self.viewModel.currentState.nicknames.indices,
                             self.store.state.nicknames.indices,
                             id: \.self
                         ) { index in
                             self.setupGridItem(
+                                // self.viewModel.currentState.nicknames[index],
                                 self.store.state.nicknames[index],
                                 with: index+1
                             )
@@ -58,8 +63,11 @@ struct InMeetingIntroduceView: View {
                 
                 OTXXLButton(
                     buttonTitle: Constants.Text.nextButtonTitle,
+                    // action: { self.inMeetingPathManager.push(path: .tmi) },
                     action: {
-                        self.homeCoordinator.push(to: .home(.inMeeting(.tmi)))
+                        if let coordinator = (self.appCoordinator.childCoordinator.last as? InMeetingCoordinator) {
+                            coordinator.push(to: .home(.inMeeting(.tmi)))
+                        }
                     },
                     isClickable: true
                 )
@@ -67,6 +75,7 @@ struct InMeetingIntroduceView: View {
                 .padding(.horizontal, 24)
             }
         }
+        // .navigationBarBackButtonHidden()
     }
 }
 
@@ -111,4 +120,8 @@ extension InMeetingIntroduceView {
         matchingType: .onething
     )
     InMeetingIntroduceView(store: .constant(inMeetingStoreForPreview))
+    // InMeetingIntroduceView(
+    //     inMeetingPathManager: .constant(OTInMeetingPathManager()),
+    //     viewModel: .constant(InMeetingViewModel(matchingId: "", matchingType: .onething))
+    // )
 }
