@@ -25,7 +25,8 @@ struct LaunchScreenView: View {
                 await self.store.send(.launch)
             }
             .onChange(of: self.store.state.isLaunched) { _, new in
-                self.appCoordinator.hasLaunchScreenOver = new
+                let isSignIn = self.appCoordinator.dependencies.rootContainer.resolve(AppStateManager.self).isSignedIn
+                self.appCoordinator.currentState = isSignIn ? .mainTabBar: .signUp
             }
     }
 }

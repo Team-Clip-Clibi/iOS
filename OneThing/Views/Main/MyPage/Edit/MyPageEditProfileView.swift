@@ -150,8 +150,10 @@ struct MyPageEditProfileView: View {
                                     TokenManager.shared.accessToken = ""
                                     TokenManager.shared.refreshToken = ""
                                     
-                                    // pathManager.myPagePaths.removeAll()
-                                    // appStateManager.isSignedIn = false
+                                    let appStateManager = self.appCoordinator.dependencies.rootContainer.resolve(AppStateManager.self)
+                                    appStateManager.isSignedIn = false
+                                    
+                                    self.appCoordinator.currentState = .signUp
                                 }
                             },
                             secondAction: {

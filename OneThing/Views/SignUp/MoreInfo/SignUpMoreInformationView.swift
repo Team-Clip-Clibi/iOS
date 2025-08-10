@@ -9,6 +9,7 @@ import SwiftUI
 
 struct SignUpMoreInformationView: View {
     
+    @Environment(\.appCoordinator) var appCoordinator
     @Environment(\.signUpCoordinator) var signUpCoordinator
     
     @Binding var store: SignUpStore
@@ -170,16 +171,6 @@ struct SignUpMoreInformationView: View {
                     buttonTitle: "완료",
                     action: {
                         Task {
-                            // let result = try await viewModel.updateDetail(
-                            //     gender: self.gender.rawValue,
-                            //     birth: dateToString,
-                            //     city: city,
-                            //     county: county
-                            // )
-                            // if result {
-                            //     authPathManager.popToRoot()
-                            //     appStateManager.isSignedIn = true
-                            // }
                             await self.store.send(
                                 .updateDetail(
                                     gender: self.gender.rawValue,
@@ -197,7 +188,8 @@ struct SignUpMoreInformationView: View {
                     if new {
                         let appStateManager = self.signUpCoordinator.dependencies.rootContainer.resolve(AppStateManager.self)
                         appStateManager.isSignedIn = true
-                        // TODO: SignUp 경로를 제거 후에 MainTabbar로 이동
+                        
+                        self.appCoordinator.currentState = .mainTabBar
                     }
                 }
             }
