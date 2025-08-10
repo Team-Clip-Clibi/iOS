@@ -41,8 +41,9 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
                 DispatchQueue.main.async {
                     UIApplication.shared.registerForRemoteNotifications()
                 }
+                LoggingManager.info("푸시 권한 허용됨")
             } else {
-                LoggingManager.error("푸시 권한 거부됨")
+                LoggingManager.info("푸시 권한 거부됨")
             }
         }
     }
