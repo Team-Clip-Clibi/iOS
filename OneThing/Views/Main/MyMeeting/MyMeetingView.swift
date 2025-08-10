@@ -8,14 +8,8 @@
 import SwiftUI
 
 struct MyMeetingView: View {
-    @Binding var appPathManager: OTAppPathManager
     
     var body: some View {
         Text("MyMeetingView")
-        
     }
-}
-
-#Preview {
-    MyMeetingView(appPathManager: .constant(OTAppPathManager()))
 }
