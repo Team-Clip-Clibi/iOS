@@ -69,10 +69,10 @@ struct SignUpMainView: View {
                         .onChange(of: self.store.state.loginResultByKakao) { _, new in
                             switch new {
                             case .success:
-                                let appStateManager = self.appCoordinator.dependencies.rootContainer.resolve(AppStateManager.self)
+                                let appStateManager = self.appCoordinator.dependencies.setupSignUpContainer().resolve(AppStateManager.self)
                                 appStateManager.isSignedIn = true
                                 
-                                self.appCoordinator.currentState = .mainTabBar
+                                // TODO: MainTabbar로 이동
                             case .needToSignUp:
                                 self.signUpCoordinator.push(to: .auth(.signUpTerm))
                             default:
