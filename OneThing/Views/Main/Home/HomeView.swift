@@ -211,9 +211,13 @@ struct HomeView: View {
                 
                 // MARK: In Meeting floating view
                 
-                if self.store.state.reachedMeeting != nil {
+                if let reachedMeeting = self.store.state.reachedMeeting {
                     InMeetingFloatingView(
                         onBackgroundTapped: {
+                            self.homeCoordinator.inMeetingInfo = (
+                                matchingId: reachedMeeting.matchingId,
+                                matchingType: reachedMeeting.matchingType
+                            )
                             self.homeCoordinator.showSheet(to: .home(.inMeeting(.main)))
                         }
                     )
