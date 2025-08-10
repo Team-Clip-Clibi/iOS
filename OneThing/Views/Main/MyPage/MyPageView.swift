@@ -9,13 +9,15 @@ import SwiftUI
 
 struct MyPageView: View {
     
-    @Binding var pathManager: OTAppPathManager
-    @Binding var viewModel: MyPageEditViewModel
+    @Environment(\.appCoordinator) var appCoordinator
+    @Environment(\.myPageCoordinator) var myPageCoordinator
+    
+    @Binding var store: MyPageEditStore
     
     var body: some View {
-        ZStack {
-            Color.gray100
-                .ignoresSafeArea()
+        
+        OTBaseView(String(describing: Self.self), background: .gray100) {
+            
             VStack(spacing:0) {
                 VStack(spacing: 0) {
                     // 상단 타이틀 영역
@@ -23,6 +25,7 @@ struct MyPageView: View {
                         Text("마이")
                             .otFont(.title1)
                             .fontWeight(.semibold)
+                            .foregroundColor(.black)
                         Spacer()
                     }
                     .padding(.top, 10)
@@ -35,7 +38,7 @@ struct MyPageView: View {
                                     .otFont(.title1)
                                     .fontWeight(.semibold)
                                     .foregroundStyle(.purple400)
-                                Text("\( viewModel.profileInfo?.username ?? "원띵")님")
+                                Text("\(self.store.state.profileInfo?.username ?? "원띵")님")
                                     .otFont(.title1)
                                     .fontWeight(.semibold)
                                 
@@ -51,22 +54,7 @@ struct MyPageView: View {
                             OTLButton(
                                 buttonTitle: "프로필 수정",
                                 action: {
-                                    Task {
-                                        do {
-                                            try await viewModel.fetchProfile()
-                                            try await viewModel.fetchJob()
-                                            try await viewModel.fetchRelationship()
-                                            try await viewModel.fetchDietary()
-                                            try await viewModel.fetchLanguage()
-                                            
-                                            // 모든 fetch가 끝난 뒤에 화면 이동
-                                            await MainActor.run {
-                                                pathManager.myPagePaths.append(.editProfile)
-                                            }
-                                        } catch {
-                                            throw NetworkError.fetchError
-                                        }
-                                    }
+                                    self.myPageCoordinator.push(to: .myPage(.editProfile))
                                 },
                                 isClicked: false,
                                 pressed: true
@@ -87,7 +75,7 @@ struct MyPageView: View {
                             backgroundColor: Color.white100,
                             borderColor: Color.white100,
                             action: {
-                                pathManager.push(path: OTMyPagePath.notification)
+                                self.myPageCoordinator.push(to: .myPage(.notification))
                             },
                             isClicked: false
                         )
@@ -120,15 +108,7 @@ struct MyPageView: View {
                             backgroundColor: Color.white100,
                             borderColor: Color.white100,
                             action: {
-                                Task {
-                                    withAnimation(.easeInOut(duration: 0.3)) {
-                                        pathManager.isTabBarHidden = true
-                                    }
-                                    
-                                    try await Task.sleep(nanoseconds: 300_000_000)
-                                    
-                                    pathManager.push(path: .report)
-                                }
+                                self.myPageCoordinator.push(to: .myPage(.report))
                             },
                             isClicked: false
                         )
@@ -146,9 +126,7 @@ struct MyPageView: View {
                 
                 HStack(spacing: 16) {
                     Button(action: {
-                        pathManager.withTabBarHiddenThenNavigate {
-                            pathManager.push(path: .term)
-                        }
+                        self.myPageCoordinator.push(to: .myPage(.term))
                     }) {
                         Text("약관 및 정책")
                             .otFont(.captionTwo)
@@ -176,18 +154,25 @@ struct MyPageView: View {
                 .padding(.bottom, 43)
             }
         }
-        .onAppear {
-            Task {
-                _ = try await self.viewModel.fetchProfile()
-                
-            }
-        }
     }
 }
 
 #Preview {
-    MyPageView(
-        pathManager: .constant(OTAppPathManager()),
-        viewModel: .constant(MyPageEditViewModel())
+    let myPageEditStoreForPreview = MyPageEditStore(
+        socialLoginUseCase: SocialLoginUseCase(),
+        
+        getProfileInfoUseCase: GetProfileInfoUseCase(),
+        getJobUseCase: GetJobUseCase(),
+        getRelationshipUseCase: GetRelationshipUseCase(),
+        getDietaryUseCase: GetDietaryUseCase(),
+        getLanguageUseCase: GetLanguageUseCase(),
+        getNicknameAvailableUseCase: GetNicknameAvailableUseCase(),
+        
+        updateNicknameUseCase: UpdateNicknameUseCase(),
+        updateJobUseCase: UpdateJobUseCase(),
+        updateRelationshipUseCase: UpdateRelationshipUseCase(),
+        updateDietaryUseCase: UpdateDietaryUseCase(),
+        updateLanguageUseCase: UpdateLanguageUseCase()
     )
+    MyPageView(store: .constant(myPageEditStoreForPreview))
 }
