@@ -460,7 +460,7 @@
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = 2Q4V2LFG28;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = OneThing/App/Info.plist;
+				INFOPLIST_FILE = OneThing/Resources/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -499,7 +499,7 @@
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = 2Q4V2LFG28;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = OneThing/App/Info.plist;
+				INFOPLIST_FILE = OneThing/Resources/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
