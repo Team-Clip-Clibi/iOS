@@ -49,7 +49,7 @@ class OnethingMatchingStore: OTStore {
         fileprivate(set) var topicContents: String
         fileprivate(set) var tmiContents: String
         
-        // TODO: 토스 페이먼트
+        // 토스 페이먼트
         fileprivate(set) var resultSucess: TossPaymentsResult.Success?
         fileprivate(set) var resultFail: TossPaymentsResult.Fail?
         fileprivate(set) var paymentResult: PaymentResult?
