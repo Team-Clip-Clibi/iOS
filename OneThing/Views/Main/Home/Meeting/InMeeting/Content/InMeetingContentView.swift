@@ -19,11 +19,9 @@ struct InMeetingContentView: View {
         }
     }
     
-    @Environment(\.appCoordinator) var appCoordinator
+    @Environment(\.homeCoordinator) var homeCoordinator
     
     @Binding var store: InMeetingStore
-    
-    // @Binding var inMeetingPathManager: OTInMeetingPathManager
     
     @State private var currentPage: Int = 0
     
@@ -69,11 +67,8 @@ struct InMeetingContentView: View {
                 
                 OTXXLButton(
                     buttonTitle: Constants.Text.nextButtonTitle,
-                    // action: { self.inMeetingPathManager.push(path: .complete) },
                     action: {
-                        if let coordinator = (self.appCoordinator.childCoordinator.last as? InMeetingCoordinator) {
-                            coordinator.push(to: .home(.inMeeting(.complete)))
-                        }
+                        self.homeCoordinator.push(to: .home(.inMeeting(.complete)))
                     },
                     isClickable: true
                 )
@@ -81,7 +76,6 @@ struct InMeetingContentView: View {
                 .padding(.horizontal, 24)
             }
         }
-        // .navigationBarBackButtonHidden()
     }
 }
 
@@ -128,5 +122,4 @@ extension InMeetingContentView {
         matchingType: .onething
     )
     InMeetingContentView(store: .constant(inMeetingStoreForPreview))
-    // InMeetingContentView(inMeetingPathManager: .constant(OTInMeetingPathManager()))
 }

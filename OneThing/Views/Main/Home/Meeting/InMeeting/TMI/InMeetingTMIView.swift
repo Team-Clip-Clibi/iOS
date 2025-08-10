@@ -19,12 +19,9 @@ struct InMeetingTMIView: View {
         }
     }
     
-    @Environment(\.appCoordinator) var appCoordinator
+    @Environment(\.homeCoordinator) var homeCoordinator
     
     @Binding var store: InMeetingStore
-    
-    // @Binding var inMeetingPathManager: OTInMeetingPathManager
-    // @Binding var viewModel: InMeetingViewModel
     
     let cols = [GridItem(), GridItem()]
     
@@ -45,12 +42,10 @@ struct InMeetingTMIView: View {
                     
                     LazyVGrid(columns: self.cols) {
                         ForEach(
-                            // self.viewModel.currentState.tmis.indices,
                             self.store.state.tmis.indices,
                             id: \.self
                         ) { index in
                             self.setupGridItem(
-                                // self.viewModel.currentState.tmis[index],
                                 self.store.state.tmis[index],
                                 with: index+1
                             )
@@ -63,11 +58,8 @@ struct InMeetingTMIView: View {
                 
                 OTXXLButton(
                     buttonTitle: Constants.Text.nextButtonTitle,
-                    // action: { self.inMeetingPathManager.push(path: .onething) },
                     action: {
-                        if let coordinator = (self.appCoordinator.childCoordinator.last as? InMeetingCoordinator) {
-                            coordinator.push(to: .home(.inMeeting(.onething)))
-                        }
+                        self.homeCoordinator.push(to: .home(.inMeeting(.onething)))
                     },
                     isClickable: true
                 )
@@ -75,9 +67,6 @@ struct InMeetingTMIView: View {
                 .padding(.horizontal, 24)
             }
         }
-        
-        
-        // .navigationBarBackButtonHidden()
     }
 }
 
@@ -124,8 +113,4 @@ extension InMeetingTMIView {
         matchingType: .onething
     )
     InMeetingTMIView(store: .constant(inMeetingStoreForPreview))
-    // InMeetingTMIView(
-    //     inMeetingPathManager: .constant(OTInMeetingPathManager()),
-    //     viewModel: .constant(InMeetingViewModel(matchingId: "", matchingType: .onething))
-    // )
 }

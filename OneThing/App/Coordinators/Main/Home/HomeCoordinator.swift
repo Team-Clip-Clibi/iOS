@@ -50,9 +50,43 @@ final class HomeCoordinator: OTBaseCoordinator {
         )
     }
     
+    private var inMeetingStore: InMeetingStore
+    private var inMeetingStoreForBinding: Binding<InMeetingStore> {
+        Binding(
+            get: { self.inMeetingStore },
+            set: { self.inMeetingStore = $0 }
+        )
+    }
+    
+    private var meetingReviewStore: MeetingReviewStore
+    private var meetingReviewStoreForBinding: Binding<MeetingReviewStore> {
+        Binding(
+            get: { self.meetingReviewStore },
+            set: { self.meetingReviewStore = $0 }
+        )
+    }
+    
     var dependencies: AppDIContainer
     
     var willPushedMatchingType: MatchingType
+    
+    var initialReviewInfo: MeetingReviewStore.InitialInfo = .init() {
+        didSet {
+            self.meetingReviewStore = self.dependencies.setupMeetingReviewContainer(
+                self.initialReviewInfo.nicknames,
+                with: self.initialReviewInfo.matchingId,
+                type: self.initialReviewInfo.matchingtype
+            ).resolve(MeetingReviewStore.self)
+        }
+    }
+    var inMeetingInfo: (matchingId: String, matchingType: MatchingType) = ("", .onething) {
+        didSet {
+            self.inMeetingStore = self.dependencies.setupInMeetingContatiner(
+                with: self.inMeetingInfo.matchingId,
+                type: self.inMeetingInfo.matchingType
+            ).resolve(InMeetingStore.self)
+        }
+    }
     
     init(
         dependencies: AppDIContainer,
@@ -79,6 +113,19 @@ final class HomeCoordinator: OTBaseCoordinator {
         let randomMatchingStore = dependencies.setupRandomMatchingContainer().resolve(RandomMatchingStore.self)
         self.randomMatchingStore = randomMatchingStore
         
+        let inMeetingStore = dependencies.setupInMeetingContatiner(
+            with: "",
+            type: .onething
+        ).resolve(InMeetingStore.self)
+        self.inMeetingStore = inMeetingStore
+        
+        let meetingReviewStore = dependencies.setupMeetingReviewContainer(
+            [],
+            with: "",
+            type: .onething
+        ).resolve(MeetingReviewStore.self)
+        self.meetingReviewStore = meetingReviewStore
+        
         super.init(rootViewBuilder: HomeViewBuilder())
     }
     
@@ -86,8 +133,17 @@ final class HomeCoordinator: OTBaseCoordinator {
         return (self.rootViewBuilder as! HomeViewBuilder).build(store: self.homeStoreForBinding)
     }
     
+    func presentInMeeting() -> InMeetingMainView {
+        return InMeetingMainViewBuilder().build(store: self.inMeetingStoreForBinding)
+    }
+    
+    func presentMeetingReview() -> MeetingReviewView {
+        return MeetingReviewViewBuilder().build(store: self.meetingReviewStoreForBinding)
+    }
+    
     @ViewBuilder
     func destinationView(to path: OTPath) -> some View {
+         
         switch path {
         case .home(.notification):
             NotificationViewBuilder().build(store: self.notificationStoreForBinding)
@@ -134,6 +190,19 @@ final class HomeCoordinator: OTBaseCoordinator {
             RandomMatchingPaymentViewBuilder().build(store: self.randomMatchingStoreForBinding)
         case .home(.random(.complete)):
             RandomMatchingCompleteViewBuilder().build(store: self.randomMatchingStoreForBinding)
+            
+        case .home(.inMeeting(.selectHost)):
+            InMeetingSelectHostViewBuilder().build(store: self.inMeetingStoreForBinding)
+        case .home(.inMeeting(.introduce)):
+            InMeetingIntroduceViewBuilder().build(store: self.inMeetingStoreForBinding)
+        case .home(.inMeeting(.tmi)):
+            InMeetingTMIViewBuilder().build(store: self.inMeetingStoreForBinding)
+        case .home(.inMeeting(.onething)):
+            InMeetingOnethingViewBuilder().build(store: self.inMeetingStoreForBinding)
+        case .home(.inMeeting(.content)):
+            InMeetingContentViewBuilder().build(store: self.inMeetingStoreForBinding)
+        case .home(.inMeeting(.complete)):
+            InMeetingCompleteViewbuilder().build(store: self.inMeetingStoreForBinding)
 
         default:
             EmptyView()

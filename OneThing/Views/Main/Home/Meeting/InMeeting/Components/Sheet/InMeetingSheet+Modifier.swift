@@ -9,8 +9,6 @@ import SwiftUI
 
 struct InMeetingSheetModifier: ViewModifier {
     
-    // @Binding var inMeetingPathManager: OTInMeetingPathManager
-    // @Binding var inMeetingViewModel: InMeetingViewModel
     @Binding var isPresented: Bool
     
     let heightRatio: CGFloat
@@ -19,16 +17,12 @@ struct InMeetingSheetModifier: ViewModifier {
     let dismissWhenBackgroundTapped: Bool
     
     init(
-        // inMeetingPathManager: Binding<OTInMeetingPathManager>,
-        // inMeetingViewModel: Binding<InMeetingViewModel>,
         isPresented: Binding<Bool>,
         heightRatio: CGFloat,
         cornerRadius: CGFloat,
         backgroundColor: Color,
         dismissWhenBackgroundTapped: Bool
     ) {
-        // self._inMeetingPathManager = inMeetingPathManager
-        // self._inMeetingViewModel = inMeetingViewModel
         self._isPresented = isPresented
         self.heightRatio = heightRatio
         self.cornerRadius = cornerRadius
@@ -41,8 +35,6 @@ struct InMeetingSheetModifier: ViewModifier {
             .overlay {
                 if self.isPresented {
                     InMeetingSheetView(
-                        // inMeetingPathManager: $inMeetingPathManager,
-                        // inMeetingViewModel: $inMeetingViewModel,
                         isPresented: $isPresented,
                         heightRatio: self.heightRatio,
                         cornerRadius: self.cornerRadius,
@@ -60,8 +52,6 @@ struct InMeetingSheetModifier: ViewModifier {
 extension View {
     
     func showInMeetingSheet(
-        // inMeetingPathManager: Binding<OTInMeetingPathManager>,
-        // inMeetingVieWModel: Binding<InMeetingViewModel>,
         isPresented: Binding<Bool>,
         heightRatio: CGFloat = 0.9,
         cornerRadius: CGFloat = 20,
@@ -71,8 +61,6 @@ extension View {
         
         self.modifier(
             InMeetingSheetModifier(
-                // inMeetingPathManager: inMeetingPathManager,
-                // inMeetingViewModel: inMeetingVieWModel,
                 isPresented: isPresented,
                 heightRatio: heightRatio,
                 cornerRadius: cornerRadius,

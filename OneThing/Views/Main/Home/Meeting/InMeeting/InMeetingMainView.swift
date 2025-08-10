@@ -23,11 +23,9 @@ struct InMeetingMainView: View {
     }
     
     @Environment(\.appCoordinator) var appCoordinator
+    @Environment(\.homeCoordinator) var homeCoordinator
     
     @Binding var store: InMeetingStore
-    
-    // @Binding var inMeetingPathManager: OTInMeetingPathManager
-    // @Binding var viewModel: InMeetingViewModel
     
     var body: some View {
         
@@ -67,12 +65,7 @@ struct InMeetingMainView: View {
                 
                 OTXXLButton(
                     buttonTitle: Constants.Text.startMeetingButtonTitle,
-                    // action: { self.inMeetingPathManager.push(path: .selectHost) },
-                    action: {
-                        if let coordinator = (self.appCoordinator.childCoordinator.last as? InMeetingCoordinator) {
-                            coordinator.push(to: .home(.inMeeting(.selectHost)))
-                        }
-                    },
+                    action: { self.homeCoordinator.push(to: .home(.inMeeting(.selectHost))) },
                     isClickable: true
                 )
                 .padding(.bottom, 12)
@@ -82,10 +75,6 @@ struct InMeetingMainView: View {
         .taskForOnce {
             await self.store.send(.landing)
         }
-        // .navigationBarBackButtonHidden()
-        // .task {
-        //     await self.viewModel.matchingProgress()
-        // }
     }
 }
 
@@ -97,8 +86,4 @@ struct InMeetingMainView: View {
         matchingType: .onething
     )
     InMeetingMainView(store: .constant(inMeetingStoreForPreview))
-    // InMeetingMainView(
-    //     inMeetingPathManager: .constant(OTInMeetingPathManager()),
-    //     viewModel: .constant(InMeetingViewModel(matchingId: "", matchingType: .onething))
-    // )
 }

@@ -17,7 +17,6 @@ class HomeStore: OTStore {
         case topBanners
         case updateTopBannerStatus(String)
         case reachedMeetingTime(MatchingInfo?)
-        case updateMeetingReviewInfo(MeetingReviewViewModel.InitialInfo)
     }
     
     enum Process: OTProcess {
@@ -32,7 +31,6 @@ class HomeStore: OTStore {
         case updateShouldWriteReview([MatchingInfo])
         case updateTopBannerStatus(Bool)
         case reachedMeetingTime(MatchingInfo?)
-        case updateMeetingReviewInfo(MeetingReviewViewModel.InitialInfo)
         
         case updateIsLoading(Bool)
     }
@@ -49,8 +47,6 @@ class HomeStore: OTStore {
         fileprivate(set) var hasMeeting: [MatchingInfo]
         fileprivate(set) var shouldWriteReview: [MatchingInfo]
         fileprivate(set) var reachedMeeting: MatchingInfo?
-        // TODO: 임시, 모임 후기 용
-        fileprivate(set) var meetingReviewInfo: MeetingReviewViewModel.InitialInfo?
         
         fileprivate(set) var isLoading: Bool
     }
@@ -89,7 +85,6 @@ class HomeStore: OTStore {
             hasMeeting: [],
             shouldWriteReview: [],
             reachedMeeting: nil,
-            meetingReviewInfo: nil,
             isLoading: false
         )
         
@@ -129,8 +124,6 @@ class HomeStore: OTStore {
             return await self.updateTopBannerStatus(with: id)
         case let .reachedMeetingTime(reachedMeeting):
             return await self.reachedMeetingTime(reachedMeeting)
-        case let .updateMeetingReviewInfo(meetingReviewInfo):
-            return await self.updateMeetingReviewInfo(meetingReviewInfo)
         }
     }
     
@@ -160,8 +153,6 @@ class HomeStore: OTStore {
             newState.isChangeSuccessForTopBannerStatus = isChangeSuccessForTopBannerStatus
         case let .reachedMeetingTime(reachedMeeting):
             newState.reachedMeeting = reachedMeeting
-        case let .updateMeetingReviewInfo(meetingReviewInfo):
-            newState.meetingReviewInfo = meetingReviewInfo
         case let .updateIsLoading(isLoading):
             newState.isLoading = isLoading
         }
@@ -282,11 +273,5 @@ private extension HomeStore {
     // TODO: 임시, 모임 중 바텀 싯 표시할 플로팅 뷰 표시 플래그
     func reachedMeetingTime(_ reachedMeeting: MatchingInfo?) async -> OTProcessResult<Process> {
         return .single(.reachedMeetingTime(reachedMeeting))
-    }
-    
-    func updateMeetingReviewInfo(
-        _ meetingReviewInfo: MeetingReviewViewModel.InitialInfo
-    ) async -> OTProcessResult<Process> {
-        return .single(.updateMeetingReviewInfo(meetingReviewInfo))
     }
 }

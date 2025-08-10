@@ -27,7 +27,6 @@ struct HomeView: View {
     @State private var currentPage: Int = 0
     
     @State private var isPresentedPreparingAlert: Bool = false
-    @State private var isInMeetingSheetPresented: Bool = false
     @State private var isMeetingReviewAlertPresented: Bool = false
     
     private let dateManager = DateComparisonManager()
@@ -179,7 +178,6 @@ struct HomeView: View {
                     VStack(spacing: 10) {
                         TabView(selection: $currentPage) {
                             ForEach(
-                                // 0..<self.viewModel.currentState.bannerInfos.count,
                                 0..<self.store.state.bannerInfos.count,
                                 id: \.self
                             ) { page in
@@ -214,7 +212,11 @@ struct HomeView: View {
                 // MARK: In Meeting floating view
                 
                 if self.store.state.reachedMeeting != nil {
-                    InMeetingFloatingView(onBackgroundTapped: { self.isInMeetingSheetPresented = true })
+                    InMeetingFloatingView(
+                        onBackgroundTapped: {
+                            self.homeCoordinator.showSheet(to: .home(.inMeeting(.main)))
+                        }
+                    )
                         .padding(.bottom, 12)
                         .padding(.horizontal, 16)
                         .frame(maxHeight: .infinity, alignment: .bottom)
@@ -276,14 +278,14 @@ struct HomeView: View {
                let matchingId = notiObject["matchingId"] as? String,
                let matchingType = notiObject["matchingType"] as? MatchingType {
                 
-                let meetingReviewInfo = MeetingReviewViewModel.InitialInfo(
+                let meetingReviewInfo = MeetingReviewStore.InitialInfo(
                     nicknames: nicknames,
                     matchingId: matchingId,
                     matchingtype: matchingType
                 )
                 
-                Task { await self.store.send(.updateMeetingReviewInfo(meetingReviewInfo)) }
                 self.isMeetingReviewAlertPresented = true
+                self.homeCoordinator.initialReviewInfo = meetingReviewInfo
             }
         }
         // 모임 후기 작성 Alert
@@ -296,9 +298,8 @@ struct HomeView: View {
                     title: ConstText.meetingReviewAlertConfirmButtonTitle,
                     style: .primary,
                     action: {
-                        guard let info = self.store.state.meetingReviewInfo else { return }
                         self.isMeetingReviewAlertPresented = false
-                        self.homeCoordinator.push(to: .home(.meetingReview))
+                        self.homeCoordinator.showCover(to: .home(.meetingReview))
                     }
                 ),
                 .init(
@@ -311,12 +312,6 @@ struct HomeView: View {
         )
         // 번개 모임 준비중 Alert
         .showPreparing(isPresented: $isPresentedPreparingAlert)
-        // 모임 중 Sheet
-        // .showInMeetingSheet(
-        //     inMeetingPathManager: $inMeetingPathManager,
-        //     inMeetingVieWModel: $inMeetingViewModel,
-        //     isPresented: $isInMeetingSheetPresented
-        // )
     }
 }
 
