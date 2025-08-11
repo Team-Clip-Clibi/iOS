@@ -36,7 +36,6 @@ struct MainTabBarView: View {
             where: { $0 is HomeCoordinator }
         ) as! HomeCoordinator
         @Bindable var homeCoordinatorForBinding = homeCoordinator
-        @State var hasInMeetingSheet = homeCoordinator.sheet == .home(.inMeeting(.main))
         
         let myPageCoordinator = coordinator.childCoordinator.first(
             where: { $0 is MyPageCoordinator }
