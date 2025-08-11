@@ -36,7 +36,6 @@ struct MainTabBarView: View {
             where: { $0 is HomeCoordinator }
         ) as! HomeCoordinator
         @Bindable var homeCoordinatorForBinding = homeCoordinator
-        @State var hasInMeetingSheet = homeCoordinator.sheet == .home(.inMeeting(.main))
         
         let myPageCoordinator = coordinator.childCoordinator.first(
             where: { $0 is MyPageCoordinator }
@@ -57,7 +56,12 @@ struct MainTabBarView: View {
                         homeCoordinator.presentMeetingReview()
                     }
                     // 모임 중 Sheet
-                    .showInMeetingSheet(isPresented: $hasInMeetingSheet)
+                    .showInMeetingSheet(
+                        isPresented: Binding(
+                            get: { homeCoordinatorForBinding.sheet == .home(.inMeeting(.main)) },
+                            set: { _ in }
+                        )
+                    )
             }
             .environment(\.homeCoordinator, homeCoordinatorForBinding)
             .tabItem {
