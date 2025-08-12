@@ -39,11 +39,11 @@ struct CheckBoxStyle: ToggleStyle {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .frame(height: 48)
                 .background(configuration.isOn ? .purple100: .gray100)
-                .clipShape(.rect(cornerRadius: 8))
                 .overlay(
                     RoundedRectangle(cornerRadius: 8)
                         .stroke(configuration.isOn ? .purple200: .gray100, lineWidth: 1)
                 )
+                .clipShape(.rect(cornerRadius: 8))
             case .meeting:
                 HStack(spacing: 12) {
                     Image(configuration.isOn ? .checkSquare: .uncheckSquare)

@@ -59,11 +59,11 @@ struct AlertView: View {
                 .padding(.horizontal, 24)
                 .frame(maxWidth: .infinity)
                 .background(.white100)
-                .clipShape(.rect(cornerRadius: 24))
                 .overlay(
                     RoundedRectangle(cornerRadius: 24)
                         .stroke(.gray100, lineWidth: 1)
                 )
+                .clipShape(.rect(cornerRadius: 24))
             }
             .padding(.horizontal, 35)
         }

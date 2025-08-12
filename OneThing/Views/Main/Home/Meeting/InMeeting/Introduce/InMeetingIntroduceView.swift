@@ -95,11 +95,11 @@ extension InMeetingIntroduceView {
         .frame(maxWidth: .infinity)
         .frame(height: 68)
         .background(.gray100)
-        .clipShape(.rect(cornerRadius: 16))
         .overlay(
             RoundedRectangle(cornerRadius: 16)
                 .stroke(.gray200, lineWidth: 1)
         )
+        .clipShape(.rect(cornerRadius: 16))
     }
 }
 

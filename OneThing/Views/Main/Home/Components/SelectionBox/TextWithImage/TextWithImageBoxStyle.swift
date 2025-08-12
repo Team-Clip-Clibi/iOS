@@ -39,11 +39,11 @@ struct TextWithImageBoxStyle: ToggleStyle {
                 .frame(maxWidth: .infinity)
                 .frame(height: 88)
                 .background(configuration.isOn ? .purple100: .gray100)
-                .clipShape(.rect(cornerRadius: 8))
                 .overlay(
                     RoundedRectangle(cornerRadius: 8)
                         .stroke(configuration.isOn ? .purple200: .gray100, lineWidth: 1)
                 )
+                .clipShape(.rect(cornerRadius: 8))
             case .meeting:
                 VStack(spacing: 6) {
                     Image(self.imageResource)
