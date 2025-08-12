@@ -115,5 +115,5 @@ struct RandomMatchingCompleteView: View {
 }
 
 #Preview {
-    RandomMatchingCompleteView(store: .constant(RandomMatchingStore()))
+    RandomMatchingCompleteView(store: .constant(RandomMatchingStore(with: "현식")))
 }

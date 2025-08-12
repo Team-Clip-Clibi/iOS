@@ -19,7 +19,7 @@ struct RandomMatchingPaymentView: View {
             static let eventTitle = "원띵 출시 이벤트"
             static let eventSubTitle = "지금, 매칭비용은 단 2,900원이에요."
             
-            static let contentTitle = "에게 매칭된 이번주 모임"
+            static let contentTitle = "님을 위한 모임"
             static let contentDateTitle = "일시"
             static let contentLocationTitle = "장소"
             
@@ -95,7 +95,7 @@ struct RandomMatchingPaymentView: View {
                                 .fill(.white100)
                             
                             VStack {
-                                Text(Constants.Text.contentTitle)
+                                Text("\(self.store.nickname)\(Constants.Text.contentTitle)")
                                     .otFont(.subtitle2)
                                     .foregroundStyle(.gray800)
                                     .frame(maxWidth: .infinity, alignment: .center)
@@ -192,5 +192,5 @@ struct RandomMatchingPaymentView: View {
 }
 
 #Preview {
-    RandomMatchingPaymentView(store: .constant(RandomMatchingStore()))
+    RandomMatchingPaymentView(store: .constant(RandomMatchingStore(with: "현식")))
 }

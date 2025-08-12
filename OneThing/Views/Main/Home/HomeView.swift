@@ -154,6 +154,7 @@ struct HomeView: View {
                                 matchingType: .random,
                                 backgroundTapAction: {
                                     self.homeCoordinator.willPushedMatchingType = .random
+                                    self.homeCoordinator.nicknameForRandomMatching = self.store.state.nickname
                                     self.homeCoordinator.push(
                                         to: UserDefaults.isFirstMatching ?
                                             .home(.initial(.main)) :

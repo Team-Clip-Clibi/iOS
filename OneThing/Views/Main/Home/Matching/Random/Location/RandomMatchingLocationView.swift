@@ -84,5 +84,5 @@ struct RandomMatchingLocationView: View {
 }
 
 #Preview {
-    RandomMatchingLocationView(store: .constant(RandomMatchingStore()))
+    RandomMatchingLocationView(store: .constant(RandomMatchingStore(with: "현식")))
 }
