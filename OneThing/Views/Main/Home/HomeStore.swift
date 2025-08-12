@@ -189,7 +189,7 @@ private extension HomeStore {
             let isUnReadNotiEmpty = try await self.getUnReadNotificationUseCase.execute().isEmpty
             return .unReadNoti(isUnReadNotiEmpty)
         } catch {
-            return .unReadNoti(false)
+            return .unReadNoti(true)
         }
     }
     
