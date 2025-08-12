@@ -45,7 +45,7 @@ struct OnethingMatchingMainView: View {
                         RoundedRectangle(cornerRadius: 24)
                             .fill(.purple100)
                         
-                        Image(.matchingInitial)
+                        Image(.onethingMatchingMain)
                     }
                     .padding(.horizontal, 16)
                     .frame(maxWidth: .infinity)

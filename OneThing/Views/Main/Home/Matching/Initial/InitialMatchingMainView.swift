@@ -46,7 +46,7 @@ struct InitialMatchingMainView: View {
                             .fill(.purple100)
                         
                         VStack(spacing: 32) {
-                            Image(.matchingInitial)
+                            Image(.initialMatchingMain)
                             
                             Text(ConstText.message)
                                 .otFont(.title1)
