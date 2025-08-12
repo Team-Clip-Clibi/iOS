@@ -96,7 +96,6 @@ struct SignUpPhoneNumberView: View {
                 self.signUpCoordinator.pop()
             }
         )
-        // .navigationBarBackButtonHidden()
     }
 }
 
