@@ -87,26 +87,6 @@ private extension AlertView {
             }
         }
     }
-    
-    func button(_ action: AlertAction) -> some View {
-        Button(
-            action: { action.action() },
-            label: {
-                Text(action.title)
-                    .otFont(.subtitle2)
-                    .fontWeight(.semibold)
-                    .foregroundStyle(action.foregroundColor)
-            }
-        )
-        .padding(.vertical, 12)
-        .frame(maxWidth: .infinity)
-        .frame(height: 48)
-        .background(
-            RoundedRectangle(cornerRadius: 12)
-                .fill(action.backgrounColor)
-        )
-        .clipShape(.rect(cornerRadius: 12))
-    }
 }
 
 extension AlertView {
