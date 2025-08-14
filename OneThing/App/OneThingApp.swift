@@ -31,7 +31,7 @@ struct OneThingApp: App {
             }
             .environment(\.appCoordinator, self.appCoordinator)
             .onOpenURL { url in
-                 if AuthApi.isKakaoTalkLoginUrl(url) { _ = AuthController.handleOpenUrl(url: url)}
+                 if AuthApi.isKakaoTalkLoginUrl(url) { _ = AuthController.handleOpenUrl(url: url) }
              }
         }
     }
