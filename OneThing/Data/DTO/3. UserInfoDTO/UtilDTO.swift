@@ -18,7 +18,7 @@ enum DeviceType: String, Encodable {
     case android = "ANDROID"
 }
 
-struct County {
+struct County: Equatable {
     var code: String
     var name: String
 }

@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct UserProfileInfo {
+struct UserProfileInfo: Equatable {
     var username: String
     var platform: String
     var phoneNumber: String

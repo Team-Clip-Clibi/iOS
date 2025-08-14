@@ -9,101 +9,99 @@ import SwiftUI
 
 struct SignUpMainView: View {
     
-    @Binding var authPathManager: OTAuthPathManager
-    @Environment(AppStateManager.self) var appStateManager
+    @Environment(\.appCoordinator) var appCoordinator
+    @Environment(\.signUpCoordinator) var signUpCoordinator
     
-    @State private var viewModel = SignUpViewModel()
+    @Binding var store: SignUpStore
+    
     @State private var currentPage = 0
     
     var body: some View {
         
-        NavigationStack(path: $authPathManager.paths) {
-            VStack(alignment: .leading) {
-                // 상단 타이틀
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("오늘 대화 주제 딱 하나!")
-                        .otFont(.heading2)
-                        .foregroundStyle(.gray800)
-                    Text("대화하고 싶은 주제에 맞는 분들끼리 만나요.")
-                        .otFont(.subtitle2)
-                        .foregroundStyle(.gray600)
-                }
-                .padding(.top, 40)
+        @Bindable var signUpCoordinator = self.signUpCoordinator
+        
+        NavigationStack(path: $signUpCoordinator.path) {
+            
+            OTBaseView(String(describing: Self.self)) {
                 
-                // Carousel
-                TabView(selection: $currentPage) {
-                    ForEach(0..<viewModel.banners.count, id: \.self) { index in
-                        BannerView(banner: viewModel.banners[index])
-                            .tag(index)
-                    }
-                }
-                .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
-                .frame(height: 400)
-                .padding(.top, 16)
-                
-                HStack(spacing: 8) {
-                    ForEach(0..<viewModel.banners.count, id: \.self) { index in
-                        Capsule()
-                            .fill(index == currentPage ? Color.purple300 : Color.gray300)
-                            .frame(width: index == currentPage ? 16 : 10, height: 10)
-                            .animation(.easeInOut(duration: 0.2), value: currentPage)
-                    }
-                }
-                .frame(maxWidth: .infinity, alignment: .center)
-                .padding(.top, 16)
-                
-                Spacer()
-                
-                VStack(spacing: 8) {
-                    SocialLoginButton(type: .kakao, text: "Kakao로 로그인하기") {
-                        Task {
-                            let result = try await viewModel.loginWithKakao()
-                            switch result {
-                            case .success:
-                                appStateManager.isSignedIn = true
-                            case .needToSignUp:
-                                authPathManager.push(path: .signUpTerm)
-                            default:
-                                print("로그인 에러발생")
-                            }
-                            
-                        }
-                    }
-                    
-                    SocialLoginButton(type: .apple, text: "Apple로 로그인하기") {
-                        // apple login logic
-                    }
-                    
-                    Button {
-                        
-                    } label: {
-                        Text("원띵 미리보기")
-                            .otFont(.body1)
+                VStack(alignment: .leading) {
+                    // 상단 타이틀
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("오늘 대화 주제 딱 하나!")
+                            .otFont(.heading2)
+                            .foregroundStyle(.gray800)
+                        Text("대화하고 싶은 주제에 맞는 분들끼리 만나요.")
+                            .otFont(.subtitle2)
                             .foregroundStyle(.gray600)
                     }
-                    .padding(.top, 10)
+                    .padding(.top, 40)
+                    
+                    // Carousel
+                    TabView(selection: $currentPage) {
+                        ForEach(0..<self.store.state.banners.count, id: \.self) { index in
+                            BannerView(banner: self.store.state.banners[index])
+                                .tag(index)
+                        }
+                    }
+                    .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
+                    .frame(height: 400)
+                    .padding(.top, 16)
+                    
+                    HStack(spacing: 8) {
+                        ForEach(0..<self.store.state.banners.count, id: \.self) { index in
+                            Capsule()
+                                .fill(index == currentPage ? Color.purple300 : Color.gray300)
+                                .frame(width: index == currentPage ? 16 : 10, height: 10)
+                                .animation(.easeInOut(duration: 0.2), value: currentPage)
+                        }
+                    }
+                    .frame(maxWidth: .infinity, alignment: .center)
+                    .padding(.top, 16)
+                    
+                    Spacer()
+                    
+                    VStack(spacing: 8) {
+                        SocialLoginButton(type: .kakao, text: "Kakao로 로그인하기") {
+                            Task {
+                                await self.store.send(.loginWithKakao)
+                            }
+                        }
+                        .onChange(of: self.store.state.loginResultByKakao) { _, new in
+                            switch new {
+                            case .success:
+                                let appStateManager = self.appCoordinator.dependencies.rootContainer.resolve(AppStateManager.self)
+                                appStateManager.isSignedIn = true
+                                
+                                self.appCoordinator.currentState = .mainTabBar
+                            case .needToSignUp:
+                                self.signUpCoordinator.push(to: .auth(.signUpTerm))
+                            default:
+                                LoggingManager.error("Error occurred while logging in with Kakao")
+                            }
+                        }
+                        
+                        SocialLoginButton(type: .apple, text: "Apple로 로그인하기") {
+                            // apple login logic
+                        }
+                        
+                        Button {
+                            
+                        } label: {
+                            Text("원띵 미리보기")
+                                .otFont(.body1)
+                                .foregroundStyle(.gray600)
+                        }
+                        .padding(.top, 10)
+                    }
                 }
-            }
-            .padding(.horizontal, 17)
-            .navigationDestination(for: OTAuthPath.self) { path in
-                switch path {
-                case .signUpTerm:
-                    SignUpTermView(viewModel: $viewModel, authPathManager: $authPathManager)
-                case .signUpPhoneNumber:
-                    SignUpPhoneNumberView(authPathManager: $authPathManager, viewModel: $viewModel)
-                case .signUpName:
-                    SignUpNameView(authPathManager: $authPathManager, viewModel: $viewModel)
-                case .signUpNickname:
-                    SignUpNicknameView(authPathManager: $authPathManager, viewModel: $viewModel)
-                case .signUpMoreInformation:
-                    SignUpMoreInformationView(authPathManager: $authPathManager, viewModel: $viewModel)
+                .padding(.horizontal, 17)
+                .navigationDestination(for: OTPath.self) { path in
+                    self.signUpCoordinator.destinationView(to: path)
                 }
             }
         }
-        .onAppear {
-            Task {
-                try await self.viewModel.fetchBanner()
-            }
+        .taskForOnce {
+            await self.store.send(.banners)
         }
     }
 }
@@ -198,6 +196,13 @@ extension SignUpMainView {
 }
 
 #Preview {
-    SignUpMainView(authPathManager: .constant(OTAuthPathManager()))
-        .environment(AppStateManager())
+    let signUpStoreForPreview = SignUpStore(
+        socialLoginUseCase: SocialLoginUseCase(),
+        updateUserNameUseCase: UpdateUserNameUseCase(),
+        updateNicknameUseCase: UpdateNicknameUseCase(),
+        updatePhoneNumberUseCase: UpdatePhoneNumberUseCase(),
+        getNicknameAvailableUseCase: GetNicknameAvailableUseCase(),
+        getBannerUseCase: GetBannerUseCase()
+    )
+    SignUpMainView(store: .constant(signUpStoreForPreview))
 }

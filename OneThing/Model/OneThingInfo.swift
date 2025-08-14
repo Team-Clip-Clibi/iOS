@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct OnethingInfo {
+struct OnethingInfo: Equatable {
     let number: Int
     let category: String
     let message: String
