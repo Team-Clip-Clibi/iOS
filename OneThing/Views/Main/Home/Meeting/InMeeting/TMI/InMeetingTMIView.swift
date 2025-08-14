@@ -97,11 +97,11 @@ extension InMeetingTMIView {
         .frame(maxWidth: .infinity)
         .frame(height: 160)
         .background(.gray100)
-        .clipShape(.rect(cornerRadius: 16))
         .overlay(
             RoundedRectangle(cornerRadius: 16)
                 .stroke(.gray200, lineWidth: 1)
         )
+        .clipShape(.rect(cornerRadius: 16))
     }
 }
 

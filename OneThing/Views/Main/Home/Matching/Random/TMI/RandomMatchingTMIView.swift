@@ -82,5 +82,5 @@ struct RandomMatchingTMIView: View {
 }
 
 #Preview {
-    RandomMatchingTMIView(store: .constant(RandomMatchingStore()))
+    RandomMatchingTMIView(store: .constant(RandomMatchingStore(with: "현식")))
 }

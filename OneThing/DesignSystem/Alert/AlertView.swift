@@ -59,11 +59,11 @@ struct AlertView: View {
                 .padding(.horizontal, 24)
                 .frame(maxWidth: .infinity)
                 .background(.white100)
-                .clipShape(.rect(cornerRadius: 24))
                 .overlay(
                     RoundedRectangle(cornerRadius: 24)
                         .stroke(.gray100, lineWidth: 1)
                 )
+                .clipShape(.rect(cornerRadius: 24))
             }
             .padding(.horizontal, 35)
         }
@@ -86,26 +86,6 @@ private extension AlertView {
                 .tag(action.tag)
             }
         }
-    }
-    
-    func button(_ action: AlertAction) -> some View {
-        Button(
-            action: { action.action() },
-            label: {
-                Text(action.title)
-                    .otFont(.subtitle2)
-                    .fontWeight(.semibold)
-                    .foregroundStyle(action.foregroundColor)
-            }
-        )
-        .padding(.vertical, 12)
-        .frame(maxWidth: .infinity)
-        .frame(height: 48)
-        .background(
-            RoundedRectangle(cornerRadius: 12)
-                .fill(action.backgrounColor)
-        )
-        .clipShape(.rect(cornerRadius: 12))
     }
 }
 

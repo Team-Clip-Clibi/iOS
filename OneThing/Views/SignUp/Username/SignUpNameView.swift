@@ -58,19 +58,13 @@ struct SignUpNameView: View {
                 }
                 .padding(.horizontal, 17)
                 
-                Rectangle()
-                    .fill(.gray200)
-                    .frame(height: 1)
-                OTXXLButton(
-                    buttonTitle: "다음",
-                    action: {
-                        Task {
-                            await self.store.send(.updateUsername(text))
-                        }
-                    },
-                    isClickable: true
+                BottomButton(
+                    isClickable: .constant(true),
+                    title: "다음",
+                    buttonTapAction: {
+                        Task { await self.store.send(.updateUsername(text)) }
+                    }
                 )
-                .padding(.horizontal, 17)
                 .onChange(of: self.store.state.isUsernameUpdated) { _, new in
                     if new {
                         self.signUpCoordinator.push(to: .auth(.signUpNickname))
@@ -80,6 +74,7 @@ struct SignUpNameView: View {
         }
         .navigationBar(
             title: "회원가입",
+            hidesBottomSeparator: false,
             rightButtons: [
                 AnyView(
                     Text("2/4")

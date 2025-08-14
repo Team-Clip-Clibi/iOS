@@ -23,7 +23,8 @@ struct OTMButton: View {
                 .lineLimit(1)
                 .foregroundStyle(isClickable ? .white100 : .gray800)
                 .padding(.vertical, 12)
-                .frame(minWidth: 276)
+                .frame(maxWidth: .infinity)
+                .frame(height: 48)
                 .background(
                     RoundedRectangle(cornerRadius: 12)
                         .foregroundStyle(isClickable ? .purple400 : .gray200)
@@ -35,4 +36,5 @@ struct OTMButton: View {
 
 #Preview {
     OTMButton(buttonTitle: "Button/M", action: {}, isClickable: true)
+        .padding(.horizontal, 24)
 }

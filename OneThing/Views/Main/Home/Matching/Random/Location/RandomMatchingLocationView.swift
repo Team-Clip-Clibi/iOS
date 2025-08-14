@@ -26,7 +26,6 @@ struct RandomMatchingLocationView: View {
     
     @Binding var store: RandomMatchingStore
     
-    @State private var isReachedLimit: Bool = false
     @State private var isNextButtonEnabled: Bool = false
     @State private var selectedDistricts: [District] = []
     
@@ -42,7 +41,7 @@ struct RandomMatchingLocationView: View {
                 Spacer().frame(height: 32)
                 
                 GuideMessageView(
-                    isChangeSubTitleColor: $isReachedLimit,
+                    isChangeSubTitleColor: .constant(false),
                     title: Constants.Text.title,
                     subTitle: Constants.Text.subTitle
                 )
@@ -55,7 +54,7 @@ struct RandomMatchingLocationView: View {
                         items: District.allCases.map { .init(item: $0) },
                         selectionLimit: 2
                     ),
-                    isReachedLimit: $isReachedLimit,
+                    isReachedLimit: .constant(false),
                     isSelected: $isNextButtonEnabled,
                     selectedItems: $selectedDistricts
                 )
@@ -84,5 +83,5 @@ struct RandomMatchingLocationView: View {
 }
 
 #Preview {
-    RandomMatchingLocationView(store: .constant(RandomMatchingStore()))
+    RandomMatchingLocationView(store: .constant(RandomMatchingStore(with: "현식")))
 }

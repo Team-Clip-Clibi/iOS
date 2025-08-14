@@ -70,6 +70,13 @@ final class HomeCoordinator: OTBaseCoordinator {
     
     var willPushedMatchingType: MatchingType
     
+    var nicknameForRandomMatching: String = "" {
+        didSet {
+            self.randomMatchingStore = self.dependencies.setupRandomMatchingContainer(
+                with: self.nicknameForRandomMatching
+            ).resolve(RandomMatchingStore.self)
+        }
+    }
     var initialReviewInfo: MeetingReviewStore.InitialInfo = .init() {
         didSet {
             self.meetingReviewStore = self.dependencies.setupMeetingReviewContainer(
@@ -110,7 +117,7 @@ final class HomeCoordinator: OTBaseCoordinator {
         let onethingMatchingStore = dependencies.setupOnethingMatchingContainer().resolve(OnethingMatchingStore.self)
         self.onethingMatchingStore = onethingMatchingStore
         
-        let randomMatchingStore = dependencies.setupRandomMatchingContainer().resolve(RandomMatchingStore.self)
+        let randomMatchingStore = dependencies.setupRandomMatchingContainer(with: "").resolve(RandomMatchingStore.self)
         self.randomMatchingStore = randomMatchingStore
         
         let inMeetingStore = dependencies.setupInMeetingContatiner(

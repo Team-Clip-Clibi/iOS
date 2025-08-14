@@ -154,6 +154,7 @@ struct HomeView: View {
                                 matchingType: .random,
                                 backgroundTapAction: {
                                     self.homeCoordinator.willPushedMatchingType = .random
+                                    self.homeCoordinator.nicknameForRandomMatching = self.store.state.nickname
                                     self.homeCoordinator.push(
                                         to: UserDefaults.isFirstMatching ?
                                             .home(.initial(.main)) :
@@ -324,9 +325,11 @@ private extension HomeView {
     
     func setupBanner(with urlString: String) -> some View {
         
-        AsyncSVGImage(urlString: urlString)
+        AsyncSVGImage(urlString: urlString, shape: .rounded(8))
+            .padding(.horizontal, 16)
             .frame(maxWidth: .infinity)
             .frame(height: 110)
+            .disabled(true)
     }
 }
 

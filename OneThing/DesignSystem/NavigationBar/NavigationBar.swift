@@ -87,17 +87,17 @@ struct NavigationBar: View {
                 }
                 .frame(minWidth: 0)
             }
-            .frame(maxWidth: .infinity)
-            .frame(height: 60)
-            .padding(self.inset)
-            .background(self.backgroundColor)
-            .overlay(
-                Rectangle()
-                    .frame(width: nil, height: self.hidesBottomSeparator ? 0: 1, alignment: .bottom)
-                    .foregroundStyle(.gray200),
-                alignment: .bottom
-            )
         }
+        .frame(maxWidth: .infinity)
+        .frame(height: 60)
+        .padding(self.inset)
+        .background(self.backgroundColor)
+        .overlay(
+            Rectangle()
+                .frame(width: nil, height: self.hidesBottomSeparator ? 0: 1, alignment: .bottom)
+                .foregroundStyle(.gray200),
+            alignment: .bottom
+        )
     }
     
     private var backButton: some View {

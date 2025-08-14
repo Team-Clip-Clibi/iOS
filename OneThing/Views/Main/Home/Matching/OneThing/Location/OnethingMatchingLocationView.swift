@@ -26,7 +26,6 @@ struct OnethingMatchingLocationView: View {
     
     @Binding var store: OnethingMatchingStore
     
-    @State private var isReachedLimit: Bool = false
     @State private var isNextButtonEnabled: Bool = false
     @State private var selectedDistricts: [District] = []
     
@@ -42,7 +41,7 @@ struct OnethingMatchingLocationView: View {
                 Spacer().frame(height: 32)
                 
                 GuideMessageView(
-                    isChangeSubTitleColor: $isReachedLimit,
+                    isChangeSubTitleColor: .constant(false),
                     title: Constants.Text.title,
                     subTitle: Constants.Text.subTitle
                 )
@@ -56,7 +55,7 @@ struct OnethingMatchingLocationView: View {
                         items: District.allCases.map { .init(item: $0) },
                         selectionLimit: 2
                     ),
-                    isReachedLimit: $isReachedLimit,
+                    isReachedLimit: .constant(false),
                     isSelected: $isNextButtonEnabled,
                     selectedItems: $selectedDistricts
                 )

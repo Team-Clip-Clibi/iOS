@@ -226,6 +226,7 @@ struct SignUpMoreInformationView: View {
         }
         .navigationBar(
             title: "회원가입",
+            hidesBottomSeparator: false,
             onBackButtonTap: {
                 self.signUpCoordinator.pop()
             }

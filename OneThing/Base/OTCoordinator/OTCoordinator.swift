@@ -7,6 +7,8 @@
 
 import Foundation
 
+import SwiftUI
+
 /// 코디네이터가 준수해야 하는 프로토콜입니다.
 /// 화면 네비게이션 로직(push, pop, sheet 등)과 자식 코디네이터 관리를 위한 인터페이스를 정의합니다.
 protocol OTCoordinatorable: AnyObject, Identifiable {

@@ -79,11 +79,11 @@ struct RandomMatchingCompleteView: View {
                     .frame(maxWidth: .infinity)
                     .frame(height: 60)
                     .background(.white100)
-                    .clipShape(.rect(cornerRadius: 12))
                     .overlay(
                         RoundedRectangle(cornerRadius: 12)
                             .stroke(.purple400, lineWidth: 1)
                     )
+                    .clipShape(.rect(cornerRadius: 12))
                     
                     OTXXLButton(
                         buttonTitle: Constants.Text.goHomeButtonTitle,
@@ -115,5 +115,5 @@ struct RandomMatchingCompleteView: View {
 }
 
 #Preview {
-    RandomMatchingCompleteView(store: .constant(RandomMatchingStore()))
+    RandomMatchingCompleteView(store: .constant(RandomMatchingStore(with: "현식")))
 }

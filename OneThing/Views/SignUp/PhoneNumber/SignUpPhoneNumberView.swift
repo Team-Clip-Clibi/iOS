@@ -61,19 +61,13 @@ struct SignUpPhoneNumberView: View {
                 }
                 .padding(.horizontal, 17)
                 
-                Rectangle()
-                    .fill(.gray200)
-                    .frame(height: 1)
-                OTXXLButton(
-                    buttonTitle: "다음",
-                    action: {
-                        Task {
-                            await self.store.send(.updatePhoneNumber(text))
-                        }
-                    },
-                    isClickable: isClickable
+                BottomButton(
+                    isClickable: $isClickable,
+                    title: "다음",
+                    buttonTapAction: {
+                        Task { await self.store.send(.updatePhoneNumber(text)) }
+                    }
                 )
-                .padding(.horizontal, 17)
                 .onChange(of: self.store.state.isPhoneNumberUpdated) { _, new in
                     if new {
                         self.signUpCoordinator.push(to: .auth(.signUpName))
@@ -83,6 +77,7 @@ struct SignUpPhoneNumberView: View {
         }
         .navigationBar(
             title: "회원가입",
+            hidesBottomSeparator: false,
             rightButtons: [
                 AnyView(
                     Text("1/4")
@@ -96,7 +91,6 @@ struct SignUpPhoneNumberView: View {
                 self.signUpCoordinator.pop()
             }
         )
-        // .navigationBarBackButtonHidden()
     }
 }
 

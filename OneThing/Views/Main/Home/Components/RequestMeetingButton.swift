@@ -70,11 +70,11 @@ struct RequestMeetingButton: View {
         .frame(maxWidth: .infinity)
         .frame(height: 84)
         .background(.white100)
-        .clipShape(.rect(cornerRadius: 16))
         .overlay(
             RoundedRectangle(cornerRadius: 16)
                 .stroke(.gray100, lineWidth: 1)
         )
+        .clipShape(.rect(cornerRadius: 16))
         .onTapGesture { self.backgroundTapAction() }
     }
 }

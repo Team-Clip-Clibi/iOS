@@ -45,11 +45,11 @@ struct DateTextBoxStyle: ToggleStyle {
             }
             .frame(width: 88, height: 108)
             .background(configuration.isOn ? .purple100: .gray100)
-            .clipShape(.rect(cornerRadius: 8))
             .overlay(
                 RoundedRectangle(cornerRadius: 8)
                     .stroke(configuration.isOn ? .purple200: .gray100, lineWidth: 1)
             )
+            .clipShape(.rect(cornerRadius: 8))
         }
     }
 }

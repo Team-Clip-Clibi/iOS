@@ -45,11 +45,11 @@ struct HomeGridEmptyAndFooter: View {
         .frame(maxWidth: self.maxWidth)
         .frame(width: self.width, height: 174)
         .background(.gray200)
-        .clipShape(.rect(cornerRadius: 24))
         .overlay(
             RoundedRectangle(cornerRadius: 24)
                 .stroke(.gray300, lineWidth: 1)
         )
+        .clipShape(.rect(cornerRadius: 24))
     }
 }
 

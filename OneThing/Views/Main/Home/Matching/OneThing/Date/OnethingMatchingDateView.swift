@@ -62,7 +62,7 @@ struct OnethingMatchingDateView: View {
                                 )
                             },
                             selectLimit: 3,
-                            changeWhenIsReachedLimit: true
+                            changeWhenIsReachedLimit: false
                         ),
                         isReachedLimit: .constant(false),
                         isSelected: $isNextButtonEnabled,

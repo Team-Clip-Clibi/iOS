@@ -36,13 +36,17 @@ class RandomMatchingStore: OTStore {
     }
     var state: State
     
-    init() {
+    let nickname: String
+    
+    init(with nickname: String) {
         
         self.state = State(
             selectedDistrict: nil,
             topicContents: "",
             tmiContents: ""
         )
+        
+        self.nickname = nickname
     }
     
     func process(_ action: Action) async -> OTProcessResult<Process> {
