@@ -144,6 +144,7 @@ struct SignUpTermView: View {
         }
         .navigationBar(
             title: "회원가입",
+            hidesBottomSeparator: false,
             onBackButtonTap: {
                 Task { await self.store.send(.updateToDeniedTerms([0, 1, 2])) }
                 self.signUpCoordinator.pop()

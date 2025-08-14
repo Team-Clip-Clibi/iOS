@@ -90,19 +90,16 @@ struct SignUpNicknameView: View {
                 }
                 .padding(.horizontal, 17)
                 
-                Rectangle()
-                    .fill(.gray200)
-                    .frame(height: 1)
-                OTXXLButton(
-                    buttonTitle: "다음",
-                    action: {
-                        Task {
-                            await self.store.send(.updateNickname(text))
-                        }
-                    },
-                    isClickable: nicknameRule == .available
+                BottomButton(
+                    isClickable: Binding(
+                        get: { self.nicknameRule == .available },
+                        set: { _ in }
+                    ),
+                    title: "다음",
+                    buttonTapAction: {
+                        Task { await self.store.send(.updateNickname(text)) }
+                    }
                 )
-                .padding(.horizontal, 17)
                 .onChange(of: self.store.state.isNicknameUpdated) { _, new in
                     if new {
                         self.signUpCoordinator.push(to: .auth(.signUpMoreInformation))
@@ -112,6 +109,7 @@ struct SignUpNicknameView: View {
         }
         .navigationBar(
             title: "회원가입",
+            hidesBottomSeparator: false,
             rightButtons: [
                 AnyView(
                     Text("3/4")
