@@ -29,8 +29,6 @@ struct HomeView: View {
     @State private var isPresentedPreparingAlert: Bool = false
     @State private var isMeetingReviewAlertPresented: Bool = false
     
-    private let dateManager = DateComparisonManager()
-    
     private let rows = [GridItem()]
     
     var body: some View {
@@ -38,21 +36,21 @@ struct HomeView: View {
         OTBaseView(String(describing: Self.self), background: .gray100) {
             
             ZStack {
-                // MARK: NavigationBar + Notice
                 
-                NoticeView(notices: self.store.state.noticeInfos)
-                
-                
-                // MARK: Top Banner + Matched Meeting + Request Meeting + Bottom Banner
-                
-                ScrollView(.vertical, showsIndicators: false) {
+                VStack {
+                    
+                    
+                    // MARK: Notice
+                    
+                    NoticeView(notices: self.store.state.noticeInfos)
                     
                     
                     // MARK: Top Banner
                     
-                    if self.store.state.topBannerInfos.isEmpty {
-                        EmptyView()
-                    } else {
+                    if self.store.state.topBannerInfos.isEmpty == false {
+                        
+                        Spacer().frame(height: 32)
+                        
                         ZStack {
                             TabView {
                                 ForEach(
@@ -83,131 +81,139 @@ struct HomeView: View {
                     }
                     
                     
-                    //MARK: Matched Meeting
+                    // MARK: Matched Meeting + Request Meeting + Bottom Banner
                     
-                    VStack(alignment: .leading, spacing: 12) {
-                        let matchingSummariesWithType = self.store.state.matchingSummariesWithType
+                    ScrollView(.vertical, showsIndicators: false) {
                         
-                        HStack(spacing: 10) {
-                            // TODO: 임시, 유저 정보는 전역으로 관리 필요
-                            Text("\(self.store.state.nickname)의 모임")
+                        
+                        //MARK: Matched Meeting
+                        
+                        VStack(alignment: .leading, spacing: 12) {
+                            let matchingSummariesWithType = self.store.state.matchingSummariesWithType
+                            
+                            HStack(spacing: 10) {
+                                // TODO: 임시, 유저 정보는 전역으로 관리 필요
+                                Text("\(self.store.state.nickname)의 모임")
+                                    .otFont(.title1)
+                                    .foregroundStyle(.gray700)
+                                
+                                if matchingSummariesWithType.isEmpty {
+                                    EmptyView()
+                                } else {
+                                    Text("\(matchingSummariesWithType.count)")
+                                    // TODO: weight 조절 추가해야 함
+                                        .otFont(.title1)
+                                        .foregroundStyle(.purple400)
+                                }
+                            }
+                            
+                            if matchingSummariesWithType.isEmpty {
+                                HomeGridEmptyAndFooter(category: .placeholder)
+                            } else {
+                                ScrollView(.horizontal, showsIndicators: false) {
+                                    LazyHGrid(rows: self.rows) {
+                                        ForEach(
+                                            matchingSummariesWithType,
+                                            id: \.info.matchingId
+                                        ) { matchingSummaryInfo in
+                                            HomeGridItem(
+                                                matchingType: matchingSummaryInfo.type,
+                                                matchingSummary: matchingSummaryInfo.info
+                                            )
+                                        }
+                                        
+                                        HomeGridEmptyAndFooter(category: .footer)
+                                    }
+                                }
+                            }
+                        }
+                        .padding(.horizontal, 16)
+                        .frame(maxWidth: .infinity)
+                        
+                        Spacer().frame(height: 40)
+                        
+                        
+                        // MARK: Request Meeting
+                        
+                        VStack(alignment: .leading, spacing: 12) {
+                            Text(ConstText.requestMeetingTitle)
                                 .otFont(.title1)
                                 .foregroundStyle(.gray700)
                             
-                            if matchingSummariesWithType.isEmpty {
-                                EmptyView()
-                            } else {
-                                Text("\(matchingSummariesWithType.count)")
-                                // TODO: weight 조절 추가해야 함
-                                    .otFont(.title1)
-                                    .foregroundStyle(.purple400)
-                            }
-                        }
-                        
-                        if matchingSummariesWithType.isEmpty {
-                            HomeGridEmptyAndFooter(category: .placeholder)
-                        } else {
-                            ScrollView(.horizontal, showsIndicators: false) {
-                                LazyHGrid(rows: self.rows) {
-                                    ForEach(
-                                        matchingSummariesWithType,
-                                        id: \.info.matchingId
-                                    ) { matchingSummaryInfo in
-                                        HomeGridItem(
-                                            matchingType: matchingSummaryInfo.type,
-                                            matchingSummary: matchingSummaryInfo.info
-                                        )
-                                    }
-                                    
-                                    HomeGridEmptyAndFooter(category: .footer)
-                                }
-                            }
-                        }
-                    }
-                    .padding(.horizontal, 16)
-                    .frame(maxWidth: .infinity)
-                    
-                    Spacer().frame(height: 40)
-                    
-                    
-                    // MARK: Request Meeting
-                    
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text(ConstText.requestMeetingTitle)
-                            .otFont(.title1)
-                            .foregroundStyle(.gray700)
-                        
-                        RequestMeetingButton(
-                            matchingType: .onething,
-                            backgroundTapAction: {
-                                self.homeCoordinator.willPushedMatchingType = .onething
-                                self.homeCoordinator.push(
-                                    to: UserDefaults.isFirstMatching ?
-                                        .home(.initial(.main)) :
-                                        .home(.onething(.main))
-                                )
-                            }
-                        )
-                        
-                        HStack(spacing: 12) {
                             RequestMeetingButton(
-                                matchingType: .random,
+                                matchingType: .onething,
                                 backgroundTapAction: {
-                                    self.homeCoordinator.willPushedMatchingType = .random
-                                    self.homeCoordinator.nicknameForRandomMatching = self.store.state.nickname
+                                    self.homeCoordinator.willPushedMatchingType = .onething
                                     self.homeCoordinator.push(
                                         to: UserDefaults.isFirstMatching ?
                                             .home(.initial(.main)) :
-                                            .home(.random(.main))
+                                            .home(.onething(.main))
                                     )
                                 }
                             )
-                            RequestMeetingButton(
-                                matchingType: .instant,
-                                backgroundTapAction: { self.isPresentedPreparingAlert = true }
-                            )
-                        }
-                    }
-                    .padding(.horizontal, 16)
-                    .frame(maxWidth: .infinity)
-                    
-                    Spacer()
-                    
-                    
-                    // MARK: Bottom Banner
-                    
-                    VStack(spacing: 10) {
-                        TabView(selection: $currentPage) {
-                            ForEach(
-                                0..<self.store.state.bannerInfos.count,
-                                id: \.self
-                            ) { page in
-                                let urlString = self.store.state.bannerInfos[page].urlString
-                                self.setupBanner(with: urlString)
-                                    .tag(page)
+                            
+                            HStack(spacing: 12) {
+                                RequestMeetingButton(
+                                    matchingType: .random,
+                                    backgroundTapAction: {
+                                        self.homeCoordinator.willPushedMatchingType = .random
+                                        self.homeCoordinator.nicknameForRandomMatching = self.store.state.nickname
+                                        self.homeCoordinator.push(
+                                            to: UserDefaults.isFirstMatching ?
+                                                .home(.initial(.main)) :
+                                                .home(.random(.main))
+                                        )
+                                    }
+                                )
+                                RequestMeetingButton(
+                                    matchingType: .instant,
+                                    backgroundTapAction: { self.isPresentedPreparingAlert = true }
+                                )
                             }
                         }
-                        .tabViewStyle(.page(indexDisplayMode: .never))
+                        .padding(.horizontal, 16)
+                        .frame(maxWidth: .infinity)
                         
-                        HStack(spacing: 6) {
-                            ForEach(
-                                0..<self.store.state.bannerInfos.count,
-                                id: \.self
-                            ) { page in
-                                Circle()
-                                    .fill(page == self.currentPage ? .purple400: .gray400)
-                                    .frame(width: 6, height: 6)
-                                    .animation(.easeInOut(duration: 0.2), value: self.currentPage)
+                        Spacer().frame(height: 40)
+                        
+                        
+                        // MARK: Bottom Banner
+                        
+                        VStack(spacing: 10) {
+                            TabView(selection: $currentPage) {
+                                ForEach(
+                                    0..<self.store.state.bannerInfos.count,
+                                    id: \.self
+                                ) { page in
+                                    let urlString = self.store.state.bannerInfos[page].urlString
+                                    self.setupBanner(with: urlString)
+                                        .tag(page)
+                                }
+                            }
+                            .tabViewStyle(.page(indexDisplayMode: .never))
+                            
+                            HStack(spacing: 6) {
+                                ForEach(
+                                    0..<self.store.state.bannerInfos.count,
+                                    id: \.self
+                                ) { page in
+                                    Circle()
+                                        .fill(page == self.currentPage ? .purple400: .gray400)
+                                        .frame(width: 6, height: 6)
+                                        .animation(.easeInOut(duration: 0.2), value: self.currentPage)
+                                }
                             }
                         }
+                        // 초기 높이, 이미지 높이 추정 전
+                        .frame(height: 136)
+                        
+                        Spacer().frame(height: 32)
                     }
-                    // 초기 높이, 이미지 높이 추정 전
-                    .frame(height: 136)
+                    .padding(.top, self.store.state.noticeInfos.isEmpty ? 0: 32)
+                    // .padding(.bottom, 32)
+                    // TODO: 새로고침 시 contentOffset 필요
+                    .refreshable { await self.store.send(.refresh) }
                 }
-                .padding(.top, self.store.state.noticeInfos.isEmpty ? 0: 32)
-                // .padding(.bottom, 32)
-                // TODO: 새로고침 시 contentOffset 필요
-                .refreshable { await self.store.send(.refresh) }
                 
                 
                 // MARK: In Meeting floating view
@@ -254,27 +260,6 @@ struct HomeView: View {
         .task(id: self.store.state.isChangeSuccessForTopBannerStatus) {
             if self.store.state.isChangeSuccessForTopBannerStatus {
                 await self.store.send(.topBanners)
-            }
-        }
-        .onChange(of: self.store.state.hasMeeting.last) { _, new in
-            
-            if let hasMeeting = new, hasMeeting.meetingTime.isToday {
-                
-                self.dateManager.startMonitoring(
-                    with: hasMeeting.meetingTime,
-                    onTimeRangeChanged: { isWithinRange in
-                        if isWithinRange {
-                            Task { await self.store.send(.reachedMeetingTime(hasMeeting)) }
-                        }
-                    },
-                    onTimeExceeded: {
-                        Task { await self.store.send(.reachedMeetingTime(nil)) }
-                    }
-                )
-            } else {
-                
-                self.dateManager.stopMonitoring()
-                Task { await self.store.send(.reachedMeetingTime(nil)) }
             }
         }
         .onReceive(NotificationCenter.default.publisher(for: .showMeetingReviewAlert)) { notification in
@@ -333,10 +318,16 @@ private extension HomeView {
     }
 }
 
-// #Preview {
-//      HomeView(
-//         appPathManager: .constant(OTAppPathManager()),
-//         viewModel: .constant(HomeViewModel()),
-//         inMeetingPathManager: .constant(OTInMeetingPathManager())
-//     )
-// }
+#Preview {
+    let homeStoreForPreview = HomeStore(
+        getProfileUseCase: GetProfileInfoUseCase(),
+        getUnReadNotificationUseCase: GetUnReadNotificationUseCase(),
+        getNotificationBannerUseCase: GetNotificationBannerUseCase(),
+        updateNotificationBannerUseCase: UpdateNotificationBannerUseCase(),
+        noticeUseCase: GetNoticeUseCase(),
+        getMatchingStatusUseCase: GetMatchingStatusUseCase(),
+        getMatchingsUseCase: GetMatchingsUseCase(),
+        bannerUseCase: GetBannerUseCase()
+    )
+    HomeView(store: .constant(homeStoreForPreview))
+}
