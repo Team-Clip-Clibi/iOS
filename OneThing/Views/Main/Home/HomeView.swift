@@ -221,7 +221,10 @@ struct HomeView: View {
                 if let reachedMeeting = self.store.state.reachedMeeting {
                     InMeetingFloatingView(
                         onBackgroundTapped: {
-                            self.homeCoordinator.inMeetingInfo = (
+                            let inMeetingCoordinator = self.homeCoordinator.childCoordinator.first(
+                                    where: { $0 is InMeetingCoordinator }
+                                ) as! InMeetingCoordinator
+                            inMeetingCoordinator.inMeetingInfo = (
                                 matchingId: reachedMeeting.matchingId,
                                 matchingType: reachedMeeting.matchingType
                             )
@@ -241,6 +244,24 @@ struct HomeView: View {
                     .resizable()
                     .scaledToFit()
                     .frame(height: 24)
+                    // Test: 모임 중 플로팅 뷰 및 바텀 싯 테스트를 위한 액션
+                    .onTapGesture {
+                        Task {
+                            await self.store.send(
+                                .updateInMeetingToday(
+                                    MatchingInfo(
+                                        id: "",
+                                        matchingId: "",
+                                        meetingTime: Date(),
+                                        matchingStatus: .confirmed,
+                                        matchingType: .onething,
+                                        myOneThingContent: "",
+                                        isReviewWritten: false
+                                    )
+                                )
+                            )
+                        }
+                    }
             ),
             hidesBackButton: true,
             rightButtons: [
@@ -274,8 +295,11 @@ struct HomeView: View {
                     matchingtype: matchingType
                 )
                 
-                self.isMeetingReviewAlertPresented = true
                 self.homeCoordinator.initialReviewInfo = meetingReviewInfo
+                self.homeCoordinator.dismissSheet()
+                
+                self.isMeetingReviewAlertPresented = true
+                
             }
         }
         // 모임 후기 작성 Alert
