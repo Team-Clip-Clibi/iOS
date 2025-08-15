@@ -41,6 +41,8 @@ final class MainTabBarCoordinator: OTBaseCoordinator {
             initialType: self.willPushedMatchingType
         )
         self.addChild(homeCoordinator)
+        let inMeetingCoordinator = InMeetingCoordinator(dependencies: self.dependencies)
+        homeCoordinator.addChild(inMeetingCoordinator)
         
         let myPageCoordinator = MyPageCoordinator(dependencies: self.dependencies)
         self.addChild(myPageCoordinator)

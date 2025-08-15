@@ -7,9 +7,10 @@
 
 import SwiftUI
 
-struct InMeetingSheetView: View {
+struct InMeetingSheetView<Content: View>: View {
     
     @Environment(\.homeCoordinator) var homeCoordinator
+    @Environment(\.inMeetingCoordinator) var inMeetingCoordinator
     
     @Binding var isPresented: Bool
     
@@ -18,6 +19,8 @@ struct InMeetingSheetView: View {
     let backgroundColor: Color
     let dismissWhenBackgroundTapped: Bool
     
+    let content: (() -> Content)
+    
     @State private var height: CGFloat = 0
     @State private var dragOffset: CGFloat = 0
     @State private var isDragging: Bool = false
@@ -25,8 +28,6 @@ struct InMeetingSheetView: View {
     private let dismissThreshold: CGFloat = 0.8
     
     var body: some View {
-        
-        @Bindable var homeCoordinatorForBinding = self.homeCoordinator
         
         GeometryReader { geometry in
             
@@ -51,12 +52,8 @@ struct InMeetingSheetView: View {
                         Spacer().frame(height: 22)
                         
                         // 모임 중 뷰
-                        NavigationStack(path: $homeCoordinatorForBinding.path) {
-                            self.homeCoordinator.presentInMeeting()
-                                .navigationDestination(for: OTPath.self) { path in
-                                    self.homeCoordinator.destinationView(to: path)
-                                }
-                        }
+                        self.content()
+                        
                     }
                     .frame(maxWidth: .infinity)
                     .frame(height: self.height)
@@ -84,8 +81,7 @@ struct InMeetingSheetView: View {
                             }
                     )
                     // path가 비었으면 모임이 완료되었다고 판단
-                    // .onChange(of: self.inMeetingPathManager.paths.isEmpty) { old, new in
-                    .onChange(of: self.homeCoordinator.path.isEmpty == true) { old, new in
+                    .onChange(of: self.inMeetingCoordinator.path.isEmpty == true) { old, new in
                         if old == false, new {
                             self.dismiss()
                         }
@@ -98,7 +94,7 @@ struct InMeetingSheetView: View {
                     }
                 }
         }
-        .ignoresSafeArea()
+        .ignoresSafeArea(.container, edges: .all)
     }
 }
 
@@ -110,7 +106,7 @@ extension InMeetingSheetView {
             self.height = 0
         }
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-            self.isPresented = false
+            self.homeCoordinator.dismissSheet()
         }
     }
 }
