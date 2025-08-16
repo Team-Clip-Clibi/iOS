@@ -72,7 +72,14 @@ class MeetingReviewStore: OTStore {
             noShowMembers,
             isMemberAllAttended
         ):
-            return .none
+            return await self.submit(
+                mood: mood,
+                positivePoints: positivePoints,
+                negativePoints: negativePoints,
+                reviewContent: reviewContent,
+                noShowMembers: noShowMembers,
+                isMemberAllAttended: isMemberAllAttended
+            )
         }
     }
     
@@ -107,6 +114,8 @@ private extension MeetingReviewStore {
                 matchingId: self.initalInfo.matchingId,
                 matchingType: self.initalInfo.matchingtype
             )
+            // 작성된 모임 리뷰 UserDefaults에서 제거
+            SimpleDefaults.shared.removeRecentMatchings([self.initalInfo.matchingId], with: .review)
             
             return .single(.updateIsSubmit(isSubmit))
         } catch {

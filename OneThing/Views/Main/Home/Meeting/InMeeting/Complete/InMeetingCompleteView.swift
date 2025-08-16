@@ -21,7 +21,7 @@ struct InMeetingCompleteView: View {
         }
     }
     
-    @Environment(\.homeCoordinator) var homeCoordinator
+    @Environment(\.inMeetingCoordinator) var inMeetingCoordinator
     
     @Binding var store: InMeetingStore
     
@@ -68,8 +68,7 @@ struct InMeetingCompleteView: View {
                     },
                     isClickable: true
                 )
-                .padding(.bottom, 12)
-                .padding(.horizontal, 24)
+                .padding([.bottom, .horizontal], 24)
             }
         }
         .onChange(of: self.store.state.isMeetingEnded) { _, new in
@@ -83,8 +82,7 @@ struct InMeetingCompleteView: View {
                     ]
                 )
                 
-                self.homeCoordinator.popToRoot()
-                self.homeCoordinator.dismissSheet()
+                self.inMeetingCoordinator.popToRoot()
             }
         }
     }

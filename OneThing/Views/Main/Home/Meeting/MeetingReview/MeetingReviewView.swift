@@ -235,12 +235,4 @@ extension MeetingReviewView {
         initalInfo: .init(nicknames: [], matchingId: "", matchingtype: .onething)
     )
     MeetingReviewView(store: .constant(meetingReviewStoreForPreview))
-    // MeetingReviewView(
-    //     appPathManager: .constant(OTAppPathManager()),
-    //     viewModel: .constant(
-    //         MeetingReviewViewModel(
-    //             initalInfo: .init(nicknames: [], matchingId: "", matchingtype: .onething)
-    //         )
-    //     )
-    // )
 }

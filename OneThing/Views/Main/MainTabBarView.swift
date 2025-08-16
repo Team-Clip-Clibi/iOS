@@ -25,35 +25,48 @@ struct MainTabBarView: View {
     
     @Environment(\.appCoordinator) var appCoordinator
     
-    var body: some View {
-        
-        let coordinator = self.appCoordinator.childCoordinator.first(
+    private var coordinator: MainTabBarCoordinator {
+        return self.appCoordinator.childCoordinator.first(
             where: { $0 is MainTabBarCoordinator }
         ) as! MainTabBarCoordinator
-        @Bindable var coordinatorForBinding = coordinator
-        
-        let homeCoordinator = coordinator.childCoordinator.first(
+    }
+    
+    private var homeCoordinator: HomeCoordinator {
+        return self.coordinator.childCoordinator.first(
             where: { $0 is HomeCoordinator }
         ) as! HomeCoordinator
-        @Bindable var homeCoordinatorForBinding = homeCoordinator
-        
-        let myPageCoordinator = coordinator.childCoordinator.first(
+    }
+    private var inMeetingCoordinator: InMeetingCoordinator {
+        return self.homeCoordinator.childCoordinator.first(
+            where: { $0 is InMeetingCoordinator }
+        ) as! InMeetingCoordinator
+    }
+    
+    private var myPageCoordinator: MyPageCoordinator {
+        return self.coordinator.childCoordinator.first(
             where: { $0 is MyPageCoordinator }
         ) as! MyPageCoordinator
-        @Bindable var myPageCoordinatorForBinding = myPageCoordinator
+    }
+    
+    var body: some View {
+        
+        @Bindable var coordinatorForBinding = self.coordinator
+        @Bindable var homeCoordinatorForBinding = self.homeCoordinator
+        @Bindable var inMeetingCoordinatorForBinding = self.inMeetingCoordinator
+        @Bindable var myPageCoordinatorForBinding = self.myPageCoordinator
         
         TabView(selection: $coordinatorForBinding.currentTab) {
             
             NavigationStack(path: $homeCoordinatorForBinding.path) {
-                homeCoordinator.start()
+                self.homeCoordinator.start()
                     .navigationDestination(for: OTPath.self) { path in
-                        homeCoordinator.destinationView(to: path)
+                        self.homeCoordinator.destinationView(to: path)
                             // HomeView에서 화면 전환 했을 때, tabBar 숨김
                             .toolbar(.hidden, for: .tabBar)
                     }
                     // 모임 후기 cover
                     .fullScreenCover(item: $homeCoordinatorForBinding.cover) { _ in
-                        homeCoordinator.presentMeetingReview()
+                        self.homeCoordinator.presentMeetingReview()
                     }
                     // 모임 중 Sheet
                     .showInMeetingSheet(
@@ -61,7 +74,21 @@ struct MainTabBarView: View {
                             get: { homeCoordinatorForBinding.sheet == .home(.inMeeting(.main)) },
                             set: { _ in }
                         )
-                    )
+                    ) {
+                        Group {
+                            if self.inMeetingCoordinator.path.isEmpty {
+                                self.inMeetingCoordinator.start()
+                            } else {
+                                // inMeetingCoordinator > path가 비어있지 않으면 경로가 반드시 존재한다고 가정
+                                self.inMeetingCoordinator.destinationView(
+                                    to: self.inMeetingCoordinator.path.last!
+                                )
+                            }
+                        }
+                        // 모임 중 sheet을 표시할 때, tabBar 숨김
+                        .toolbar(.hidden, for: .tabBar)
+                        .environment(\.inMeetingCoordinator, inMeetingCoordinatorForBinding)
+                    }
             }
             .environment(\.homeCoordinator, homeCoordinatorForBinding)
             .tabItem {
@@ -82,9 +109,9 @@ struct MainTabBarView: View {
                 .tag(1)
             
             NavigationStack(path: $myPageCoordinatorForBinding.path) {
-                myPageCoordinator.start()
+                self.myPageCoordinator.start()
                     .navigationDestination(for: OTPath.self) { path in
-                        myPageCoordinator.destinationView(to: path)
+                        self.myPageCoordinator.destinationView(to: path)
                             // MyPage에서 화면 전환 했을 때, tabBar 숨김
                             .toolbar(.hidden, for: .tabBar)
                     }

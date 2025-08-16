@@ -19,7 +19,7 @@ struct InMeetingIntroduceView: View {
         }
     }
     
-    @Environment(\.homeCoordinator) var homeCoordinator
+    @Environment(\.inMeetingCoordinator) var inMeetingCoordinator
     
     @Binding var store: InMeetingStore
     
@@ -59,12 +59,11 @@ struct InMeetingIntroduceView: View {
                 OTXXLButton(
                     buttonTitle: Constants.Text.nextButtonTitle,
                     action: {
-                        self.homeCoordinator.push(to: .home(.inMeeting(.tmi)))
+                        self.inMeetingCoordinator.push(to: .home(.inMeeting(.tmi)))
                     },
                     isClickable: true
                 )
-                .padding(.bottom, 12)
-                .padding(.horizontal, 24)
+                .padding([.bottom, .horizontal], 24)
             }
         }
     }

@@ -10,13 +10,21 @@ import SwiftUI
 @Observable
 class HomeStore: OTStore {
     
+    enum Constants {
+        /// 피그마 Description, 2시간
+        static let timeRangeLimit: TimeInterval = 2 * 60 * 60
+        /// 임의의 타이머 interval, 1분
+        static let timerInterval: TimeInterval = 60
+    }
+    
     enum Action: OTAction {
         case landing
         case refresh
         case matchings
         case topBanners
         case updateTopBannerStatus(String)
-        case reachedMeetingTime(MatchingInfo?)
+        case updateInMeetingToday(MatchingInfo)
+        case shouldWriteReview(MatchingInfo)
     }
     
     enum Process: OTProcess {
@@ -27,10 +35,9 @@ class HomeStore: OTStore {
         case matchingSummaries([MatchingSummariesWithType])
         case bottomBanners([HomeBannerInfo])
         case matchings([MatchingInfo])
-        case updateHasMeeting([MatchingInfo])
-        case updateShouldWriteReview([MatchingInfo])
         case updateTopBannerStatus(Bool)
         case reachedMeetingTime(MatchingInfo?)
+        case shouldWriteReview(MatchingInfo?)
         
         case updateIsLoading(Bool)
     }
@@ -44,13 +51,15 @@ class HomeStore: OTStore {
         fileprivate(set) var matchingSummariesWithType: [MatchingSummariesWithType]
         fileprivate(set) var bannerInfos: [HomeBannerInfo]
         fileprivate(set) var matchingProgressInfo: [MatchingInfo]
-        fileprivate(set) var hasMeeting: [MatchingInfo]
-        fileprivate(set) var shouldWriteReview: [MatchingInfo]
         fileprivate(set) var reachedMeeting: MatchingInfo?
+        fileprivate(set) var shouldWriteReview: MatchingInfo?
         
         fileprivate(set) var isLoading: Bool
     }
     var state: State
+    
+    private var dateComparisonTask: Task<MatchingInfo?, Never>?
+    private var isWithInTimeRange: Bool = false
     
     // TODO: 임시, 유저 정보는 전역으로 관리 필요
     private let getProfileUseCase: GetProfileInfoUseCase
@@ -78,13 +87,22 @@ class HomeStore: OTStore {
             isUnReadNotiEmpty: true,
             topBannerInfos: [],
             isChangeSuccessForTopBannerStatus: false,
-            noticeInfos: [],
-            matchingSummariesWithType: [],
+            noticeInfos: [
+                // Test: 공지 테스트를 위한 초기 값
+                NoticeInfo(noticeType: .notice, content: "원띵 업데이트 공지 어쩌구 저쩌구", link: ""),
+                NoticeInfo(noticeType: .article, content: "원띵 업데이트 기사 어쩌구", link: ""),
+                NoticeInfo(noticeType: .notice, content: "원띵 업데이트 공지 어쩌구 저쩌구 어쩌구", link: "")
+            ],
+            matchingSummariesWithType: [
+                // Test: 매칭 요약 테스트를 위한 초기 값
+                MatchingSummariesWithType(type: .onething, info: .init(matchingId: 11111, daysUntilMeeting: 5, meetingTime: Date(), meetingPlace: "강남")),
+                MatchingSummariesWithType(type: .random, info: .init(matchingId: 22222, daysUntilMeeting: 5, meetingTime: Date(), meetingPlace: "강남")),
+                MatchingSummariesWithType(type: .instant, info: .init(matchingId: 33333, daysUntilMeeting: 5, meetingTime: Date(), meetingPlace: "강남"))
+            ],
             bannerInfos: [],
             matchingProgressInfo: [],
-            hasMeeting: [],
-            shouldWriteReview: [],
             reachedMeeting: nil,
+            shouldWriteReview: nil,
             isLoading: false
         )
         
@@ -96,6 +114,11 @@ class HomeStore: OTStore {
         self.getMatchingStatusUseCase = getMatchingStatusUseCase
         self.getMatchingsUseCase = getMatchingsUseCase
         self.bannerUseCase = bannerUseCase
+        
+        Task {
+            await self.subscribe()
+            await self.writeReview()
+        }
     }
     
     func process(_ action: Action) async -> OTProcessResult<Process> {
@@ -103,11 +126,11 @@ class HomeStore: OTStore {
         case .landing:
             return .concat([
                 await self.unReadNoti(),
-                await self.notice(),
+                // await self.notice(),
                 await self.topBanners(),
                 await self.bottomBanners(),
                 await self.nickname(),
-                await self.matchingSummaries()
+                // await self.matchingSummaries()
             ])
         case .refresh:
             return .concat([
@@ -122,8 +145,10 @@ class HomeStore: OTStore {
             return await .single(self.topBanners())
         case let .updateTopBannerStatus(id):
             return await self.updateTopBannerStatus(with: id)
-        case let .reachedMeetingTime(reachedMeeting):
-            return await self.reachedMeetingTime(reachedMeeting)
+        case let .updateInMeetingToday(inMeeting):
+            return await self.startTimer(with: inMeeting)
+        case let .shouldWriteReview(review):
+            return .single(.shouldWriteReview(review))
         }
     }
     
@@ -145,31 +170,16 @@ class HomeStore: OTStore {
             newState.bannerInfos = bannerInfos
         case let .matchings(matchingProgressInfo):
             newState.matchingProgressInfo = matchingProgressInfo
-        case let .updateHasMeeting(hasMeeting):
-            newState.hasMeeting = hasMeeting
-        case let .updateShouldWriteReview(shouldWriteReview):
-            newState.shouldWriteReview = shouldWriteReview
         case let .updateTopBannerStatus(isChangeSuccessForTopBannerStatus):
             newState.isChangeSuccessForTopBannerStatus = isChangeSuccessForTopBannerStatus
         case let .reachedMeetingTime(reachedMeeting):
             newState.reachedMeeting = reachedMeeting
+        case let .shouldWriteReview(review):
+            newState.shouldWriteReview = review
         case let .updateIsLoading(isLoading):
             newState.isLoading = isLoading
         }
         return newState
-    }
-}
-
-extension HomeStore {
-    
-    func hasMeeting(_ infos: [MatchingInfo]) -> [MatchingInfo] {
-        return infos.filter { $0.matchingStatus == .confirmed }
-    }
-    
-    func shouldWriteReview(_ infos: [MatchingInfo]) -> [MatchingInfo] {
-        return infos
-            .filter { $0.matchingStatus == .completed }
-            .filter { $0.isReviewWritten }
     }
 }
 
@@ -181,6 +191,109 @@ extension HomeStore {
         let info: MatchingSummaryInfo
     }
 }
+
+
+// MARK: Date Timer
+
+private extension HomeStore {
+    
+    func hasMeeting(_ infos: [MatchingInfo]) -> [MatchingInfo] {
+        return infos
+            .filter { $0.matchingStatus == .confirmed }
+            .filter { $0.meetingTime.isToday }
+    }
+    
+    func shouldWriteReview(_ infos: [MatchingInfo]) -> [MatchingInfo] {
+        return infos
+            .filter { $0.matchingStatus == .completed }
+            .filter { $0.isReviewWritten == false }
+    }
+    
+    func subscribe() async {
+        // 저장된 모임 여부 확인
+        guard SimpleDefaults.shared.isRecentMatchingsEmpty(with: .inMeeting) == false else {
+            LoggingManager.info("Do not have inMeeting today")
+            return
+        }
+        // 저장된 모임 중 오늘 진행될 모임 확인
+        let hasMeetings = SimpleDefaults.shared.loadRecentMatchings(with: .inMeeting)
+        guard hasMeetings.contains(where: { $0.meetingTime.isToday }),
+              let inMeeting = hasMeetings.filter({ $0.meetingTime.isToday }).last
+        else {
+            // 오늘 진행될 모임이 없다면, 전부 삭제
+            SimpleDefaults.shared.removeRecentMatchings(hasMeetings.map { $0.matchingId }, with: .inMeeting)
+            LoggingManager.info("Removed all inMeeting")
+            return
+        }
+        
+        Task { await self.send(.updateInMeetingToday(inMeeting)) }
+    }
+    
+    func writeReview() async {
+        guard SimpleDefaults.shared.isRecentMatchingsEmpty(with: .review) == false else {
+            LoggingManager.info("Do not have backlogged reviews")
+            return
+        }
+        
+        guard let review = SimpleDefaults.shared.loadRecentMatchings(with: .review).last else {
+            LoggingManager.error("Error occur: No backlogged reviews")
+            return
+        }
+        
+        Task { await self.send(.shouldWriteReview(review))}
+    }
+    
+    func startTimer(with matching: MatchingInfo) async -> OTProcessResult<Process> {
+        // 기존 타이머 관련 변수 초기화
+        self.dateComparisonTask?.cancel()
+        self.isWithInTimeRange = false
+        
+        self.dateComparisonTask = Task.detached(priority: .background) { [weak self] in
+            // 최초 즉시 비교
+            if let hasMeeting = await self?.checkTimeRange(with: matching) {
+                return hasMeeting
+            }
+            // 타이머 루프 (백그라운드 실행)
+            while Task.isCancelled == false {
+                try? await Task.sleep(for: .seconds(Constants.timerInterval))
+                if Task.isCancelled { break }
+                if let hasMeeting = await self?.checkTimeRange(with: matching) {
+                    return hasMeeting
+                }
+            }
+            
+            return nil
+        }
+        
+        return await .single(.reachedMeetingTime(self.dateComparisonTask?.value))
+    }
+    
+    func checkTimeRange(with matching: MatchingInfo) async -> MatchingInfo? {
+        // 현재 날짜와 서버에서 받은 날짜를 비교, 0 <= targetDate - currentDate <= 2시간
+        let timeDifference = Date().timeIntervalSince(matching.meetingTime)
+        let withInRange = timeDifference >= 0 && timeDifference <= Constants.timeRangeLimit
+        LoggingManager.info("Get time difference: \(timeDifference), and is in range: \(withInRange)")
+        // 상태 변화 검사
+        let shouldUpdateRange = self.isWithInTimeRange != withInRange
+        // 내부 상태 업데이트
+        self.isWithInTimeRange = withInRange
+        // 시간 범위 변경 시 호출
+        if shouldUpdateRange { return matching }
+        // 시간 초과 시 자동 정지
+        if withInRange == false {
+            self.isWithInTimeRange = false
+            self.dateComparisonTask?.cancel()
+            self.dateComparisonTask = nil
+            
+            return nil
+        }
+        
+        return nil
+    }
+}
+
+
+// MARK: Request API
 
 private extension HomeStore {
     
@@ -260,11 +373,21 @@ private extension HomeStore {
     func matchings() async -> OTProcessResult<Process> {
         do {
             let matchings = try await self.getMatchingsUseCase.matchings()
-            return .concat([
-                .matchings(matchings),
-                .updateHasMeeting(self.hasMeeting(matchings)),
-                .updateShouldWriteReview(self.shouldWriteReview(matchings))
-            ])
+            
+            // 당일 참석할 모임이 있을 경우, UserDefaults에 저장
+            let hasMeetins = self.hasMeeting(matchings)
+            if hasMeetins.isEmpty == false {
+                SimpleDefaults.shared.saveRecentMatchings(hasMeetins, with: .inMeeting)
+                Task { await self.subscribe() }
+            }
+            
+            let shouldWriteReview = self.shouldWriteReview(matchings)
+            if shouldWriteReview.isEmpty == false {
+                SimpleDefaults.shared.saveRecentMatchings(shouldWriteReview, with: .review)
+                Task { await self.writeReview() }
+            }
+            
+            return .single(.matchings(matchings))
         } catch {
             return .single(.matchings([]))
         }

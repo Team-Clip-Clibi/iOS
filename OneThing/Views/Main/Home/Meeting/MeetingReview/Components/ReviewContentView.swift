@@ -24,7 +24,7 @@ struct ReviewContentView: View {
             
             Text(Constants.Text.reviewContentTitle)
                 .otFont(.subtitle1)
-                .foregroundStyle(.gray800)
+                .foregroundColor(.gray800)
                 .padding(.horizontal, 16)
                 .frame(maxWidth: .infinity, alignment: .leading)
             
@@ -37,15 +37,17 @@ struct ReviewContentView: View {
                 
                 TextEditor(text: $reviewContent)
                     .otFont(.body2)
-                    .foregroundStyle(.gray800)
+                    .foregroundColor(.gray800)
                     .tint(.purple400)
                     .multilineTextAlignment(.leading)
                     .contentMargins(.all, 16)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    // 기본 배경색을 표시하기 위해, 스크롤 백그라운드 숨김
+                    .scrollContentBackground(.hidden)
                     .overlay(
                         Text(Constants.Text.reviewPlaceholder)
                             .otFont(.body2)
-                            .foregroundStyle(self.reviewContent.isEmpty ? .gray500: .clear)
+                            .foregroundColor(self.reviewContent.isEmpty ? .gray500: .clear)
                             .padding(24)
                             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
                     )

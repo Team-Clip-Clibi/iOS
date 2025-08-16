@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct InMeetingSheetModifier: ViewModifier {
+struct InMeetingSheetModifier<SheetContent: View>: ViewModifier {
     
     @Binding var isPresented: Bool
     
@@ -16,21 +16,26 @@ struct InMeetingSheetModifier: ViewModifier {
     let backgroundColor: Color
     let dismissWhenBackgroundTapped: Bool
     
+    let sheetContent: (() -> SheetContent)
+    
     init(
         isPresented: Binding<Bool>,
         heightRatio: CGFloat,
         cornerRadius: CGFloat,
         backgroundColor: Color,
-        dismissWhenBackgroundTapped: Bool
+        dismissWhenBackgroundTapped: Bool,
+        @ViewBuilder sheetContent: @escaping (() -> SheetContent)
     ) {
         self._isPresented = isPresented
         self.heightRatio = heightRatio
         self.cornerRadius = cornerRadius
         self.backgroundColor = backgroundColor
         self.dismissWhenBackgroundTapped = dismissWhenBackgroundTapped
+        self.sheetContent = sheetContent
     }
     
     func body(content: Content) -> some View {
+        
         content
             .overlay {
                 if self.isPresented {
@@ -39,7 +44,8 @@ struct InMeetingSheetModifier: ViewModifier {
                         heightRatio: self.heightRatio,
                         cornerRadius: self.cornerRadius,
                         backgroundColor: self.backgroundColor,
-                        dismissWhenBackgroundTapped: self.dismissWhenBackgroundTapped
+                        dismissWhenBackgroundTapped: self.dismissWhenBackgroundTapped,
+                        content: self.sheetContent
                     )
                     // 기본 transition 제거
                     .transition(.identity)
@@ -51,12 +57,13 @@ struct InMeetingSheetModifier: ViewModifier {
 
 extension View {
     
-    func showInMeetingSheet(
+    func showInMeetingSheet<Content: View>(
         isPresented: Binding<Bool>,
         heightRatio: CGFloat = 0.9,
         cornerRadius: CGFloat = 20,
         backgroundColor: Color = .black.opacity(0.4),
-        dismissWhenBackgroundTapped: Bool = true
+        dismissWhenBackgroundTapped: Bool = true,
+        @ViewBuilder content: @escaping (() -> Content)
     ) -> some View {
         
         self.modifier(
@@ -65,7 +72,8 @@ extension View {
                 heightRatio: heightRatio,
                 cornerRadius: cornerRadius,
                 backgroundColor: backgroundColor,
-                dismissWhenBackgroundTapped: dismissWhenBackgroundTapped
+                dismissWhenBackgroundTapped: dismissWhenBackgroundTapped,
+                sheetContent: content
             )
         )
     }
