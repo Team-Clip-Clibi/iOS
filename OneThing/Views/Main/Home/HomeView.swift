@@ -106,6 +106,7 @@ struct HomeView: View {
                                         .foregroundStyle(.purple400)
                                 }
                             }
+                            .padding(.horizontal, 16)
                             
                             if matchingSummariesWithType.isEmpty {
                                 HomeGridEmptyAndFooter(category: .placeholder)
@@ -124,10 +125,10 @@ struct HomeView: View {
                                         
                                         HomeGridEmptyAndFooter(category: .footer)
                                     }
+                                    .padding(.horizontal, 16)
                                 }
                             }
                         }
-                        .padding(.horizontal, 16)
                         .frame(maxWidth: .infinity)
                         
                         Spacer().frame(height: 40)
