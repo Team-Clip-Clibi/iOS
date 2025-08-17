@@ -289,7 +289,17 @@ private extension MyPageEditStore {
                 nickname: nickname
             )
             
-            return .single(.updateNickname(isNicknameUpdated))
+            let new = UserProfileInfo(
+                username: self.state.profileInfo?.username ?? "",
+                platform: self.state.profileInfo?.platform ?? "",
+                phoneNumber: self.state.profileInfo?.phoneNumber ?? "",
+                nickname: nickname
+            )
+            
+            return .concat([
+                .updateNickname(isNicknameUpdated),
+                .profile(new)
+            ])
         } catch {
             return .single(.updateNickname(false))
         }
@@ -302,7 +312,10 @@ private extension MyPageEditStore {
             
             let isJobUpdated = try await self.updateJobUseCase.execute(job: job)
             
-            return .single(.updateJob(isJobUpdated))
+            return .concat([
+                .updateJob(isJobUpdated),
+                .job(job)
+            ])
         } catch {
             return .single(.updateJob(false))
         }
@@ -318,7 +331,10 @@ private extension MyPageEditStore {
                 isSameRelationshipConsidered: isConsidered
             )
             
-            return .single(.updateRelationship(isRelationshipUpdated))
+            return .concat([
+                .updateRelationship(isRelationshipUpdated),
+                .relationship(RelationshipInfo(status: status, isConsidered: isConsidered))
+            ])
         } catch {
             return .single(.updateRelationship(false))
         }
@@ -332,7 +348,10 @@ private extension MyPageEditStore {
                 dietaryOption: dietary == "기타" ? otherText: dietary
             )
          
-            return .single(.updateDietary(isDietaryUpdated))
+            return .concat([
+                .updateDietary(isDietaryUpdated),
+                .dietary(dietary == "기타" ? otherText: dietary)
+            ])
         } catch {
             return .single(.updateDietary(false))
         }
@@ -345,7 +364,10 @@ private extension MyPageEditStore {
             
             let isLanguageUpdated = try await self.updateLanguageUseCase.execute(language: language)
             
-            return .single(.updateLanguage(isLanguageUpdated))
+            return .concat([
+                .updateLanguage(isLanguageUpdated),
+                .language(language)
+            ])
         } catch {
             return .single(.updateLanguage(false))
         }

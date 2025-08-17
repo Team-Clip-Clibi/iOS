@@ -89,7 +89,7 @@ struct MyPageEditNicknameView: View {
                 .padding(.horizontal, 17)
                 .padding(.top, 10)
                 .onChange(of: self.store.state.isNicknameUpdated) { _, newValue in
-                    if newValue { self.myPageCoordinator.pop() }
+                    if newValue { self.myPageCoordinator.dismissCover() }
                 }
             }
             .taskForOnce { await self.store.send(.profile) }
@@ -103,7 +103,7 @@ struct MyPageEditNicknameView: View {
             rightButtons: [
                 AnyView(
                     Button(
-                        action: { self.myPageCoordinator.pop() },
+                        action: { self.myPageCoordinator.dismissCover() },
                         label: {
                             Image(.closeOutlined)
                                 .resizable()

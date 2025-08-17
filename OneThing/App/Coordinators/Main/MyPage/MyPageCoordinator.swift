@@ -58,10 +58,8 @@ final class MyPageCoordinator: OTBaseCoordinator {
     }
     
     @ViewBuilder
-    func destinationView(to path: OTPath) -> some View {
+    func destinationEditView(to path: OTPath) -> some View {
         switch path {
-        case .myPage(.editProfile):
-            MyPageEditProfileViewBuilder().build(store: self.myPageEditStoreForBinding)
         case .myPage(.editJob):
             MyPageEditJobViewBuilder().build(store: self.myPageEditStoreForBinding)
         case .myPage(.editLanguage):
@@ -72,6 +70,17 @@ final class MyPageCoordinator: OTBaseCoordinator {
             MyPageEditDietaryViewBuilder().build(store: self.myPageEditStoreForBinding)
         case .myPage(.editRelationship):
             MyPageEditRelationshipViewBuilder().build(store: self.myPageEditStoreForBinding)
+            
+        default:
+            EmptyView()
+        }
+    }
+    
+    @ViewBuilder
+    func destinationView(to path: OTPath) -> some View {
+        switch path {
+        case .myPage(.editProfile):
+            MyPageEditProfileViewBuilder().build(store: self.myPageEditStoreForBinding)
             
         case .myPage(.notification):
             MyPageNotificationViewBuilder().build(store: self.myPageNotificationStoreForBinding)

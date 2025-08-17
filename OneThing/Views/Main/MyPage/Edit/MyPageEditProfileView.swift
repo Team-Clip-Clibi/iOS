@@ -38,8 +38,12 @@ struct MyPageEditProfileView: View {
                             InfoRow(title: "이름", value: self.store.state.profileInfo?.username ?? "")
                             InfoRow(title: "소셜 로그인", value: self.store.state.profileInfo?.platform ?? "")
                             InfoRow(title: "전화번호", value: self.store.state.profileInfo?.phoneNumber ?? "")
-                            InfoRow(title: "닉네임", value: self.store.state.profileInfo?.nickname ?? "", isClickable: true) {
-                                self.myPageCoordinator.push(to: .myPage(.editNickName))
+                            InfoRow(
+                                title: "닉네임",
+                                value: self.store.state.profileInfo?.nickname ?? "",
+                                isClickable: true
+                            ) {
+                                self.myPageCoordinator.showCover(to: .myPage(.editNickName))
                             }
                         }
                         .background(Color.white)
@@ -59,18 +63,38 @@ struct MyPageEditProfileView: View {
                                     .foregroundStyle(.gray600)
                                 Spacer()
                             }
-                            InfoRow(title: "하는 일", value: self.store.state.job?.toKorean ?? "", isClickable: true, action: {
-                                self.myPageCoordinator.push(to: .myPage(.editJob))
-                            })
-                            InfoRow(title: "연애 상태", value: self.store.state.relationship?.status?.toKorean ?? "", isClickable: true, action: {
-                                self.myPageCoordinator.push(to: .myPage(.editRelationship))
-                            })
-                            InfoRow(title: "식단 제한", value: self.store.state.dietary, isClickable: true, action: {
-                                self.myPageCoordinator.push(to: .myPage(.editDiet))
-                            })
-                            InfoRow(title: "사용 언어", value: self.store.state.language?.toKorean ?? "", isClickable: true, action: {
-                                self.myPageCoordinator.push(to: .myPage(.editLanguage))
-                            })
+                            InfoRow(
+                                title: "하는 일",
+                                value: self.store.state.job?.toKorean ?? "",
+                                isClickable: true,
+                                action: {
+                                    self.myPageCoordinator.showCover(to: .myPage(.editJob))
+                                }
+                            )
+                            InfoRow(
+                                title: "연애 상태",
+                                value: self.store.state.relationship?.status?.toKorean ?? "",
+                                isClickable: true,
+                                action: {
+                                    self.myPageCoordinator.showCover(to: .myPage(.editRelationship))
+                                }
+                            )
+                            InfoRow(
+                                title: "식단 제한",
+                                value: self.store.state.dietary,
+                                isClickable: true,
+                                action: {
+                                    self.myPageCoordinator.showCover(to: .myPage(.editDiet))
+                                }
+                            )
+                            InfoRow(
+                                title: "사용 언어",
+                                value: self.store.state.language?.toKorean ?? "",
+                                isClickable: true,
+                                action: {
+                                    self.myPageCoordinator.showCover(to: .myPage(.editLanguage))
+                                }
+                            )
                         }
                         .background(Color.white)
                         .padding(.horizontal, 16)
@@ -128,7 +152,15 @@ struct MyPageEditProfileView: View {
                     }
                     .ignoresSafeArea()
                     .onChange(of: self.store.state.isAccountDeleted) { _, newValue in
-                        self.myPageCoordinator.pop()
+                        Task {
+                            TokenManager.shared.accessToken = ""
+                            TokenManager.shared.refreshToken = ""
+                            
+                            let appStateManager = self.appCoordinator.dependencies.rootContainer.resolve(AppStateManager.self)
+                            appStateManager.isSignedIn = false
+                            
+                            self.appCoordinator.currentState = .signUp
+                        }
                     }
                 }
                 

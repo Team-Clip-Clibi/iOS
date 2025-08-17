@@ -24,14 +24,14 @@ struct InMeetingGuideMessageView: View {
             Spacer().frame(height: 2)
             
             Text(self.subTitle)
-                .font(.heading3)
+                .otFont(.heading3)
                 .foregroundColor(.gray800)
                 .frame(maxWidth: .infinity, alignment: .leading)
             
             Spacer().frame(height: 12)
             
-            Text(message)
-                .font(.subtitle2)
+            Text(self.message)
+                .otFont(.subtitle2)
                 .foregroundColor(.gray700)
                 .multilineTextAlignment(.leading)
                 .frame(maxWidth: .infinity, alignment: .leading)

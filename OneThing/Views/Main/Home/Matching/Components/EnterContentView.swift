@@ -34,7 +34,14 @@ struct EnterContentView: View {
         Spacer().frame(height: 4)
         
         VStack(spacing: 4) {
-            TextField(self.placeholder, text: $content)
+            TextField(
+                self.placeholder,
+                text: $content,
+                prompt: Text(self.placeholder)
+                    .foregroundColor(.gray500)
+            )
+                .otFont(.body2)
+                .foregroundColor(.gray800)
                 .tint(.purple400)
                 .frame(height: 48)
                 .overlay(
