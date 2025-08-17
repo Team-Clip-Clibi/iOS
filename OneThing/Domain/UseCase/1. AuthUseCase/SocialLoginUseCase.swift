@@ -89,7 +89,7 @@ class SocialLoginUseCase {
         serviceTerm: Bool,
         privateTerm: Bool,
         marketingTerm: Bool
-    ) async throws {
+    ) async throws -> Bool {
         let signUpDTO = SignUpDTO(
             servicePermission: serviceTerm,
             privatePermission: privateTerm,
@@ -107,8 +107,11 @@ class SocialLoginUseCase {
 
             TokenManager.shared.accessToken = response.accessToken
             TokenManager.shared.refreshToken = response.refreshToken
+            
+            return true
         } catch {
             print(error)
+            return false
         }
     }
     

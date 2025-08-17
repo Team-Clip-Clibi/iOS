@@ -7,7 +7,9 @@
 
 import Foundation
 
-struct RelationshipInfo: Codable {
+struct RelationshipInfo: Equatable {
     var status: RelationshipStatus?
     var isConsidered: Bool?
 }
+
+extension RelationshipInfo: Codable { }
