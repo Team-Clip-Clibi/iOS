@@ -13,9 +13,7 @@ struct InMeetingMainView: View {
         enum Text {
             static let title = "모임시작"
             static let subTitle = "인사는 나누셨나요?"
-            static let message = """
-                아직 도착하지 않은 멤버가 있다면, 앱 내 알림내역에서 도착 예정 시간을 확인 후 메뉴를 먼저 주문해요
-            """
+            static let message = "아직 도착하지 않은 멤버가 있다면, 앱 내 알림내역에서 도착 예정 시간을 확인 후 메뉴를 먼저 주문해요"
             static let content = "원하는 메뉴를 주문하고,\n닉네임 또는 실명으로 소개해 주세요"
             
             static let startMeetingButtonTitle = "모임 시작하기"
