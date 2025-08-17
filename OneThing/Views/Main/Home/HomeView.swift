@@ -211,7 +211,6 @@ struct HomeView: View {
                         Spacer().frame(height: 32)
                     }
                     .padding(.top, self.store.state.noticeInfos.isEmpty ? 0: 32)
-                    // .padding(.bottom, 32)
                     // TODO: 새로고침 시 contentOffset 필요
                     .refreshable {
                         await self.store.send(.refresh)
@@ -248,24 +247,6 @@ struct HomeView: View {
                     .resizable()
                     .scaledToFit()
                     .frame(height: 24)
-                    // Test: 모임 중 플로팅 뷰 및 바텀 싯 테스트를 위한 액션
-                    .onTapGesture {
-                        Task {
-                            await self.store.send(
-                                .updateInMeetingToday(
-                                    MatchingInfo(
-                                        id: "",
-                                        matchingId: "",
-                                        meetingTime: Date(),
-                                        matchingStatus: .confirmed,
-                                        matchingType: .onething,
-                                        myOneThingContent: "",
-                                        isReviewWritten: false
-                                    )
-                                )
-                            )
-                        }
-                    }
             ),
             hidesBackButton: true,
             rightButtons: [
@@ -281,7 +262,10 @@ struct HomeView: View {
             ],
             backgroundColor: .gray100
         )
-        .taskForOnce { await self.store.send(.landing) }
+        .taskForOnce {
+            await self.store.send(.landing)
+            await self.store.send(.matchings)
+        }
         .task(id: self.store.state.isChangeSuccessForTopBannerStatus) {
             if self.store.state.isChangeSuccessForTopBannerStatus {
                 await self.store.send(.topBanners)

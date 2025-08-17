@@ -87,18 +87,8 @@ class HomeStore: OTStore {
             isUnReadNotiEmpty: true,
             topBannerInfos: [],
             isChangeSuccessForTopBannerStatus: false,
-            noticeInfos: [
-                // Test: 공지 테스트를 위한 초기 값
-                NoticeInfo(noticeType: .notice, content: "원띵 업데이트 공지 어쩌구 저쩌구", link: ""),
-                NoticeInfo(noticeType: .article, content: "원띵 업데이트 기사 어쩌구", link: ""),
-                NoticeInfo(noticeType: .notice, content: "원띵 업데이트 공지 어쩌구 저쩌구 어쩌구", link: "")
-            ],
-            matchingSummariesWithType: [
-                // Test: 매칭 요약 테스트를 위한 초기 값
-                MatchingSummariesWithType(type: .onething, info: .init(matchingId: 11111, daysUntilMeeting: 5, meetingTime: Date(), meetingPlace: "강남")),
-                MatchingSummariesWithType(type: .random, info: .init(matchingId: 22222, daysUntilMeeting: 5, meetingTime: Date(), meetingPlace: "강남")),
-                MatchingSummariesWithType(type: .instant, info: .init(matchingId: 33333, daysUntilMeeting: 5, meetingTime: Date(), meetingPlace: "강남"))
-            ],
+            noticeInfos: [],
+            matchingSummariesWithType: [],
             bannerInfos: [],
             matchingProgressInfo: [],
             reachedMeeting: nil,
@@ -126,11 +116,11 @@ class HomeStore: OTStore {
         case .landing:
             return .concat([
                 await self.unReadNoti(),
-                // await self.notice(),
+                await self.notice(),
                 await self.topBanners(),
                 await self.bottomBanners(),
                 await self.nickname(),
-                // await self.matchingSummaries()
+                await self.matchingSummaries()
             ])
         case .refresh:
             return .concat([
