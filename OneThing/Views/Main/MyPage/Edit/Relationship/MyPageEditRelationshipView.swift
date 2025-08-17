@@ -94,7 +94,7 @@ struct MyPageEditRelationshipView: View {
                 .padding(.horizontal, 17)
                 .padding(.top, 10)
                 .onChange(of: self.store.state.isRelationshipUpdated) { _, newValue in
-                    if newValue { self.myPageCoordinator.pop() }
+                    if newValue { self.myPageCoordinator.dismissCover() }
                 }
             }
             .taskForOnce { await self.store.send(.relationship) }
@@ -109,7 +109,7 @@ struct MyPageEditRelationshipView: View {
             rightButtons: [
                 AnyView(
                     Button(
-                        action: { self.myPageCoordinator.pop() },
+                        action: { self.myPageCoordinator.dismissCover() },
                         label: {
                             Image(.closeOutlined)
                                 .resizable()

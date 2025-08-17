@@ -45,12 +45,12 @@ struct MyPageEditLanguageView: View {
                             await self.store.send(.updateLanguage(self.language))
                         }
                     },
-                    isClickable: true
+                    isClickable: self.language != nil
                 )
                 .padding(.horizontal, 17)
                 .padding(.top, 10)
                 .onChange(of: self.store.state.isLanguageUpdated) { _, newValue in
-                    if newValue { self.myPageCoordinator.pop() }
+                    if newValue { self.myPageCoordinator.dismissCover() }
                 }
             }
             .taskForOnce { await self.store.send(.language) }
@@ -64,7 +64,7 @@ struct MyPageEditLanguageView: View {
             rightButtons: [
                 AnyView(
                     Button(
-                        action: { self.myPageCoordinator.pop() },
+                        action: { self.myPageCoordinator.dismissCover() },
                         label: {
                             Image(.closeOutlined)
                                 .resizable()

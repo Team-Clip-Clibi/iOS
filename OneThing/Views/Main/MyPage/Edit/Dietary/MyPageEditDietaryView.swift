@@ -98,13 +98,16 @@ struct MyPageEditDietaryView: View {
                 .padding(.horizontal, 17)
                 .padding(.top, 10)
                 .onChange(of: self.store.state.isDietaryUpdated) { _, newValue in
-                    if newValue { self.myPageCoordinator.pop() }
+                    if newValue { self.myPageCoordinator.dismissCover() }
                 }
             }
             .ignoresSafeArea(.keyboard)
             .taskForOnce { await self.store.send(.dietary) }
             .onChange(of: self.store.state.dietary) { _, newValue in
                 self.dietary = newValue
+            }
+            .onChange(of: self.store.state.otherText) { _, newValue in
+                self.otherText = newValue
             }
         }
         .navigationBar(
@@ -113,7 +116,7 @@ struct MyPageEditDietaryView: View {
             rightButtons: [
                 AnyView(
                     Button(
-                        action: { self.myPageCoordinator.pop() },
+                        action: { self.myPageCoordinator.dismissCover() },
                         label: {
                             Image(.closeOutlined)
                                 .resizable()

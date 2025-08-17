@@ -115,6 +115,10 @@ struct MainTabBarView: View {
                             // MyPage에서 화면 전환 했을 때, tabBar 숨김
                             .toolbar(.hidden, for: .tabBar)
                     }
+                    // 내 정보 수정 cover
+                    .fullScreenCover(item: $myPageCoordinatorForBinding.cover) { path in
+                        self.myPageCoordinator.destinationEditView(to: path)
+                    }
             }
             .environment(\.myPageCoordinator, myPageCoordinatorForBinding)
             .tabItem {
