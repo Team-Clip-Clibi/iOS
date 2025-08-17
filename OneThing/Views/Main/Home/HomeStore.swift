@@ -137,6 +137,7 @@ class HomeStore: OTStore {
                 await self.unReadNoti(),
                 await self.notice(),
                 await self.topBanners(),
+                await self.bottomBanners(),
                 await self.matchingSummaries()
             ])
         case .matchings:

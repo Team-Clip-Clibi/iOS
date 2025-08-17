@@ -213,7 +213,10 @@ struct HomeView: View {
                     .padding(.top, self.store.state.noticeInfos.isEmpty ? 0: 32)
                     // .padding(.bottom, 32)
                     // TODO: 새로고침 시 contentOffset 필요
-                    .refreshable { await self.store.send(.refresh) }
+                    .refreshable {
+                        await self.store.send(.refresh)
+                        await self.store.send(.matchings)
+                    }
                 }
                 
                 
