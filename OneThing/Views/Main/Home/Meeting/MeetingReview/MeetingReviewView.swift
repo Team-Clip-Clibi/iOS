@@ -201,7 +201,19 @@ struct MeetingReviewView: View {
         }
         .navigationBar(
             title: Constants.Text.naviTitle,
-            onBackButtonTap: { self.homeCoordinator.pop() }
+            rightButtons: [
+                AnyView(
+                    Button {
+                        self.homeCoordinator.dismissCover()
+                     } label: {
+                         Image(.closeOutlined)
+                             .resizable()
+                             .frame(width: 24, height: 24)
+                             .foregroundStyle(.gray500)
+                     }
+                )
+            ],
+            onBackButtonTap: { self.homeCoordinator.dismissCover() }
         )
     }
 }
