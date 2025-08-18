@@ -15,7 +15,7 @@ struct RequestMeetingButton: View {
         static let instantTitle = "번개 모임"
         
         static let onethingDescription = "대화하고 싶은 나만의 주제를 나눠요"
-        static let randomDescription = "매주 월요일 7시"
+        static let randomDescription = "매주 금요일 7시"
         static let instantDescription = "오픈 예정이에요"
     }
     
