@@ -38,7 +38,6 @@ struct InMeetingIntroduceView: View {
                 )
                 
                 ScrollView(.vertical, showsIndicators: false) {
-                    Spacer().frame(height: 32)
                     
                     LazyVGrid(columns: self.cols) {
                         ForEach(
@@ -53,6 +52,7 @@ struct InMeetingIntroduceView: View {
                         .padding(.horizontal, 24)
                     }
                 }
+                .contentMargins(.top, 20, for: .scrollContent)
                 
                 Spacer()
                 

@@ -37,7 +37,6 @@ struct InMeetingSelectHostView: View {
                 )
                 
                 ScrollView(.vertical, showsIndicators: false) {
-                    Spacer().frame(height: 32)
                     
                     ZStack {
                         RoundedRectangle(cornerRadius: 24)
@@ -58,6 +57,7 @@ struct InMeetingSelectHostView: View {
                     .frame(maxWidth: .infinity)
                     .frame(height: 460)
                 }
+                .contentMargins(.top, 20, for: .scrollContent)
                 
                 Spacer()
                 
