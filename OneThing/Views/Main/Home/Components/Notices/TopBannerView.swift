@@ -34,7 +34,7 @@ struct TopBannerView: View {
                         EmptyView()
                     } else {
                         Text("\(self.currentPage+1)/\(self.totalPage)")
-                            .otFont(.captionTwo)
+                            .otFont(.caption2)
                             .foregroundStyle(.purple400)
                             .background(
                                 RoundedRectangle(cornerRadius: 20)

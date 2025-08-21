@@ -57,7 +57,7 @@ struct EnterContentView: View {
                 }
             
             Text("\(self.content.count)/\(self.maxCharacters)")
-                .otFont(.captionTwo)
+                .otFont(.caption2)
                 .foregroundStyle(.gray700)
                 .frame(maxWidth: .infinity, alignment: .trailing)
         }
