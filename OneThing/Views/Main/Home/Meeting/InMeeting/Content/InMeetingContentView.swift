@@ -52,9 +52,9 @@ struct InMeetingContentView: View {
                         }
                         .scrollTargetLayout()
                     }
+                    .contentMargins(.horizontal, 24, for: .scrollContent)
                     .scrollTargetBehavior(.viewAligned)
                     .scrollPosition(id: Binding($currentPage))
-                    .safeAreaPadding(.horizontal, 24)
                     
                     Text("\(InMeetingContentInfo.mock[self.currentPage].number)/\(InMeetingContentInfo.mock.count)")
                         .otFont(.caption1)

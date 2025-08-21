@@ -210,7 +210,11 @@ struct HomeView: View {
                         
                         Spacer().frame(height: 32)
                     }
-                    .padding(.top, self.store.state.noticeInfos.isEmpty ? 0: 32)
+                    .contentMargins(
+                        .top,
+                        self.store.state.noticeInfos.isEmpty ? 0: 32,
+                        for: .scrollContent
+                    )
                     // TODO: 새로고침 시 contentOffset 필요
                     .refreshable {
                         await self.store.send(.refresh)
