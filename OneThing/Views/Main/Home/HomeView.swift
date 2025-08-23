@@ -110,6 +110,7 @@ struct HomeView: View {
                             
                             if matchingSummariesWithType.isEmpty {
                                 HomeGridEmptyAndFooter(category: .placeholder)
+                                    .padding(.horizontal, 16)
                             } else {
                                 ScrollView(.horizontal, showsIndicators: false) {
                                     LazyHGrid(rows: self.rows) {
