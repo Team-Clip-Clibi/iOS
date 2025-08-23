@@ -81,7 +81,7 @@ private extension AlertView {
                 OTMButton(
                     buttonTitle: action.title,
                     action: { action.action() },
-                    isClickable: true
+                    isClickable: action.style == .primary ? true: false
                 )
                 .tag(action.tag)
             }
@@ -140,10 +140,16 @@ extension AlertView {
 }
 
 #Preview {
+    // AlertView(
+    //     isPresented: .constant(true),
+    //     title: "원띵은 토스페이 결제만 가능해요",
+    //     message: "토스 앱이 없다면, 설치 후 결제를 진행해주세요.",
+    //     actions: [.init(title: "확인", style: .primary, action: { })]
+    // )
     AlertView(
         isPresented: .constant(true),
         title: "원띵은 토스페이 결제만 가능해요",
         message: "토스 앱이 없다면, 설치 후 결제를 진행해주세요.",
-        actions: [.init(title: "확인", style: .primary, action: { })]
+        actions: [.init(title: "확인", style: .gray, action: { })]
     )
 }
