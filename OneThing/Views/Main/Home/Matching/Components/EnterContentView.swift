@@ -9,10 +9,17 @@ import SwiftUI
 
 struct EnterContentView: View {
     
+    enum Constants {
+        /// 임의의 타이머 interval, 4초
+        static let timerInterval: TimeInterval = 4
+    }
+    
     @Binding var content: String
     @Binding var buttonEnable: Bool
     
-    let title: String
+    @State private var currentIndex: Int = 0
+    
+    let titles: [String]
     let placeholder: String
     let maxCharacters: Int
     
@@ -21,11 +28,21 @@ struct EnterContentView: View {
             RoundedRectangle(cornerRadius: 4)
                 .fill(.purple100)
             
-            Text(self.title)
+            let title = self.titles[self.currentIndex]
+            Text(title)
                 .otFont(.body1)
                 .foregroundStyle(.gray800)
                 .padding(.horizontal, 12)
                 .frame(maxWidth: .infinity, alignment: .leading)
+                .id(self.currentIndex)
+                .intervalWithAnimation(
+                    self.titles.count,
+                    duration: Constants.timerInterval,
+                    transition: .opacity.combined(with: .move(edge: .bottom)),
+                    onIndexChanged: { new in self.currentIndex = new }
+                )
+                .animation(.easeInOut(duration: 0.4), value: self.currentIndex)
+                .clipped()
         }
         .padding(.horizontal, 16)
         .frame(maxWidth: .infinity)
@@ -69,7 +86,7 @@ struct EnterContentView: View {
     EnterContentView(
         content: .constant(""),
         buttonEnable: .constant(false),
-        title: "ex. 타이틀",
+        titles: ["ex. 타이틀", "ex. 타이틀 222"],
         placeholder: "플레이스홀더",
         maxCharacters: 50
     )
