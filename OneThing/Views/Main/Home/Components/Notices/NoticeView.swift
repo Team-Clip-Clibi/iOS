@@ -23,22 +23,33 @@ struct NoticeView: View {
     var body: some View {
         if self.notices.count > 1 {
             
-            let notice = self.notices[self.currentIndex]
-            self.setupNotice(notice)
-                .id(self.currentIndex)
-                .intervalWithAnimation(
-                    self.notices.count,
-                    duration: Constants.timerInterval,
-                    transition: .opacity.combined(with: .move(edge: .bottom)),
-                    onIndexChanged: { new in self.currentIndex = new }
-                )
-                .animation(.easeInOut(duration: 0.4), value: self.currentIndex)
-                .background(Color.gray200)
-                .clipped()
+            ZStack {
+                
+                Color.gray200
+                
+                let notice = self.notices[self.currentIndex]
+                self.setupNotice(notice)
+                    .id(self.currentIndex)
+                    .intervalWithAnimation(
+                        self.notices.count,
+                        duration: Constants.timerInterval,
+                        transition: .opacity.combined(with: .move(edge: .bottom)),
+                        onIndexChanged: { new in
+                            withAnimation(.easeInOut(duration: 0.4)) {
+                                self.currentIndex = new
+                            }
+                        }
+                    )
+            }
+            .frame(maxWidth: .infinity)
+            .frame(height: 34)
+            .clipped()
         } else {
             if let notice = self.notices.last {
                 self.setupNotice(notice)
                     .background(Color.gray200)
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 34)
             }
         }
     }
@@ -64,8 +75,6 @@ private extension NoticeView {
         }
         .padding(.leading, 17)
         .padding(.trailing, 9)
-        .frame(maxWidth: .infinity)
-        .frame(height: 34)
         .onTapGesture {
             guard let url = URL(string: notice.link) else { return }
             self.openURL(url)

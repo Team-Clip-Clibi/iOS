@@ -39,14 +39,17 @@ struct EnterContentView: View {
                     self.titles.count,
                     duration: Constants.timerInterval,
                     transition: .opacity.combined(with: .move(edge: .bottom)),
-                    onIndexChanged: { new in self.currentIndex = new }
+                    onIndexChanged: { new in
+                        withAnimation(.easeInOut(duration: 0.4)) {
+                            self.currentIndex = new
+                        }
+                    }
                 )
-                .animation(.easeInOut(duration: 0.4), value: self.currentIndex)
-                .clipped()
         }
         .padding(.horizontal, 16)
         .frame(maxWidth: .infinity)
         .frame(height: 32)
+        .clipped()
         
         Spacer().frame(height: 4)
         
