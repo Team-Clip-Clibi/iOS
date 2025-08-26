@@ -27,8 +27,7 @@ struct LaunchScreenView: View {
             .onChange(of: self.store.state.isLaunched) { _, new in
                 let hasTokens = TokenManager.shared.accessToken.isEmpty == false &&
                                 TokenManager.shared.refreshToken.isEmpty == false
-                // self.appCoordinator.currentState = hasTokens ? .mainTabBar: .signUp
-                self.appCoordinator.currentState = .mainTabBar
+                self.appCoordinator.currentState = hasTokens ? .mainTabBar: .signUp
             }
     }
 }
