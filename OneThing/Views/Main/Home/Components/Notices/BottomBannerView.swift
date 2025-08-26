@@ -21,7 +21,7 @@ struct BottomBannerView: View {
     
     var body: some View {
         
-        if self.bannerInfos.isEmpty == false {
+        if self.bannerInfos.count > 1 {
         
             VStack(spacing: 10) {
                 
@@ -39,18 +39,16 @@ struct BottomBannerView: View {
                         }
                     )
                 
-                HStack(spacing: 6) {
-                    ForEach(self.bannerInfos.indices, id: \.self) { page in
-                        Circle()
-                            .fill(page == self.currentIndex ? .purple400: .gray400)
-                            .frame(width: 6, height: 6)
-                    }
-                }
+                self.setupIndicator(total: self.bannerInfos.count, current: self.currentIndex)
             }
             // 초기 높이, 이미지 높이 추정 전
             .frame(height: 136)
         } else {
-            EmptyView()
+            if let urlString = self.bannerInfos.last?.urlString {
+                self.setupBanner(with: urlString)
+            } else {
+                EmptyView()
+            }
         }
     }
 }
@@ -64,6 +62,17 @@ private extension BottomBannerView {
             .frame(maxWidth: .infinity)
             .frame(height: 110)
             .disabled(true)
+    }
+    
+    func setupIndicator(total totalIndex: Int, current currentIndex: Int) -> some View {
+        
+        return HStack(spacing: 6) {
+            ForEach(0..<totalIndex, id: \.self) { index in
+                Circle()
+                    .fill(index == currentIndex ? .purple400: .gray400)
+                    .frame(width: 6, height: 6)
+            }
+        }
     }
 }
 
