@@ -18,44 +18,32 @@ struct BottomBannerView: View {
     @State private var currentIndex: Int = 0
     
     private(set) var bannerInfos: [HomeBannerInfo]
-    private let timer = Timer.publish(
-        every: Constants.timerInterval,
-        on: .main,
-        in: .common
-    ).autoconnect()
     
     var body: some View {
         
         if self.bannerInfos.isEmpty == false {
         
             VStack(spacing: 10) {
-                TabView(selection: $currentIndex) {
-                    ForEach(
-                        0..<self.bannerInfos.count,
-                        id: \.self
-                    ) { page in
-                        let urlString = self.bannerInfos[page].urlString
-                        self.setupBanner(with: urlString)
-                            .tag(page)
-                    }
-                }
-                .tabViewStyle(.page(indexDisplayMode: .never))
-                // TODO: TabView 애니메이션이 겹치기 때문에 modifier 사용 X
-                .onReceive(self.timer) { _ in
-                    let newIndex = (self.currentIndex + 1) % self.bannerInfos.count
-                    self.currentIndex = newIndex
-                }
-                .animation(.easeInOut(duration: 0.4), value: self.currentIndex)
+                
+                let urlString = self.bannerInfos[self.currentIndex].urlString
+                self.setupBanner(with: urlString)
+                    .id(self.currentIndex)
+                    .intervalWithAnimation(
+                        self.bannerInfos.count,
+                        duration: Constants.timerInterval,
+                        transition: .slide,
+                        onIndexChanged: { new in
+                            withAnimation(.easeInOut(duration: 0.8)) {
+                                self.currentIndex = new
+                            }
+                        }
+                    )
                 
                 HStack(spacing: 6) {
-                    ForEach(
-                        0..<self.bannerInfos.count,
-                        id: \.self
-                    ) { page in
+                    ForEach(self.bannerInfos.indices, id: \.self) { page in
                         Circle()
                             .fill(page == self.currentIndex ? .purple400: .gray400)
                             .frame(width: 6, height: 6)
-                            .animation(.easeInOut(duration: 0.2), value: self.currentIndex)
                     }
                 }
             }
