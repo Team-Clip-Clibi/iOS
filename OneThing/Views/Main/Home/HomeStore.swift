@@ -104,11 +104,6 @@ class HomeStore: OTStore {
         self.getMatchingStatusUseCase = getMatchingStatusUseCase
         self.getMatchingsUseCase = getMatchingsUseCase
         self.bannerUseCase = bannerUseCase
-        
-        Task {
-            await self.subscribe()
-            await self.writeReview()
-        }
     }
     
     func process(_ action: Action) async -> OTProcessResult<Process> {
@@ -124,11 +119,11 @@ class HomeStore: OTStore {
             ])
         case .refresh:
             return .concat([
+                await self.updateIsLoading(true),
                 await self.unReadNoti(),
-                await self.notice(),
                 await self.topBanners(),
-                await self.bottomBanners(),
-                await self.matchingSummaries()
+                await self.matchingSummaries(),
+                await self.updateIsLoading(false)
             ])
         case .matchings:
             return await self.matchings()
@@ -188,50 +183,17 @@ extension HomeStore {
 
 private extension HomeStore {
     
-    func hasMeeting(_ infos: [MatchingInfo]) -> [MatchingInfo] {
+    func hasMeetings(_ infos: [MatchingInfo]) -> [MatchingInfo] {
         return infos
             .filter { $0.matchingStatus == .confirmed }
             .filter { $0.meetingTime.isToday }
     }
     
-    func shouldWriteReview(_ infos: [MatchingInfo]) -> [MatchingInfo] {
+    func shouldWriteReviews(_ infos: [MatchingInfo]) -> [MatchingInfo] {
         return infos
             .filter { $0.matchingStatus == .completed }
             .filter { $0.isReviewWritten == false }
-    }
-    
-    func subscribe() async {
-        // 저장된 모임 여부 확인
-        guard SimpleDefaults.shared.isRecentMatchingsEmpty(with: .inMeeting) == false else {
-            LoggingManager.info("Do not have inMeeting today")
-            return
-        }
-        // 저장된 모임 중 오늘 진행될 모임 확인
-        let hasMeetings = SimpleDefaults.shared.loadRecentMatchings(with: .inMeeting)
-        guard hasMeetings.contains(where: { $0.meetingTime.isToday }),
-              let inMeeting = hasMeetings.filter({ $0.meetingTime.isToday }).last
-        else {
-            // 오늘 진행될 모임이 없다면, 전부 삭제
-            SimpleDefaults.shared.removeRecentMatchings(hasMeetings.map { $0.matchingId }, with: .inMeeting)
-            LoggingManager.info("Removed all inMeeting")
-            return
-        }
-        
-        Task { await self.send(.updateInMeetingToday(inMeeting)) }
-    }
-    
-    func writeReview() async {
-        guard SimpleDefaults.shared.isRecentMatchingsEmpty(with: .review) == false else {
-            LoggingManager.info("Do not have backlogged reviews")
-            return
-        }
-        
-        guard let review = SimpleDefaults.shared.loadRecentMatchings(with: .review).last else {
-            LoggingManager.error("Error occur: No backlogged reviews")
-            return
-        }
-        
-        Task { await self.send(.shouldWriteReview(review))}
+            .filter { $0.meetingTime.isToday }
     }
     
     func startTimer(with matching: MatchingInfo) async -> OTProcessResult<Process> {
@@ -361,21 +323,29 @@ private extension HomeStore {
         }
     }
     
+    func updateIsLoading(_ isLoading: Bool) async -> Process {
+        // TODO: 임시, 새로고침 오프셋을 위한 1초 딜레이
+        if isLoading == false { sleep(1) }
+        return .updateIsLoading(isLoading)
+    }
+    
     func matchings() async -> OTProcessResult<Process> {
         do {
             let matchings = try await self.getMatchingsUseCase.matchings()
             
-            // 당일 참석할 모임이 있을 경우, UserDefaults에 저장
-            let hasMeetins = self.hasMeeting(matchings)
-            if hasMeetins.isEmpty == false {
-                SimpleDefaults.shared.saveRecentMatchings(hasMeetins, with: .inMeeting)
-                Task { await self.subscribe() }
+            // 당일 참석할 모임이 있을 경우, 타이머 시작
+            let hasMeetings = self.hasMeetings(matchings)
+            if let hasMeeting = hasMeetings.last {
+                Task { await self.startTimer(with: hasMeeting) }
             }
             
-            let shouldWriteReview = self.shouldWriteReview(matchings)
-            if shouldWriteReview.isEmpty == false {
-                SimpleDefaults.shared.saveRecentMatchings(shouldWriteReview, with: .review)
-                Task { await self.writeReview() }
+            // 작성할 리뷰가 있을 때, 팝업 바로 표시
+            let shouldWriteReviews = self.shouldWriteReviews(matchings)
+            if let shouldWriteReview = shouldWriteReviews.last {
+                return .concat([
+                    .shouldWriteReview(shouldWriteReview),
+                    .matchings(matchings)
+                ])
             }
             
             return .single(.matchings(matchings))
