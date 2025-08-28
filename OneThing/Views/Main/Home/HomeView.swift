@@ -202,6 +202,24 @@ struct HomeView: View {
                     .resizable()
                     .scaledToFit()
                     .frame(height: 24)
+                    // Test: 모임 중 플로팅 뷰 및 바텀 싯 테스트를 위한 액션
+                    .onTapGesture {
+                        Task {
+                            await self.store.send(
+                                .updateInMeetingToday(
+                                    MatchingInfo(
+                                        id: "",
+                                        matchingId: "",
+                                        meetingTime: Date(),
+                                        matchingStatus: .confirmed,
+                                        matchingType: .onething,
+                                        myOneThingContent: "",
+                                        isReviewWritten: false
+                                    )
+                                )
+                            )
+                        }
+                    }
             ),
             hidesBackButton: true,
             rightButtons: [

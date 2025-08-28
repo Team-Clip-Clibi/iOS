@@ -85,10 +85,24 @@ class HomeStore: OTStore {
         self.state = State(
             nickname: "",
             isUnReadNotiEmpty: true,
-            topBannerInfos: [],
+            topBannerInfos: [
+                NotificationBannerInfo(id: "1", bannerType: .matching),
+                NotificationBannerInfo(id: "2", bannerType: .matchingInfo),
+                NotificationBannerInfo(id: "3", bannerType: .review)
+            ],
             isChangeSuccessForTopBannerStatus: false,
-            noticeInfos: [],
-            matchingSummariesWithType: [],
+            noticeInfos: [
+                // Test: 공지 테스트를 위한 초기 값
+                NoticeInfo(noticeType: .notice, content: "원띵 업데이트 공지 어쩌구 저쩌구", link: ""),
+                NoticeInfo(noticeType: .article, content: "원띵 업데이트 기사 어쩌구", link: ""),
+                NoticeInfo(noticeType: .notice, content: "원띵 업데이트 공지 어쩌구 저쩌구 어쩌구", link: "")
+            ],
+            matchingSummariesWithType: [
+                // Test: 매칭 요약 테스트를 위한 초기 값
+                MatchingSummariesWithType(type: .onething, info: .init(matchingId: 1, daysUntilMeeting: 5, meetingTime: Date(), meetingPlace: "강남")),
+                MatchingSummariesWithType(type: .random, info: .init(matchingId: 2, daysUntilMeeting: 0, meetingTime: Date(), meetingPlace: "강남")),
+                MatchingSummariesWithType(type: .instant, info: .init(matchingId: 3, daysUntilMeeting: 10, meetingTime: Date(), meetingPlace: "강남"))
+            ],
             bannerInfos: [],
             matchingProgressInfo: [],
             reachedMeeting: nil,
@@ -111,11 +125,11 @@ class HomeStore: OTStore {
         case .landing:
             return .concat([
                 await self.unReadNoti(),
-                await self.notice(),
-                await self.topBanners(),
+                // await self.notice(),
+                // await self.topBanners(),
                 await self.bottomBanners(),
                 await self.nickname(),
-                await self.matchingSummaries()
+                // await self.matchingSummaries()
             ])
         case .refresh:
             return .concat([
@@ -130,7 +144,9 @@ class HomeStore: OTStore {
         case .topBanners:
             return await .single(self.topBanners())
         case let .updateTopBannerStatus(id):
-            return await self.updateTopBannerStatus(with: id)
+            // return await self.updateTopBannerStatus(with: id)
+            let new = self.state.topBannerInfos.filter { $0.id != id }
+            return .single(.topBanners(new))
         case let .updateInMeetingToday(inMeeting):
             return await self.startTimer(with: inMeeting)
         case let .shouldWriteReview(review):
