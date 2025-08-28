@@ -26,7 +26,6 @@ struct NoticeInfo: Equatable {
     let link: String
 }
 
-// TODO: DTO 모델이 불필요
 extension NoticeInfo: Codable {
     
     init(from decoder: any Decoder) throws {

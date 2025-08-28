@@ -126,10 +126,10 @@ struct MyPageView: View {
                 
                 HStack(spacing: 16) {
                     Button(action: {
-                        self.myPageCoordinator.push(to: .myPage(.term))
+                        // TODO: 추후 약관 및 정책 노션으로 전환
                     }) {
                         Text("약관 및 정책")
-                            .otFont(.captionTwo)
+                            .otFont(.caption2)
                             .fontWeight(.medium)
                             .foregroundColor(Color.gray700)
                     }
@@ -139,10 +139,10 @@ struct MyPageView: View {
                         .foregroundColor(Color.gray300)
                     
                     Button(action: {
-                        
+                        // TODO: 추후 원띵 이용 가이드 노션으로 전환
                     }) {
                         Text("원띵 이용 가이드")
-                            .otFont(.captionTwo)
+                            .otFont(.caption2)
                             .fontWeight(.medium)
                             .foregroundColor(Color.gray700)
                     }

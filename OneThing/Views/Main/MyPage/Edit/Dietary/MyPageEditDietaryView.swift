@@ -70,7 +70,7 @@ struct MyPageEditDietaryView: View {
                         HStack {
                             Spacer()
                             Text("\(self.otherText.count)/100")
-                                .otFont(.captionTwo)
+                                .otFont(.caption2)
                                 .fontWeight(.medium)
                                 .foregroundStyle(.gray700)
                         }

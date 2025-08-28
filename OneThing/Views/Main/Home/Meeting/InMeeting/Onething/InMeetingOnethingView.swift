@@ -57,9 +57,9 @@ struct InMeetingOnethingView: View {
                             }
                             .scrollTargetLayout()
                         }
+                        .contentMargins(.horizontal, 24, for: .scrollContent)
                         .scrollTargetBehavior(.viewAligned)
                         .scrollPosition(id: Binding($currentPage))
-                        .safeAreaPadding(.horizontal, 24)
                         
                         let number = onethings[self.currentPage].number
                         Text("\(number)/\(onethings.count)")

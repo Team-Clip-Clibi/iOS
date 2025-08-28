@@ -87,7 +87,14 @@ struct RandomMatchingCompleteView: View {
                     
                     OTXXLButton(
                         buttonTitle: Constants.Text.goHomeButtonTitle,
-                        action: { self.homeCoordinator.popToRoot() },
+                        action: {
+                            NotificationCenter.default.post(
+                                name: .fetchMatchingsForToday,
+                                object: nil
+                            )
+                            
+                            self.homeCoordinator.popToRoot()
+                        },
                         isClickable: true
                     )
                 }
@@ -101,6 +108,11 @@ struct RandomMatchingCompleteView: View {
             rightButtons: [
                 AnyView(
                     Button {
+                        NotificationCenter.default.post(
+                            name: .fetchMatchingsForToday,
+                            object: nil
+                        )
+                        
                         self.homeCoordinator.popToRoot()
                      } label: {
                          Image(.closeOutlined)

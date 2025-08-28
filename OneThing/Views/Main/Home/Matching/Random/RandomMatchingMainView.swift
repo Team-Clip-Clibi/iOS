@@ -14,10 +14,10 @@ struct RandomMatchingMainView: View {
         enum Text {
             static let naviTitle = "랜덤 모임 신청"
             
-            static let title = "매주 월요일 7시,\n랜덤 모임에서 만나요"
+            static let title = "금요일 7시,\n랜덤 모임에서 만나요"
             static let subTitle = "새로운 사람과 함께 다양한 이야기를 나눠요"
             
-            static let message = "질문이 인연이 되는 월요일\n함께할래요?"
+            static let message = "질문이 인연이 되는 금요일\n함께할래요?"
             
             static let nextButtonTitle = "다음"
         }

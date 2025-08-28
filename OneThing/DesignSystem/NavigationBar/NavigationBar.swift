@@ -7,7 +7,6 @@
 
 import SwiftUI
 
-// TODO: 임시 네비게이션 바, 기존 OTNavigationBar를 홈 화면에서 사용하기 어려워서 생성
 struct NavigationBar: View {
     
     /// 타이틀 텍스트

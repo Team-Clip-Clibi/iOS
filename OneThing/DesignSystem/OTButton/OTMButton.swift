@@ -23,14 +23,14 @@ struct OTMButton: View {
                 .lineLimit(1)
                 .foregroundStyle(isClickable ? .white100 : .gray800)
                 .padding(.vertical, 12)
-                .frame(maxWidth: .infinity)
-                .frame(height: 48)
-                .background(
-                    RoundedRectangle(cornerRadius: 12)
-                        .foregroundStyle(isClickable ? .purple400 : .gray200)
-                        .animation(.easeInOut(duration: 0.3), value: isClickable)
-                )
         }
+        .frame(maxWidth: .infinity)
+        .frame(height: 48)
+        .background(
+            RoundedRectangle(cornerRadius: 12)
+                .foregroundStyle(isClickable ? .purple400 : .gray200)
+                .animation(.easeInOut(duration: 0.3), value: isClickable)
+        )
     }
 }
 

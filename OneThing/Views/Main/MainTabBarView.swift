@@ -68,29 +68,7 @@ struct MainTabBarView: View {
                     .fullScreenCover(item: $homeCoordinatorForBinding.cover) { _ in
                         self.homeCoordinator.presentMeetingReview()
                     }
-                    // 모임 중 Sheet
-                    .showInMeetingSheet(
-                        isPresented: Binding(
-                            get: { homeCoordinatorForBinding.sheet == .home(.inMeeting(.main)) },
-                            set: { _ in }
-                        )
-                    ) {
-                        Group {
-                            if self.inMeetingCoordinator.path.isEmpty {
-                                self.inMeetingCoordinator.start()
-                            } else {
-                                // inMeetingCoordinator > path가 비어있지 않으면 경로가 반드시 존재한다고 가정
-                                self.inMeetingCoordinator.destinationView(
-                                    to: self.inMeetingCoordinator.path.last!
-                                )
-                            }
-                        }
-                        // 모임 중 sheet을 표시할 때, tabBar 숨김
-                        .toolbar(.hidden, for: .tabBar)
-                        .environment(\.inMeetingCoordinator, inMeetingCoordinatorForBinding)
-                    }
             }
-            .environment(\.homeCoordinator, homeCoordinatorForBinding)
             .tabItem {
                 OTTabItem(
                     title: Constants.Text.homeTabTitle,
@@ -120,7 +98,6 @@ struct MainTabBarView: View {
                         self.myPageCoordinator.destinationEditView(to: path)
                     }
             }
-            .environment(\.myPageCoordinator, myPageCoordinatorForBinding)
             .tabItem {
                 OTTabItem(
                     title: Constants.Text.myTabTitle,
@@ -129,7 +106,6 @@ struct MainTabBarView: View {
             }
             .tag(2)
         }
-        // TODO: 임시, 선택된 탭 이미지 색상
         .accentColor(.gray800)
         .onAppear() {
             let appearance = UITabBarAppearance()
@@ -138,6 +114,24 @@ struct MainTabBarView: View {
             UITabBar.appearance().standardAppearance = appearance
             UITabBar.appearance().scrollEdgeAppearance = appearance
         }
+        // 모임 중 Sheet
+        .showInMeetingSheet(
+            isPresented: Binding(
+                get: { homeCoordinatorForBinding.sheet == .home(.inMeeting(.main)) },
+                set: { _ in }
+            )
+        ) {
+            Group {
+                if let path = self.inMeetingCoordinator.path.last {
+                    self.inMeetingCoordinator.destinationView(to: path)
+                } else {
+                    self.inMeetingCoordinator.start()
+                }
+            }
+            .environment(\.inMeetingCoordinator, inMeetingCoordinatorForBinding)
+        }
+        .environment(\.homeCoordinator, homeCoordinatorForBinding)
+        .environment(\.myPageCoordinator, myPageCoordinatorForBinding)
     }
 }
 

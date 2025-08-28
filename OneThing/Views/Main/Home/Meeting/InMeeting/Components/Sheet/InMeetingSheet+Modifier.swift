@@ -51,7 +51,6 @@ struct InMeetingSheetModifier<SheetContent: View>: ViewModifier {
                     .transition(.identity)
                 }
             }
-            .animation(.easeInOut(duration: 0.3), value: self.isPresented)
     }
 }
 

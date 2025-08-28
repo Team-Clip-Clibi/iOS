@@ -14,7 +14,8 @@ struct OnethingMatchingTopicView: View {
             static let naviTitle = "원띵 모임 신청"
             
             static let title = "모임에서 이야기하고 싶은\n주제를 알려주세요"
-            static let subTitle = "ex. 유럽 여행기 대화 나눠요"
+            static let subTitleFirst = "ex. 유럽 여행기 대화 나눠요"
+            static let subTitleSecond = "ex. 다들 면접 준비 어떻게 하고 있는지 궁금해요"
             
             static let placeholderText = "최소 8자, 최대 50자까지 입력할 수 있어요"
             
@@ -53,7 +54,7 @@ struct OnethingMatchingTopicView: View {
                 EnterContentView(
                     content: $topicContents,
                     buttonEnable: $isNextButtonEnabled,
-                    title: Constants.Text.subTitle,
+                    titles: [Constants.Text.subTitleFirst, Constants.Text.subTitleSecond],
                     placeholder: Constants.Text.placeholderText,
                     maxCharacters: Constants.maxCharacters
                 )

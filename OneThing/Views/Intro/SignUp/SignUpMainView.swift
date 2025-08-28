@@ -1,0 +1,208 @@
+//
+//  SignUpMainView.swift
+//  OneThing
+//
+//  Created by 윤동주 on 3/23/25.
+//
+
+import SwiftUI
+
+struct SignUpMainView: View {
+    
+    @Environment(\.appCoordinator) var appCoordinator
+    @Environment(\.signUpCoordinator) var signUpCoordinator
+    
+    @Binding var store: SignUpStore
+    
+    @State private var currentPage = 0
+    
+    var body: some View {
+        
+        @Bindable var signUpCoordinator = self.signUpCoordinator
+        
+        NavigationStack(path: $signUpCoordinator.path) {
+            
+            OTBaseView(String(describing: Self.self)) {
+                
+                VStack(alignment: .leading) {
+                    // 상단 타이틀
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("오늘 대화 주제 딱 하나!")
+                            .otFont(.heading2)
+                            .foregroundStyle(.gray800)
+                        Text("대화하고 싶은 주제에 맞는 분들끼리 만나요.")
+                            .otFont(.subtitle2)
+                            .foregroundStyle(.gray600)
+                    }
+                    .padding(.top, 40)
+                    
+                    // Carousel
+                    TabView(selection: $currentPage) {
+                        ForEach(0..<self.store.state.banners.count, id: \.self) { index in
+                            BannerView(banner: self.store.state.banners[index])
+                                .tag(index)
+                        }
+                    }
+                    .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
+                    .frame(height: 400)
+                    .padding(.top, 16)
+                    
+                    HStack(spacing: 8) {
+                        ForEach(0..<self.store.state.banners.count, id: \.self) { index in
+                            Capsule()
+                                .fill(index == currentPage ? Color.purple300 : Color.gray300)
+                                .frame(width: index == currentPage ? 16 : 10, height: 10)
+                                .animation(.easeInOut(duration: 0.2), value: currentPage)
+                        }
+                    }
+                    .frame(maxWidth: .infinity, alignment: .center)
+                    .padding(.top, 16)
+                    
+                    Spacer()
+                    
+                    VStack(spacing: 8) {
+                        SocialLoginButton(type: .kakao, text: "Kakao로 로그인하기") {
+                            Task {
+                                await self.store.send(.loginWithKakao)
+                            }
+                        }
+                        .onChange(of: self.store.state.loginResultByKakao) { _, new in
+                            switch new {
+                            case .success:
+                                let appStateManager = self.appCoordinator.dependencies.rootContainer.resolve(AppStateManager.self)
+                                appStateManager.isSignedIn = true
+                                
+                                self.appCoordinator.currentState = .mainTabBar
+                            case .needToSignUp:
+                                self.signUpCoordinator.push(to: .auth(.signUpTerm))
+                            default:
+                                LoggingManager.error("Error occurred while logging in with Kakao")
+                            }
+                        }
+                        
+                        SocialLoginButton(type: .apple, text: "Apple로 로그인하기") {
+                            // apple login logic
+                        }
+                        
+                        Button {
+                            
+                        } label: {
+                            Text("원띵 미리보기")
+                                .otFont(.body1)
+                                .foregroundStyle(.gray600)
+                        }
+                        .padding(.top, 10)
+                    }
+                }
+                .padding(.horizontal, 17)
+                .navigationDestination(for: OTPath.self) { path in
+                    self.signUpCoordinator.destinationView(to: path)
+                }
+            }
+        }
+        .taskForOnce {
+            await self.store.send(.banners)
+        }
+    }
+}
+
+extension SignUpMainView {
+    struct BannerView: View {
+        var banner: LoginBannerInfo
+        
+        var body: some View {
+            ZStack {
+                RoundedRectangle(cornerRadius: 24)
+                    .fill(Color.purple100)
+                    .frame(width: 360, height: 400)
+                
+                VStack(spacing: 32) {
+                    AsyncImage(url: URL(string: banner.imagePresignedUrl)!) { phase in
+                        
+                        switch phase {
+                        case .success(let image):
+                            image
+                                .resizable()
+                                .scaledToFit()
+                                .frame(height: 210)
+                                .clipped()
+                        default:
+                            Color.gray600
+                                .frame(width: 210, height: 210)
+                        }
+                    }
+                    .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
+                    
+                    Text(banner.text)
+                        .otFont(.title1)
+                        .foregroundStyle(.gray800)
+                        .multilineTextAlignment(.center)
+                }
+            }
+        }
+    }
+    
+    struct SocialLoginButton: View {
+        enum LoginType {
+            case kakao
+            case apple
+        }
+
+        let type: LoginType
+        let text: String
+        let action: () -> Void
+
+        var body: some View {
+            Button(action: action) {
+                ZStack {
+                    RoundedRectangle(cornerRadius: 8)
+                        .fill(backgroundColor)
+                        .frame(height: 48)
+                    HStack {
+                        Image(iconName)
+                        Text(text)
+                            .otFont(.body2)
+                            .foregroundStyle(textColor)
+                    }
+                }
+            }
+        }
+
+        private var backgroundColor: Color {
+            switch type {
+            case .kakao:
+                return Color(hex: "FAE300")
+            case .apple:
+                return Color(hex: "000000")
+            }
+        }
+
+        private var textColor: Color {
+            switch type {
+            case .kakao:
+                return Color(hex: "2D2D2D")
+            case .apple:
+                return Color(hex: "FFFFFF")
+            }
+        }
+
+        private var iconName: String {
+            switch type {
+            case .kakao: return "kakao"
+            case .apple: return "apple"
+            }
+        }
+    }
+}
+
+#Preview {
+    let signUpStoreForPreview = SignUpStore(
+        socialLoginUseCase: SocialLoginUseCase(),
+        updateUserNameUseCase: UpdateUserNameUseCase(),
+        updateNicknameUseCase: UpdateNicknameUseCase(),
+        updatePhoneNumberUseCase: UpdatePhoneNumberUseCase(),
+        getNicknameAvailableUseCase: GetNicknameAvailableUseCase(),
+        getBannerUseCase: GetBannerUseCase()
+    )
+    SignUpMainView(store: .constant(signUpStoreForPreview))
+}

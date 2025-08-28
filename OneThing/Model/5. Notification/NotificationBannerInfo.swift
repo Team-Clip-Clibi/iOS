@@ -16,7 +16,7 @@ struct NotificationBannerInfo: Equatable {
         var title: String {
             switch self {
             case .matching:
-                return "참석 결정하기"
+                return "확인하기"
             case .matchingInfo:
                 return "확인하기"
             case .review:
@@ -27,11 +27,11 @@ struct NotificationBannerInfo: Equatable {
         var description: String {
             switch self {
             case .matching:
-                return "모임 매칭이 완료되었어요! 참석 여부를 알려주세요"
+                return "모임 매칭이 완료되었어요! 매칭 결과를 확인해요"
             case .matchingInfo:
                 return "최종 안내문이 도착했어요! 지금 확인해 보세요"
             case .review:
-                return "오늘 모임은 어떠셨나요? 리뷰를 남겨주세요"
+                return "오늘 모임은 어떠셨나요? 후기를 남겨주세요"
             }
         }
     }

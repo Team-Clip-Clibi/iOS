@@ -24,8 +24,10 @@ struct InMeetingSheetView<Content: View>: View {
     @State private var height: CGFloat = 0
     @State private var dragOffset: CGFloat = 0
     @State private var isDragging: Bool = false
+    @State private var displayedWhenAnimationEnded: Bool = false
     
     private let dismissThreshold: CGFloat = 0.8
+    private let animationDuration: Double = 0.25
     
     var body: some View {
         
@@ -51,9 +53,8 @@ struct InMeetingSheetView<Content: View>: View {
                         
                         Spacer().frame(height: 22)
                         
-                        // 모임 중 뷰
-                        self.content()
-                        
+                        // 모임 중 뷰, 애니메이션이 끝난 후 표시
+                        if self.displayedWhenAnimationEnded { self.content() }
                     }
                     .frame(maxWidth: .infinity)
                     .frame(height: self.height)
@@ -88,9 +89,17 @@ struct InMeetingSheetView<Content: View>: View {
                     }
                 }
                 .onAppear {
+                    // 오프셋, 높이 기본 값
+                    let target = geometry.size.height * self.heightRatio
+                    self.dragOffset = target
+                    self.height = target
+                    
                     // 바텀 싯이 표시될 때, 애니메이션
-                    withAnimation(.easeOut(duration: 0.3)) {
-                        self.height = geometry.size.height * self.heightRatio
+                    withAnimation(.easeOut(duration: self.animationDuration)) {
+                        self.dragOffset = 0
+                    }
+                    DispatchQueue.main.asyncAfter(deadline: .now() + self.animationDuration) {
+                        self.displayedWhenAnimationEnded = true
                     }
                 }
         }
@@ -102,10 +111,12 @@ extension InMeetingSheetView {
     
     private func dismiss() {
         // 바텀 싯이 사라질 때, 애니메이션
-        withAnimation(.easeIn(duration: 0.3)) {
-            self.height = 0
+        withAnimation(.easeIn(duration: self.animationDuration)) {
+            self.dragOffset = self.height
         }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + self.animationDuration) {
+            self.height = 0
+            self.displayedWhenAnimationEnded = false
             self.homeCoordinator.dismissSheet()
         }
     }

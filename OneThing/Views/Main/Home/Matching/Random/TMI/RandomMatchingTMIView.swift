@@ -14,7 +14,8 @@ struct RandomMatchingTMIView: View {
             static let naviTitle = "랜덤 모임 신청"
             
             static let title = "마지막으로 모임에서 나눌\nTMI를 입력해주세요"
-            static let subTitle = "ex. 저는 시드니에 사는 것이 꿈이에요"
+            static let subTitleFirst = "ex. 저는 시드니에 사는 것이 꿈이에요"
+            static let subTitleSecond = "ex. 저는 매년 생일마다 증명사진을 찍어서 모아요"
             
             static let placeholderText = "최소 8자, 최대 50자까지 입력할 수 있어요"
             
@@ -53,7 +54,7 @@ struct RandomMatchingTMIView: View {
                 EnterContentView(
                     content: $tmiContents,
                     buttonEnable: $isCompleteButtonEnabled,
-                    title: Constants.Text.subTitle,
+                    titles: [Constants.Text.subTitleFirst, Constants.Text.subTitleSecond],
                     placeholder: Constants.Text.placeholderText,
                     maxCharacters: Constants.maxCharacters
                 )
