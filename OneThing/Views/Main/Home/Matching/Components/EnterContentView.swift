@@ -38,7 +38,7 @@ struct EnterContentView: View {
                 .intervalWithAnimation(
                     self.titles.count,
                     duration: Constants.timerInterval,
-                    transition: .opacity.combined(with: .move(edge: .bottom)),
+                    transition: .opacity.combined(with: .offset(y: 5)),
                     onIndexChanged: { new in
                         withAnimation(.easeInOut(duration: 0.4)) {
                             self.currentIndex = new
