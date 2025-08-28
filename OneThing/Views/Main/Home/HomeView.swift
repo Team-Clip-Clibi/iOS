@@ -81,8 +81,7 @@ struct HomeView: View {
                                         EmptyView()
                                     } else {
                                         Text("\(matchingSummariesWithType.count)")
-                                            // TODO: weight 조절 추가해야 함
-                                            .otFont(.title1)
+                                            .otFont(.title1(with: .black))
                                             .foregroundStyle(.purple400)
                                     }
                                 }

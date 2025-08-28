@@ -57,3 +57,74 @@ extension Typography {
     static let caption1 = Typography(size: 12, weight: .semibold, lineHeight: 18)
     static let caption2 = Typography(size: 10, weight: .medium, lineHeight: 14)
 }
+
+
+// MARK: Weight
+
+extension Typography {
+    
+    /// Size: 30, Line height: 42
+    ///
+    /// Weight: [Thin: 100, UltraLight: 200, Light: 300, Regular: 400, Medium: 500, SemiBold: 600, Bold: 700, Heavy: 800, Black: 900]
+    static func heading1(with weight: Font.Weight) -> Typography {
+        return Typography(size: 30, weight: weight, lineHeight: 42)
+    }
+    /// Size: 28, Line height: 40
+    ///
+    /// Weight: [Thin: 100, UltraLight: 200, Light: 300, Regular: 400, Medium: 500, SemiBold: 600, Bold: 700, Heavy: 800, Black: 900]
+    static func heading2(with weight: Font.Weight) -> Typography {
+        return Typography(size: 28, weight: weight, lineHeight: 40)
+    }
+    /// Size: 24, Line height: 34
+    ///
+    /// Weight: [Thin: 100, UltraLight: 200, Light: 300, Regular: 400, Medium: 500, SemiBold: 600, Bold: 700, Heavy: 800, Black: 900]
+    static func heading3(with weight: Font.Weight) -> Typography {
+        return Typography(size: 24, weight: weight, lineHeight: 34)
+    }
+    /// Size: 22, Line height: 30
+    ///
+    /// Weight: [Thin: 100, UltraLight: 200, Light: 300, Regular: 400, Medium: 500, SemiBold: 600, Bold: 700, Heavy: 800, Black: 900]
+    static func heading4(with weight: Font.Weight) -> Typography {
+        return Typography(size: 22, weight: weight, lineHeight: 30)
+    }
+    
+    /// Size: 20, Line height: 28
+    ///
+    /// Weight: [Thin: 100, UltraLight: 200, Light: 300, Regular: 400, Medium: 500, SemiBold: 600, Bold: 700, Heavy: 800, Black: 900]
+    static func title1(with weight: Font.Weight) -> Typography {
+        return Typography(size: 20, weight: weight, lineHeight: 28)
+    }
+    
+    /// Size: 18, Line height: 26
+    ///
+    /// Weight: [Thin: 100, UltraLight: 200, Light: 300, Regular: 400, Medium: 500, SemiBold: 600, Bold: 700, Heavy: 800, Black: 900]
+    static func subtilte1(with weight: Font.Weight) -> Typography {
+        return Typography(size: 18, weight: weight, lineHeight: 26)
+    }
+    /// Size: 16, Line height: 24
+    ///
+    /// Weight: [Thin: 100, UltraLight: 200, Light: 300, Regular: 400, Medium: 500, SemiBold: 600, Bold: 700, Heavy: 800, Black: 900]
+    static func subtilte2(with weight: Font.Weight) -> Typography {
+        return Typography(size: 16, weight: weight, lineHeight: 24)
+    }
+    
+    /// Size: 14, Line height: 20
+    ///
+    /// Weight: [Thin: 100, UltraLight: 200, Light: 300, Regular: 400, Medium: 500, SemiBold: 600, Bold: 700, Heavy: 800, Black: 900]
+    static func body1(with weight: Font.Weight) -> Typography {
+        return Typography(size: 14, weight: weight, lineHeight: 20)
+    }
+    
+    /// Size: 12, Line height: 18
+    ///
+    /// Weight: [Thin: 100, UltraLight: 200, Light: 300, Regular: 400, Medium: 500, SemiBold: 600, Bold: 700, Heavy: 800, Black: 900]
+    static func caption1(with weight: Font.Weight) -> Typography {
+        return Typography(size: 12, weight: weight, lineHeight: 18)
+    }
+    /// Size: 10, Line height: 14
+    ///
+    /// Weight: [Thin: 100, UltraLight: 200, Light: 300, Regular: 400, Medium: 500, SemiBold: 600, Bold: 700, Heavy: 800, Black: 900]
+    static func caption2(with weight: Font.Weight) -> Typography {
+        return Typography(size: 10, weight: weight, lineHeight: 14)
+    }
+}
