@@ -106,7 +106,6 @@ struct MainTabBarView: View {
             }
             .tag(2)
         }
-        // TODO: 임시, 선택된 탭 이미지 색상
         .accentColor(.gray800)
         .onAppear() {
             let appearance = UITabBarAppearance()

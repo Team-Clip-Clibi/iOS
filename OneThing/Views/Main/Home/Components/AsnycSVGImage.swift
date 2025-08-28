@@ -11,7 +11,6 @@ import WebKit
 struct AsyncSVGImage: UIViewRepresentable {
     
     enum Shape {
-        // TODO: 임시, 둥근 사각형으로 표시하기 위해 사용
         case rounded(CGFloat)
     }
     
