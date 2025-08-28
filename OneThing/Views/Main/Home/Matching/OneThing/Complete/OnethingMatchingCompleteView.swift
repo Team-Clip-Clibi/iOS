@@ -82,7 +82,14 @@ struct OnethingMatchingCompleteView: View {
                     
                     OTXXLButton(
                         buttonTitle: Constants.Text.goHomeButtonTitle,
-                        action: { self.homeCoordinator.popToRoot() },
+                        action: {
+                            NotificationCenter.default.post(
+                                name: .fetchMatchingsForToday,
+                                object: nil
+                            )
+                            
+                            self.homeCoordinator.popToRoot()
+                        },
                         isClickable: true
                     )
                 }
@@ -96,6 +103,11 @@ struct OnethingMatchingCompleteView: View {
             rightButtons: [
                 AnyView(
                     Button {
+                        NotificationCenter.default.post(
+                            name: .fetchMatchingsForToday,
+                            object: nil
+                        )
+                        
                         self.homeCoordinator.popToRoot()
                      } label: {
                          Image(.closeOutlined)

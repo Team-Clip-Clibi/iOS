@@ -246,6 +246,10 @@ struct HomeView: View {
                 self.isMeetingReviewAlertPresented = true
             }
         }
+        // 모임 신청 후 당일 모임이 있는 지 확인
+        .onReceive(NotificationCenter.default.publisher(for: .fetchMatchingsForToday)) { _ in
+            Task { await self.store.send(.matchings) }
+        }
         // 모임 후기 작성 Alert
         .showAlert(
             isPresented: $isMeetingReviewAlertPresented,

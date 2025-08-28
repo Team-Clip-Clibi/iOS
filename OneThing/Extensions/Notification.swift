@@ -11,4 +11,6 @@ extension Notification.Name {
     
     /// Show meeting review alert
     static let showMeetingReviewAlert = Notification.Name("showMeetingReviewAlert")
+    /// Fetch matchings for today
+    static let fetchMatchingsForToday = Notification.Name("fetchMatchingsForToday")
 }
