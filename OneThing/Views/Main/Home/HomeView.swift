@@ -37,8 +37,8 @@ struct HomeView: View {
         OTBaseView(String(describing: Self.self), background: .gray100) {
             
             ZStack {
-                
-                VStack {
+                // 공지와 하단 뷰들의 패딩을 없애기 위해 spacing = 0 사용
+                VStack(spacing: 0) {
                     
                     
                     // MARK: Notice

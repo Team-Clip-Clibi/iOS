@@ -21,11 +21,12 @@ struct NoticeView: View {
     private(set) var notices: [NoticeInfo]
     
     var body: some View {
-        if self.notices.count > 1 {
             
-            ZStack {
-                
-                Color.gray200
+        ZStack {
+            
+            Color.gray200
+            
+            if self.notices.count > 1 {
                 
                 let notice = self.notices[self.currentIndex]
                 self.setupNotice(notice)
@@ -40,18 +41,16 @@ struct NoticeView: View {
                             }
                         }
                     )
-            }
-            .frame(maxWidth: .infinity)
-            .frame(height: 34)
-            .clipped()
-        } else {
-            if let notice = self.notices.last {
-                self.setupNotice(notice)
-                    .background(Color.gray200)
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 34)
+            } else {
+                
+                if let notice = self.notices.last {
+                    self.setupNotice(notice)
+                }
             }
         }
+        .frame(maxWidth: .infinity)
+        .frame(height: 34)
+        .clipped()
     }
 }
 
@@ -85,8 +84,7 @@ private extension NoticeView {
 #Preview {
     NoticeView(
         notices: [
-            NoticeInfo(noticeType: .notice, content: "원띵 업데이트 공지 어쩌구 저쩌구 111", link: ""),
-            NoticeInfo(noticeType: .article, content: "원띵 업데이트 공지 어쩌구 저쩌구 222", link: "")
+            NoticeInfo(noticeType: .notice, content: "원띵 업데이트 공지 어쩌구 저쩌구 111", link: "")
         ]
     )
 }
