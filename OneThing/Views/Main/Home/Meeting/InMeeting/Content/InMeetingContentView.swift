@@ -37,10 +37,10 @@ struct InMeetingContentView: View {
                     message: Constants.Text.message
                 )
                 
-                VStack(spacing: 20) {
+                VStack {
+                    Spacer().frame(height: 20)
+                    
                     ScrollView(.horizontal, showsIndicators: false) {
-                        Spacer().frame(height: 32)
-                        
                         LazyHStack {
                             ForEach(
                                 0..<InMeetingContentInfo.mock.count,

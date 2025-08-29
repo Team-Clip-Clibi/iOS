@@ -39,9 +39,10 @@ struct InMeetingOnethingView: View {
                 
                 let onethings = self.store.state.onethings
                 if onethings.isEmpty == false {
-                    Spacer().frame(height: 32)
                     
-                    VStack(spacing: 20) {
+                    VStack {
+                        Spacer().frame(height: 20)
+                        
                         ScrollView(.horizontal, showsIndicators: false) {
                             LazyHStack {
                                 ForEach(
@@ -66,7 +67,8 @@ struct InMeetingOnethingView: View {
                             .otFont(.caption1)
                             .foregroundStyle(.gray500)
                     }
-                    .frame(height: 438)
+                    /// top padding + card height + bottom page view
+                    .frame(height: 458)
                 }
                 
                 
