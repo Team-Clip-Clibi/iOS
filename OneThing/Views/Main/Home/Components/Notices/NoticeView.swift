@@ -21,36 +21,41 @@ struct NoticeView: View {
     private(set) var notices: [NoticeInfo]
     
     var body: some View {
+        
+        if self.notices.isEmpty == false {
             
-        ZStack {
-            
-            Color.gray200
-            
-            if self.notices.count > 1 {
+            ZStack {
                 
-                let notice = self.notices[self.currentIndex]
-                self.setupNotice(notice)
-                    .id(self.currentIndex)
-                    .intervalWithAnimation(
-                        self.notices.count,
-                        duration: Constants.timerInterval,
-                        transition: .opacity.combined(with: .offset(y: 5)),
-                        onIndexChanged: { new in
-                            withAnimation(.easeInOut(duration: 0.4)) {
-                                self.currentIndex = new
-                            }
-                        }
-                    )
-            } else {
+                Color.gray200
                 
-                if let notice = self.notices.last {
+                if self.notices.count > 1 {
+                    
+                    let notice = self.notices[self.currentIndex]
                     self.setupNotice(notice)
+                        .id(self.currentIndex)
+                        .intervalWithAnimation(
+                            self.notices.count,
+                            duration: Constants.timerInterval,
+                            transition: .opacity.combined(with: .offset(y: 5)),
+                            onIndexChanged: { new in
+                                withAnimation(.easeInOut(duration: 0.4)) {
+                                    self.currentIndex = new
+                                }
+                            }
+                        )
+                } else {
+                    
+                    if let notice = self.notices.last {
+                        self.setupNotice(notice)
+                    }
                 }
             }
+            .frame(maxWidth: .infinity)
+            .frame(height: 34)
+            .clipped()
+        } else {
+            EmptyView()
         }
-        .frame(maxWidth: .infinity)
-        .frame(height: 34)
-        .clipped()
     }
 }
 
