@@ -22,6 +22,12 @@ struct BottomBannerView: View {
     
     private(set) var bannerInfos: [HomeBannerInfo]
     
+    private let timer = Timer.publish(
+        every: Constants.timerInterval,
+        on: .main,
+        in: .common
+    ).autoconnect()
+    
     var body: some View {
         
         if self.bannerInfos.count > 1 {
@@ -43,15 +49,6 @@ struct BottomBannerView: View {
                                 let urlString = self.bannerInfos[index].urlString
                                 self.setupBanner(with: urlString)
                                     .tag(index)
-                                    // ScrollView의 기본 애니메이션 사용
-                                    .intervalWithAnimation(
-                                        hasTimerStopped: $hasTimerStopped,
-                                        self.bannerInfos.count,
-                                        duration: Constants.timerInterval,
-                                        onIndexChanged: { new in
-                                            self.currentIndex = new
-                                        }
-                                    )
                             }
                         }
                         .scrollTargetLayout()
@@ -59,13 +56,19 @@ struct BottomBannerView: View {
                     .contentMargins(.horizontal, 16, for: .scrollContent)
                     .scrollTargetBehavior(.viewAligned)
                     .scrollPosition(id: Binding($currentIndex))
-                    // currentIndex가 업데이트 되면 자동 스크롤
+                    .gesture(dragGesture)
                     .onChange(of: self.currentIndex) { _, new in
+                        guard self.hasTimerStopped == false else { return }
+                        
                         withAnimation(.easeInOut(duration: 0.8)) {
                             proxy.scrollTo(new)
                         }
                     }
-                    .gesture(dragGesture)
+                    .onReceive(self.timer) { _ in
+                        guard self.hasTimerStopped == false else { return }
+                        
+                        self.currentIndex = (self.currentIndex + 1) % self.bannerInfos.count
+                    }
                 }
                 
                 self.setupIndicator(total: self.bannerInfos.count, current: self.currentIndex)
@@ -86,11 +89,15 @@ private extension BottomBannerView {
     
     func setupBanner(with urlString: String) -> some View {
         
-        return WebImage(url: URL(string: urlString))
-            .resizable()
-            .scaledToFit()
-            .frame(height: 110)
+        return RoundedRectangle(cornerRadius: 8)
+            .fill(.clear)
             .containerRelativeFrame(.horizontal)
+            .frame(height: 110)
+            .overlay {
+                WebImage(url: URL(string: urlString))
+                    .resizable()
+            }
+            .clipShape(.rect(cornerRadius: 8))
     }
     
     func setupIndicator(total totalIndex: Int, current currentIndex: Int) -> some View {
