@@ -20,23 +20,22 @@ struct OTLButton: View {
         Button {
             action()
         } label: {
-            HStack {
+            HStack(spacing: 14) {
                 if pressed {
                     Spacer()
                 }
                 if buttonImage != nil {
                     buttonImage
-                        .padding(.leading, 17)
                 }
                 Text(buttonTitle)
                     .otFont(.body1)
                     .fontWeight(.medium)
                     .lineLimit(1)
                     .foregroundStyle(.gray800)
-                    .padding(.leading, pressed ? 0 : 17)
                 Spacer()
 
             }
+            .padding(.horizontal, 16)
             .frame(height: 48)
             .background(
                 RoundedRectangle(cornerRadius: 8)
@@ -55,5 +54,14 @@ struct OTLButton: View {
 
 #Preview {
     OTLButton(buttonTitle: "Button/L", action: {}, isClicked: true)
+    
+    OTLButton(
+        buttonImage: Image(.bellOutlined),
+        buttonTitle: "알림 설정",
+        backgroundColor: Color.white100,
+        borderColor: Color.white100,
+        action: { },
+        isClicked: false
+    )
 }
 
