@@ -100,6 +100,7 @@ struct MyPageEditNicknameView: View {
         .navigationBar(
             title: "닉네임 변경",
             hidesBackButton: true,
+            hidesBottomSeparator: false,
             rightButtons: [
                 AnyView(
                     Button(

@@ -21,36 +21,40 @@ struct NoticeView: View {
     private(set) var notices: [NoticeInfo]
     
     var body: some View {
-        if self.notices.count > 1 {
+        
+        if self.notices.isEmpty == false {
             
             ZStack {
                 
                 Color.gray200
                 
-                let notice = self.notices[self.currentIndex]
-                self.setupNotice(notice)
-                    .id(self.currentIndex)
-                    .intervalWithAnimation(
-                        self.notices.count,
-                        duration: Constants.timerInterval,
-                        transition: .opacity.combined(with: .offset(y: 5)),
-                        onIndexChanged: { new in
-                            withAnimation(.easeInOut(duration: 0.4)) {
-                                self.currentIndex = new
+                if self.notices.count > 1 {
+                    
+                    let notice = self.notices[self.currentIndex]
+                    self.setupNotice(notice)
+                        .id(self.currentIndex)
+                        .intervalWithAnimation(
+                            self.notices.count,
+                            duration: Constants.timerInterval,
+                            transition: .opacity.combined(with: .offset(y: 5)),
+                            onIndexChanged: { new in
+                                withAnimation(.easeInOut(duration: 0.4)) {
+                                    self.currentIndex = new
+                                }
                             }
-                        }
-                    )
+                        )
+                } else {
+                    
+                    if let notice = self.notices.last {
+                        self.setupNotice(notice)
+                    }
+                }
             }
             .frame(maxWidth: .infinity)
             .frame(height: 34)
             .clipped()
         } else {
-            if let notice = self.notices.last {
-                self.setupNotice(notice)
-                    .background(Color.gray200)
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 34)
-            }
+            EmptyView()
         }
     }
 }
@@ -85,8 +89,7 @@ private extension NoticeView {
 #Preview {
     NoticeView(
         notices: [
-            NoticeInfo(noticeType: .notice, content: "원띵 업데이트 공지 어쩌구 저쩌구 111", link: ""),
-            NoticeInfo(noticeType: .article, content: "원띵 업데이트 공지 어쩌구 저쩌구 222", link: "")
+            NoticeInfo(noticeType: .notice, content: "원띵 업데이트 공지 어쩌구 저쩌구 111", link: "")
         ]
     )
 }

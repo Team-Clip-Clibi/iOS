@@ -70,6 +70,7 @@ struct MyPageNotificationView: View {
         }
         .navigationBar(
             title: "알림 설정",
+            hidesBottomSeparator: false,
             onBackButtonTap: {
                 self.myPageCoordinator.pop()
             }

@@ -41,7 +41,7 @@ struct InMeetingFloatingView: View {
             
             Spacer()
             
-            Image(.rightArrow)
+            Image(.rightArrowOutlined)
                 .resizable()
                 .frame(width: 24, height: 24)
                 .foregroundStyle(.white100)

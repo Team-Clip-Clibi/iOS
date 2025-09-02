@@ -14,14 +14,14 @@ struct IntervalWithAnimationModifier: ViewModifier {
     
     let totalCount: Int
     let timeInterval: TimeInterval
-    let transition: AnyTransition
+    let transition: AnyTransition?
     let onIndexChanged: (Int) -> Void
     
     
     init(
         _ totalCount: Int,
         duration timeInterval: TimeInterval,
-        transition: AnyTransition,
+        transition: AnyTransition?,
         onIndexChanged: @escaping (Int) -> Void
     ) {
         self.totalCount = totalCount
@@ -31,10 +31,16 @@ struct IntervalWithAnimationModifier: ViewModifier {
     }
     
     func body(content: Content) -> some View {
-        content
-            .transition(self.transition)
-            .onAppear { self.startTimer() }
-            .onDisappear { self.stopTimer() }
+        
+        Group {
+            if let transition = self.transition {
+                content.transition(transition)
+            } else {
+                content
+            }
+        }
+        .onAppear { self.startTimer() }
+        .onDisappear { self.stopTimer() }
     }
 }
 
@@ -66,7 +72,7 @@ extension View {
     func intervalWithAnimation(
         _ totalCount: Int,
         duration timeInterval: TimeInterval,
-        transition: AnyTransition,
+        transition: AnyTransition? = nil,
         onIndexChanged: @escaping (Int) -> Void
     ) -> some View {
         return self.modifier(

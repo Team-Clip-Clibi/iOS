@@ -113,6 +113,7 @@ struct MyPageEditDietaryView: View {
         .navigationBar(
             title: "식단 제한 변경",
             hidesBackButton: true,
+            hidesBottomSeparator: false,
             rightButtons: [
                 AnyView(
                     Button(

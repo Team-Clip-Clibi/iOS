@@ -8,6 +8,8 @@
 import SwiftUI
 import Combine
 
+import SDWebImageSwiftUI
+
 struct BottomBannerView: View {
     
     enum Constants {
@@ -16,8 +18,15 @@ struct BottomBannerView: View {
     }
     
     @State private var currentIndex: Int = 0
+    @State private var hasTimerStopped: Bool = false
     
     private(set) var bannerInfos: [HomeBannerInfo]
+    
+    private let timer = Timer.publish(
+        every: Constants.timerInterval,
+        on: .main,
+        in: .common
+    ).autoconnect()
     
     var body: some View {
         
@@ -25,19 +34,42 @@ struct BottomBannerView: View {
         
             VStack(spacing: 10) {
                 
-                let urlString = self.bannerInfos[self.currentIndex].urlString
-                self.setupBanner(with: urlString)
-                    .id(self.currentIndex)
-                    .intervalWithAnimation(
-                        self.bannerInfos.count,
-                        duration: Constants.timerInterval,
-                        transition: .slide,
-                        onIndexChanged: { new in
-                            withAnimation(.easeInOut(duration: 0.8)) {
-                                self.currentIndex = new
+                let dragGesture = DragGesture(minimumDistance: 0)
+                    .onChanged { _ in self.hasTimerStopped = true }
+                    .onEnded { _ in self.hasTimerStopped = false }
+                
+                ScrollViewReader { proxy in
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        LazyHStack(spacing: 16) {
+                            ForEach(
+                                0..<self.bannerInfos.count,
+                                id: \.self
+                            ) { index in
+                                
+                                let urlString = self.bannerInfos[index].urlString
+                                self.setupBanner(with: urlString)
+                                    .tag(index)
                             }
                         }
-                    )
+                        .scrollTargetLayout()
+                    }
+                    .contentMargins(.horizontal, 16, for: .scrollContent)
+                    .scrollTargetBehavior(.viewAligned)
+                    .scrollPosition(id: Binding($currentIndex))
+                    .gesture(dragGesture)
+                    .onChange(of: self.currentIndex) { _, new in
+                        guard self.hasTimerStopped == false else { return }
+                        
+                        withAnimation(.easeInOut(duration: 0.8)) {
+                            proxy.scrollTo(new)
+                        }
+                    }
+                    .onReceive(self.timer) { _ in
+                        guard self.hasTimerStopped == false else { return }
+                        
+                        self.currentIndex = (self.currentIndex + 1) % self.bannerInfos.count
+                    }
+                }
                 
                 self.setupIndicator(total: self.bannerInfos.count, current: self.currentIndex)
             }
@@ -57,11 +89,15 @@ private extension BottomBannerView {
     
     func setupBanner(with urlString: String) -> some View {
         
-        return AsyncSVGImage(urlString: urlString, shape: .rounded(8))
-            .padding(.horizontal, 16)
-            .frame(maxWidth: .infinity)
+        return RoundedRectangle(cornerRadius: 8)
+            .fill(.clear)
+            .containerRelativeFrame(.horizontal)
             .frame(height: 110)
-            .disabled(true)
+            .overlay {
+                WebImage(url: URL(string: urlString))
+                    .resizable()
+            }
+            .clipShape(.rect(cornerRadius: 8))
     }
     
     func setupIndicator(total totalIndex: Int, current currentIndex: Int) -> some View {

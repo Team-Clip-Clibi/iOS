@@ -80,6 +80,7 @@ struct MyPageReportMainView: View {
         }
         .navigationBar(
             title: "신고하기",
+            hidesBottomSeparator: false,
             onBackButtonTap: {
                 self.myPageCoordinator.pop()
             }
@@ -110,7 +111,7 @@ extension MyPageReportMainView {
                             .fontWeight(.medium)
                             .foregroundStyle(.gray800)
                         if isClickable {
-                            Image(.rightArrow)
+                            Image(.rightArrowOutlined)
                                 .foregroundStyle(.gray400)
                         }
                     }

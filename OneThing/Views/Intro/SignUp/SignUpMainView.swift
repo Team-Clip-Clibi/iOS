@@ -7,6 +7,8 @@
 
 import SwiftUI
 
+import SDWebImageSwiftUI
+
 struct SignUpMainView: View {
     
     @Environment(\.appCoordinator) var appCoordinator
@@ -35,28 +37,39 @@ struct SignUpMainView: View {
                             .foregroundStyle(.gray600)
                     }
                     .padding(.top, 40)
+                    .padding(.horizontal, 16)
                     
-                    // Carousel
-                    TabView(selection: $currentPage) {
-                        ForEach(0..<self.store.state.banners.count, id: \.self) { index in
-                            BannerView(banner: self.store.state.banners[index])
-                                .tag(index)
+                    VStack {
+                        
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            LazyHStack(spacing: 16) {
+                                ForEach(
+                                    0..<self.store.state.banners.count,
+                                    id: \.self
+                                ) { index in
+                                    
+                                    let banner = self.store.state.banners[index]
+                                    BannerView(banner: banner)
+                                        .tag(index)
+                                }
+                            }
+                            .scrollTargetLayout()
                         }
-                    }
-                    .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
-                    .frame(height: 400)
-                    .padding(.top, 16)
-                    
-                    HStack(spacing: 8) {
-                        ForEach(0..<self.store.state.banners.count, id: \.self) { index in
-                            Capsule()
-                                .fill(index == currentPage ? Color.purple300 : Color.gray300)
-                                .frame(width: index == currentPage ? 16 : 10, height: 10)
-                                .animation(.easeInOut(duration: 0.2), value: currentPage)
+                        .contentMargins(.horizontal, 16, for: .scrollContent)
+                        .scrollTargetBehavior(.viewAligned)
+                        .scrollPosition(id: Binding($currentPage))
+                        
+                        HStack(spacing: 8) {
+                            ForEach(0..<self.store.state.banners.count, id: \.self) { index in
+                                Capsule()
+                                    .fill(index == currentPage ? Color.purple300 : Color.gray300)
+                                    .frame(width: index == currentPage ? 16 : 10, height: 10)
+                                    .animation(.easeInOut(duration: 0.2), value: currentPage)
+                            }
                         }
+                        .frame(maxWidth: .infinity, alignment: .center)
                     }
-                    .frame(maxWidth: .infinity, alignment: .center)
-                    .padding(.top, 16)
+                    .frame(height: 422)
                     
                     Spacer()
                     
@@ -93,8 +106,8 @@ struct SignUpMainView: View {
                         }
                         .padding(.top, 10)
                     }
+                    .padding(.horizontal, 16)
                 }
-                .padding(.horizontal, 17)
                 .navigationDestination(for: OTPath.self) { path in
                     self.signUpCoordinator.destinationView(to: path)
                 }
@@ -114,31 +127,21 @@ extension SignUpMainView {
             ZStack {
                 RoundedRectangle(cornerRadius: 24)
                     .fill(Color.purple100)
-                    .frame(width: 360, height: 400)
                 
                 VStack(spacing: 32) {
-                    AsyncImage(url: URL(string: banner.imagePresignedUrl)!) { phase in
-                        
-                        switch phase {
-                        case .success(let image):
-                            image
-                                .resizable()
-                                .scaledToFit()
-                                .frame(height: 210)
-                                .clipped()
-                        default:
-                            Color.gray600
-                                .frame(width: 210, height: 210)
-                        }
-                    }
-                    .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
+                    WebImage(url: URL(string: self.banner.imagePresignedUrl))
+                        .resizable()
+                        .scaledToFit()
+                        .frame(height: 210)
                     
-                    Text(banner.text)
+                    Text(self.banner.text)
                         .otFont(.title1)
                         .foregroundStyle(.gray800)
                         .multilineTextAlignment(.center)
                 }
             }
+            .frame(height: 400)
+            .containerRelativeFrame(.horizontal)
         }
     }
     

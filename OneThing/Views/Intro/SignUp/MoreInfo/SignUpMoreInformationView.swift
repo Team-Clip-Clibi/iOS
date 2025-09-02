@@ -200,8 +200,10 @@ struct SignUpMoreInformationView: View {
                         Button {
                             selectedCategory = nil // 닫기
                         } label: {
-                            Image(.sheetClose)
+                            Image(.closeOutlined)
+                                .resizable()
                                 .frame(width: 24, height: 24)
+                                .foregroundStyle(.black)
                         }
                         .padding(.vertical, 12)
                     }

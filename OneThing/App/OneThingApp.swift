@@ -8,6 +8,7 @@
 import SwiftUI
 
 import KakaoSDKAuth
+import SDWebImageSVGCoder
 
 @main
 struct OneThingApp: App {
@@ -16,6 +17,11 @@ struct OneThingApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
     
     @State private var appCoordinator: AppCoordinator = AppCoordinator(dependencies: AppDIContainer())
+    
+    init() {
+        // SVG 이미지를 표시하기 위한 Framework 초기화
+        SDImageCodersManager.shared.addCoder(SDImageSVGCoder.shared)
+    }
     
     var body: some Scene {
         WindowGroup {

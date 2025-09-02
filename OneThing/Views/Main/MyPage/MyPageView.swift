@@ -48,8 +48,7 @@ struct MyPageView: View {
                                 .frame(height: 1)
                             
                             Text("지금까지 총 N번 모임에 참여했어요!")
-                                .otFont(.title1)
-                                .fontWeight(.regular)
+                                .otFont(.body2)
                             
                             OTLButton(
                                 buttonTitle: "프로필 수정",
@@ -70,7 +69,7 @@ struct MyPageView: View {
                     VStack(spacing: 12) {
                         // 기타 버튼들
                         OTLButton(
-                            buttonImage: Image("myPageBell"),
+                            buttonImage: Image(.bellOutlined),
                             buttonTitle: "알림 설정",
                             backgroundColor: Color.white100,
                             borderColor: Color.white100,
