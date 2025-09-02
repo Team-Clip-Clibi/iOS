@@ -48,8 +48,7 @@ struct MyPageView: View {
                                 .frame(height: 1)
                             
                             Text("지금까지 총 N번 모임에 참여했어요!")
-                                .otFont(.title1)
-                                .fontWeight(.regular)
+                                .otFont(.body2)
                             
                             OTLButton(
                                 buttonTitle: "프로필 수정",
