@@ -34,6 +34,7 @@ struct NoticeView: View {
                     self.setupNotice(notice)
                         .id(self.currentIndex)
                         .intervalWithAnimation(
+                            hasTimerStopped: .constant(false),
                             self.notices.count,
                             duration: Constants.timerInterval,
                             transition: .opacity.combined(with: .offset(y: 5)),

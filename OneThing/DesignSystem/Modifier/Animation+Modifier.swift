@@ -12,18 +12,22 @@ struct IntervalWithAnimationModifier: ViewModifier {
     @State private var timer: Timer?
     @State private var currentIndex: Int = 0
     
+    @Binding var hasTimerStopped: Bool
+    
     let totalCount: Int
     let timeInterval: TimeInterval
-    let transition: AnyTransition
+    let transition: AnyTransition?
     let onIndexChanged: (Int) -> Void
     
     
     init(
+        hasTimerStopped: Binding<Bool>,
         _ totalCount: Int,
         duration timeInterval: TimeInterval,
-        transition: AnyTransition,
+        transition: AnyTransition?,
         onIndexChanged: @escaping (Int) -> Void
     ) {
+        self._hasTimerStopped = hasTimerStopped
         self.totalCount = totalCount
         self.timeInterval = timeInterval
         self.transition = transition
@@ -31,10 +35,37 @@ struct IntervalWithAnimationModifier: ViewModifier {
     }
     
     func body(content: Content) -> some View {
-        content
-            .transition(self.transition)
-            .onAppear { self.startTimer() }
-            .onDisappear { self.stopTimer() }
+        
+        if let transition = self.transition {
+            content
+                .transition(transition)
+                .onAppear {
+                    if self.hasTimerStopped == false {
+                        self.startTimer()
+                    }
+                }
+                .onDisappear { self.stopTimer() }
+                .onChange(of: self.hasTimerStopped) { old, new in
+                    guard old != new else { return }
+                    
+                    if new == false { self.startTimer() }
+                    else { self.stopTimer() }
+                }
+        } else {
+            content
+                .onAppear {
+                    if self.hasTimerStopped == false {
+                        self.startTimer()
+                    }
+                }
+                .onDisappear { self.stopTimer() }
+                .onChange(of: self.hasTimerStopped) { old, new in
+                    guard old != new else { return }
+                    
+                    if new == false { self.startTimer() }
+                    else { self.stopTimer() }
+                }
+        }
     }
 }
 
@@ -64,13 +95,15 @@ private extension IntervalWithAnimationModifier {
 extension View {
     
     func intervalWithAnimation(
+        hasTimerStopped: Binding<Bool>,
         _ totalCount: Int,
         duration timeInterval: TimeInterval,
-        transition: AnyTransition,
+        transition: AnyTransition? = nil,
         onIndexChanged: @escaping (Int) -> Void
     ) -> some View {
         return self.modifier(
             IntervalWithAnimationModifier(
+                hasTimerStopped: hasTimerStopped,
                 totalCount,
                 duration: timeInterval,
                 transition: transition,
