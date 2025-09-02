@@ -37,7 +37,6 @@ struct SignUpTermView: View {
                     } label: {
                         HStack(spacing: 10) {
                             Image(
-                                // viewModel.isAllTermsAccepted
                                 self.store.state.isAllTermsAccepted
                                 ? "checkedBox"
                                 : "uncheckedBox"
@@ -111,7 +110,10 @@ struct SignUpTermView: View {
                                         .foregroundColor(term.isAccepted ? .gray800 : .gray600)
                                     
                                     Spacer()
-                                    Image("rightArrow")
+                                    Image(.rightArrowOutlined)
+                                        .resizable()
+                                        .frame(width: 24, height: 24)
+                                        .foregroundStyle(.gray400)
                                 }
                                 .frame(height: 60)
                                 .frame(maxWidth: .infinity)
@@ -124,7 +126,7 @@ struct SignUpTermView: View {
                     Spacer()
                     
                     OTXXLButton(
-                        buttonTitle: "원띵 시작하기",
+                        buttonTitle: "동의하고 가입하기",
                         action: {
                             Task {
                                 await self.store.send(.signUpWithKakao)

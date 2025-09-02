@@ -110,7 +110,7 @@ extension MyPageReportMainView {
                             .fontWeight(.medium)
                             .foregroundStyle(.gray800)
                         if isClickable {
-                            Image(.rightArrow)
+                            Image(.rightArrowOutlined)
                                 .foregroundStyle(.gray400)
                         }
                     }

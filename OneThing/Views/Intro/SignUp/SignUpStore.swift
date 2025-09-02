@@ -61,7 +61,7 @@ class SignUpStore: OTStore {
             return self.terms.filter { $0.isAccepted == false }.isEmpty
         }
         var isRequiredTermsAccepted: Bool {
-            return self.terms.contains(where: { $0.isRequired && $0.isAccepted == false })
+            return self.terms.filter { $0.isRequired }.allSatisfy { $0.isAccepted }
         }
     }
     var state: State
