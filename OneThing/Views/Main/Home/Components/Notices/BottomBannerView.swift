@@ -8,6 +8,8 @@
 import SwiftUI
 import Combine
 
+import SDWebImageSwiftUI
+
 struct BottomBannerView: View {
     
     enum Constants {
@@ -16,6 +18,7 @@ struct BottomBannerView: View {
     }
     
     @State private var currentIndex: Int = 0
+    @State private var hasTimerStopped: Bool = false
     
     private(set) var bannerInfos: [HomeBannerInfo]
     
@@ -25,19 +28,45 @@ struct BottomBannerView: View {
         
             VStack(spacing: 10) {
                 
-                let urlString = self.bannerInfos[self.currentIndex].urlString
-                self.setupBanner(with: urlString)
-                    .id(self.currentIndex)
-                    .intervalWithAnimation(
-                        self.bannerInfos.count,
-                        duration: Constants.timerInterval,
-                        transition: .slide,
-                        onIndexChanged: { new in
-                            withAnimation(.easeInOut(duration: 0.8)) {
-                                self.currentIndex = new
+                let dragGesture = DragGesture(minimumDistance: 0)
+                    .onChanged { _ in self.hasTimerStopped = true }
+                    .onEnded { _ in self.hasTimerStopped = false }
+                
+                ScrollViewReader { proxy in
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        LazyHStack(spacing: 16) {
+                            ForEach(
+                                0..<self.bannerInfos.count,
+                                id: \.self
+                            ) { index in
+                                
+                                let urlString = self.bannerInfos[index].urlString
+                                self.setupBanner(with: urlString)
+                                    .tag(index)
+                                    // ScrollView의 기본 애니메이션 사용
+                                    .intervalWithAnimation(
+                                        hasTimerStopped: $hasTimerStopped,
+                                        self.bannerInfos.count,
+                                        duration: Constants.timerInterval,
+                                        onIndexChanged: { new in
+                                            self.currentIndex = new
+                                        }
+                                    )
                             }
                         }
-                    )
+                        .scrollTargetLayout()
+                    }
+                    .contentMargins(.horizontal, 16, for: .scrollContent)
+                    .scrollTargetBehavior(.viewAligned)
+                    .scrollPosition(id: Binding($currentIndex))
+                    // currentIndex가 업데이트 되면 자동 스크롤
+                    .onChange(of: self.currentIndex) { _, new in
+                        withAnimation(.easeInOut(duration: 0.8)) {
+                            proxy.scrollTo(new)
+                        }
+                    }
+                    .gesture(dragGesture)
+                }
                 
                 self.setupIndicator(total: self.bannerInfos.count, current: self.currentIndex)
             }
@@ -57,11 +86,11 @@ private extension BottomBannerView {
     
     func setupBanner(with urlString: String) -> some View {
         
-        return AsyncSVGImage(urlString: urlString, shape: .rounded(8))
-            .padding(.horizontal, 16)
-            .frame(maxWidth: .infinity)
+        return WebImage(url: URL(string: urlString))
+            .resizable()
+            .scaledToFit()
             .frame(height: 110)
-            .disabled(true)
+            .containerRelativeFrame(.horizontal)
     }
     
     func setupIndicator(total totalIndex: Int, current currentIndex: Int) -> some View {
