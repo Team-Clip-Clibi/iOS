@@ -106,6 +106,7 @@ struct MyPageEditRelationshipView: View {
         .navigationBar(
             title: "연애 상태 변경",
             hidesBackButton: true,
+            hidesBottomSeparator: false,
             rightButtons: [
                 AnyView(
                     Button(

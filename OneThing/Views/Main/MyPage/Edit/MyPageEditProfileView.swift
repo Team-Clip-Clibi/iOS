@@ -196,6 +196,7 @@ struct MyPageEditProfileView: View {
         }
         .navigationBar(
             title: "프로필 수정",
+            hidesBottomSeparator: false,
             onBackButtonTap: {
                 self.myPageCoordinator.pop()
             }

@@ -80,6 +80,7 @@ struct MyPageReportMainView: View {
         }
         .navigationBar(
             title: "신고하기",
+            hidesBottomSeparator: false,
             onBackButtonTap: {
                 self.myPageCoordinator.pop()
             }

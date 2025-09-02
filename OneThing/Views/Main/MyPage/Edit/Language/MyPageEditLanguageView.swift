@@ -61,6 +61,7 @@ struct MyPageEditLanguageView: View {
         .navigationBar(
             title: "사용 언어 변경",
             hidesBackButton: true,
+            hidesBottomSeparator: false,
             rightButtons: [
                 AnyView(
                     Button(
