@@ -69,7 +69,7 @@ struct MyPageView: View {
                     VStack(spacing: 12) {
                         // 기타 버튼들
                         OTLButton(
-                            buttonImage: Image("myPageBell"),
+                            buttonImage: Image(.bellOutlined),
                             buttonTitle: "알림 설정",
                             backgroundColor: Color.white100,
                             borderColor: Color.white100,
