@@ -7,6 +7,8 @@
 
 import SwiftUI
 
+import SDWebImageSwiftUI
+
 struct SignUpMainView: View {
     
     @Environment(\.appCoordinator) var appCoordinator
@@ -117,23 +119,12 @@ extension SignUpMainView {
                     .frame(width: 360, height: 400)
                 
                 VStack(spacing: 32) {
-                    AsyncImage(url: URL(string: banner.imagePresignedUrl)!) { phase in
-                        
-                        switch phase {
-                        case .success(let image):
-                            image
-                                .resizable()
-                                .scaledToFit()
-                                .frame(height: 210)
-                                .clipped()
-                        default:
-                            Color.gray600
-                                .frame(width: 210, height: 210)
-                        }
-                    }
-                    .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
+                    WebImage(url: URL(string: self.banner.imagePresignedUrl))
+                        .resizable()
+                        .scaledToFit()
+                        .frame(height: 210)
                     
-                    Text(banner.text)
+                    Text(self.banner.text)
                         .otFont(.title1)
                         .foregroundStyle(.gray800)
                         .multilineTextAlignment(.center)
