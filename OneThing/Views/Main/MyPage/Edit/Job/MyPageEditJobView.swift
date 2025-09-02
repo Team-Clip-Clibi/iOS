@@ -30,34 +30,23 @@ struct MyPageEditJobView: View {
             
             VStack {
                 
-                VStack {
-                    HStack {
-                        Text("최대 2개까지 선택할 수 있어요.")
-                            .otFont(.subtitle2)
-                            .fontWeight(.semibold)
-                            .foregroundColor(isLimitErrorHighlighted ? .red100 : .gray600)
-                            .animation(.easeInOut(duration: 0.3), value: isLimitErrorHighlighted)
-                            .padding(.top, 32)
-                        
-                        Spacer()
+                Spacer().frame(height: 32)
+                
+                LazyVGrid(columns: columns, spacing: 20) {
+                    ForEach(JobType.allCases) { job in
+                        OTSelectionButton(buttonTitle: job.toKorean, action: {
+                            toggle(job)
+                        }, isClicked: self.job == job)
                     }
-                    
-                    LazyVGrid(columns: columns, spacing: 20) {
-                        ForEach(JobType.allCases) { job in
-                            OTSelectionButton(buttonTitle: job.toKorean, action: {
-                                toggle(job)
-                            }, isClicked: self.job == job)
-                        }
-                    }
-                    .padding(.top, 24)
-                    
-                    Spacer()
                 }
-                .padding(.horizontal, 17)
+                .padding(.horizontal, 16)
+                
+                Spacer()
                 
                 Rectangle()
                     .fill(.gray200)
                     .frame(height: 1)
+                
                 OTXXLButton(
                     buttonTitle: "완료",
                     action: {
@@ -67,7 +56,7 @@ struct MyPageEditJobView: View {
                     },
                     isClickable: self.job != nil
                 )
-                .padding(.horizontal, 17)
+                .padding(.horizontal, 16)
                 .padding(.top, 10)
                 .onChange(of: self.store.state.isJobUpdated) { _, newValue in
                     if newValue { self.myPageCoordinator.dismissCover() }
@@ -81,6 +70,7 @@ struct MyPageEditJobView: View {
         .navigationBar(
             title: "하는 일 변경",
             hidesBackButton: true,
+            hidesBottomSeparator: false,
             rightButtons: [
                 AnyView(
                     Button(
