@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import PopupView
 
 struct MyPageEditProfileView: View {
     
