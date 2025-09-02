@@ -36,7 +36,6 @@ struct EnterContentView: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .id(self.currentIndex)
                 .intervalWithAnimation(
-                    hasTimerStopped: .constant(false),
                     self.titles.count,
                     duration: Constants.timerInterval,
                     transition: .opacity.combined(with: .offset(y: 5)),
