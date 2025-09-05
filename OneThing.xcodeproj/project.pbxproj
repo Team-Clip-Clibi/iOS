@@ -16,6 +16,7 @@
 		08F292EF2D9C330100C8332D /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = 08F292EE2D9C330100C8332D /* FirebaseCore */; };
 		08F292F12D9C330100C8332D /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = 08F292F02D9C330100C8332D /* FirebaseCrashlytics */; };
 		08F292F32D9C330100C8332D /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = 08F292F22D9C330100C8332D /* FirebaseMessaging */; };
+		3828C6D02E6AAC9F00EA7BAB /* LookinServer in Frameworks */ = {isa = PBXBuildFile; productRef = 3828C6CF2E6AAC9F00EA7BAB /* LookinServer */; };
 		3841AA1A2E65D96E006DB7A2 /* SDWebImageSVGCoder in Frameworks */ = {isa = PBXBuildFile; productRef = 3841AA192E65D96E006DB7A2 /* SDWebImageSVGCoder */; };
 		38A6BC442E65DC7300CB0522 /* SDWebImageSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 38A6BC432E65DC7300CB0522 /* SDWebImageSwiftUI */; };
 /* End PBXBuildFile section */
@@ -86,6 +87,7 @@
 				08F292ED2D9C330100C8332D /* FirebaseAuth in Frameworks */,
 				08F291E32D9B090B00C8332D /* KakaoSDKAuth in Frameworks */,
 				08F292F12D9C330100C8332D /* FirebaseCrashlytics in Frameworks */,
+				3828C6D02E6AAC9F00EA7BAB /* LookinServer in Frameworks */,
 				08F292EB2D9C330100C8332D /* FirebaseAnalytics in Frameworks */,
 				38A6BC442E65DC7300CB0522 /* SDWebImageSwiftUI in Frameworks */,
 				08F292EF2D9C330100C8332D /* FirebaseCore in Frameworks */,
@@ -169,6 +171,7 @@
 				082750F02DF4A6740056EF9C /* TossPayments */,
 				3841AA192E65D96E006DB7A2 /* SDWebImageSVGCoder */,
 				38A6BC432E65DC7300CB0522 /* SDWebImageSwiftUI */,
+				3828C6CF2E6AAC9F00EA7BAB /* LookinServer */,
 			);
 			productName = OneThing;
 			productReference = 086442612D85BB550055FB81 /* OneThing.app */;
@@ -258,6 +261,7 @@
 				082750EF2DF4A6740056EF9C /* XCRemoteSwiftPackageReference "payment-sdk-ios" */,
 				38CA80CF2E65D91A00FC562B /* XCRemoteSwiftPackageReference "SDWebImageSVGCoder" */,
 				3841AA1B2E65DC12006DB7A2 /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */,
+				3807B5962E6AAC310080F151 /* XCRemoteSwiftPackageReference "LookinServer" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 086442622D85BB550055FB81 /* Products */;
@@ -690,6 +694,14 @@
 				minimumVersion = 11.11.0;
 			};
 		};
+		3807B5962E6AAC310080F151 /* XCRemoteSwiftPackageReference "LookinServer" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/QMUI/LookinServer";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.2.8;
+			};
+		};
 		3841AA1B2E65DC12006DB7A2 /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/SDWebImage/SDWebImageSwiftUI.git";
@@ -753,6 +765,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 08F292E92D9C330100C8332D /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseMessaging;
+		};
+		3828C6CF2E6AAC9F00EA7BAB /* LookinServer */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 3807B5962E6AAC310080F151 /* XCRemoteSwiftPackageReference "LookinServer" */;
+			productName = LookinServer;
 		};
 		3841AA192E65D96E006DB7A2 /* SDWebImageSVGCoder */ = {
 			isa = XCSwiftPackageProductDependency;

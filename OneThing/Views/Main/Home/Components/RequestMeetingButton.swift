@@ -52,21 +52,18 @@ struct RequestMeetingButton: View {
             
             Spacer().frame(width: self.matchingType == .onething ? 16: 12)
             
-            VStack(alignment: .leading) {
+            VStack(alignment: .leading, spacing: 2) {
                 Text(self.title)
                     .otFont(.subtitle2)
                     .foregroundStyle(.gray800)
-                
-                Spacer().frame(height: 2)
                 
                 Text(self.description)
                     .otFont(.caption1)
                     .foregroundStyle(.gray600)
             }
-            
-            Spacer()
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .padding(.horizontal,self.matchingType == .onething ? 18: 16)
+        .padding(.horizontal, self.matchingType == .onething ? 18: 16)
         .frame(maxWidth: .infinity)
         .frame(height: 84)
         .background(.white100)
@@ -90,5 +87,6 @@ struct RequestMeetingButton: View {
                 RequestMeetingButton(matchingType: .instant, backgroundTapAction: { })
             }
         }
+        .padding(.horizontal, 16)
     }
 }
