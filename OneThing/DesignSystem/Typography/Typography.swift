@@ -25,16 +25,21 @@ struct Typography {
         }
     }
     
-    var font: Font
-    var uiFont: UIFont
-    var lineHeight: CGFloat
+    private(set) var font: Font
+    private(set) var lineSpacing: CGFloat
+    private(set) var letterSpacing: CGFloat
+    private(set) var padding: CGFloat
     
     // 이니셜라이저: 폰트 사이즈, weight, lineHeight를 받아서 Typography 객체 생성
-    init(size: CGFloat, weight: Font.Weight, lineHeight: CGFloat) {
+    init(size: CGFloat, weight: Font.Weight, lineHeight: CGFloat, letterSpacing: CGFloat = 0) {
         let fontName = Self.pretendardFontName(for: weight)
-        self.font = .custom(fontName, size: size)
-        self.uiFont = UIFont(name: fontName, size: size) ?? UIFont.systemFont(ofSize: size)
-        self.lineHeight = lineHeight
+        let uiFont = UIFont(name: fontName, size: size) ?? UIFont.systemFont(ofSize: size)
+        let fontLineHeight = uiFont.lineHeight
+        
+        self.font = Font.custom(fontName, size: size)
+        self.lineSpacing = max(0, lineHeight - fontLineHeight)
+        self.letterSpacing = letterSpacing
+        self.padding = max(0, (lineHeight - fontLineHeight) / 2)
     }
 }
 

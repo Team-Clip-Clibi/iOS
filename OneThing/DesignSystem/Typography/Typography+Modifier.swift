@@ -13,8 +13,9 @@ struct TypographyModifier: ViewModifier {
     func body(content: Content) -> some View {
         content
             .font(self.typography.font)
-            .lineSpacing((self.typography.lineHeight - self.typography.uiFont.pointSize) / 2)
-            .padding(.vertical, (self.typography.lineHeight - self.typography.uiFont.pointSize) / 2)
+            .lineSpacing(self.typography.lineSpacing)
+            .tracking(self.typography.letterSpacing)
+            .padding(.vertical, self.typography.padding)
     }
 }
 
