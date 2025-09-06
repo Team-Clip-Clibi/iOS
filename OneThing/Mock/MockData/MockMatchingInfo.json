@@ -1,0 +1,42 @@
+//
+//  MockMatchingInfo.json
+//  OneThing
+//
+//  Created by 윤동주 on 8/8/25.
+//
+
+[
+  {
+    "id": 1,
+    "matchingId": 101,
+    "meetingTime": "2025-08-08T10:00:00.000Z",
+    "matchingStatus": {
+      "matchingStatusName": "scheduled"
+    },
+    "matchingType": "online",
+    "myOneThingContent": "Discuss SwiftUI DI",
+    "isReviewWritten": false
+  },
+  {
+    "id": 2,
+    "matchingId": 102,
+    "meetingTime": "2025-08-09T14:30:00.000Z",
+    "matchingStatus": {
+      "matchingStatusName": "confirmed"
+    },
+    "matchingType": "offline",
+    "myOneThingContent": "Review Repository pattern",
+    "isReviewWritten": true
+  },
+  {
+    "id": 3,
+    "matchingId": 103,
+    "meetingTime": "2025-08-10T09:15:00.000Z",
+    "matchingStatus": {
+      "matchingStatusName": "completed"
+    },
+    "matchingType": "online",
+    "myOneThingContent": "Finalize mock data",
+    "isReviewWritten": true
+  }
+]

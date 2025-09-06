@@ -29,6 +29,7 @@ struct GetMatchingsUseCase {
     func matchings() async throws -> [MatchingInfo] {
         return try await self.repository.matchings().matchingInfos
     }
+    
     // 모임 리스트 조회 + 필터
     func matchings(_ request: MatchingRequest) async throws -> [MatchingInfo] {
         let dto = MatchingRequestDTO(matchingRequest: request)
