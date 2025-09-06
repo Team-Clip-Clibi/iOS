@@ -7,7 +7,11 @@
 
 import Foundation
 
-struct UpdateUserNotifyUseCase {
+protocol UpdateUserNotifyUseCaseProtocol {
+    func execute(isAllowNotify: Bool) async throws -> Bool
+}
+
+struct UpdateUserNotifyUseCase: UpdateUserNotifyUseCaseProtocol {
     private let repository: UserInfoRepository
     
     init(repository: UserInfoRepository = UserInfoRepository()) {

@@ -7,7 +7,6 @@
 
 import SwiftUI
 
-
 struct OTMButton: View {
     var buttonTitle: String
     var action: () -> Void
