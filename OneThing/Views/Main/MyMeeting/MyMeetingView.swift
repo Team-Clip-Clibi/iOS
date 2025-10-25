@@ -8,10 +8,10 @@
 import SwiftUI
 
 struct MyMeetingView: View {
-    @State private var selectionTab: Int = MyMeetingTabMenu.meetingDetails.selectedTab
-    @State private var viewModel: MyMeetingViewModel = MyMeetingViewModel()
     
-    @Binding var appPathManager: OTAppPathManager
+    @State private var selectionTab: Int = MyMeetingTabMenu.meetingDetails.selectedTab
+    
+    @Binding private var store: MyMeetingStore
     
     var body: some View {
         ScrollView {
